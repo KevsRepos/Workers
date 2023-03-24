@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-readonly final class CreateAccountRequest {
+readonly final class DataCreateAccountRequest {
     public function __construct(
         public string $emailAddress,
         public string $firstName,

@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\DTO\CreateAccountRequest;
+use App\DTO\DataCreateAccountRequest;
 use App\Entity\Account as EntityAccount;
 use App\Repository\AccountRepository;
 use DateTimeImmutable;
@@ -12,7 +12,7 @@ final class AccountService {
     {
     }
 
-    public function save(CreateAccountRequest $user)
+    public function save(DataCreateAccountRequest $user)
     {
         $account = new EntityAccount();
 
