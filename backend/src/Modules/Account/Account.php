@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Modules\Account;
 
-use App\Repository\AccountRepository;
+use App\Modules\Account\Repository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-#[ORM\Entity(repositoryClass: AccountRepository::class)]
+#[ORM\Entity(repositoryClass: Repository::class)]
 #[UniqueEntity('emailAddress')]
 class Account
 {

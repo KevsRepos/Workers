@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Modules\Account;
 
-use App\Entity\Account;
+use App\Modules\Account\Account;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Account[]    findAll()
  * @method Account[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AccountRepository extends ServiceEntityRepository
+class Repository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

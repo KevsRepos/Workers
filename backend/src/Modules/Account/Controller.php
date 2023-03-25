@@ -1,18 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Modules\Account;
 
-use App\DTO\DataCreateAccountRequest;
-use App\Service\AccountAsserter;
-use App\Service\AccountService;
+use App\Modules\Account\DataCreateAccountRequest;
+use App\Modules\Account\Asserter;
+use App\Modules\Account\Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
-class AccountController extends AbstractController {
+#[AsController]
+class Controller extends AbstractController {
     #[Route(path: '/accounts', methods: [Request::METHOD_POST])]
-    public function createAccount(array $data, AccountAsserter $accountAsserter, AccountService $accountService): JsonResponse
+    public function createAccount(array $data, Asserter $accountAsserter, Service $accountService): JsonResponse
     {
         $accountAsserter
         ->setEmailAddress($data['emailAddress'] ?? "")

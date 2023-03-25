@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Modules\Account;
 
 use App\Service\StringNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class AccountAsserter {
+final class Asserter {
     #[Assert\Email]
     private string $emailAddress;
 
