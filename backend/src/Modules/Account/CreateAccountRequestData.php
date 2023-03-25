@@ -2,7 +2,7 @@
 
 namespace App\Modules\Account;
 
-readonly final class DataCreateAccountRequest {
+readonly final class CreateAccountRequestData {
     public function __construct(
         public string $emailAddress,
         public string $firstName,

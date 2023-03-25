@@ -2,39 +2,36 @@
 
 namespace App\Modules\Account;
 
-use App\Modules\Account\DataCreateAccountRequest;
-use App\Modules\Account\Account;
-use App\Lib\Success;
+use App\Modules\Account\CreateAccountRequestData;
 use App\Modules\Account\Repository;
-use DateTimeImmutable;
+use App\Modules\Account\Factory;
+use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Error;
 use Exception;
 
 final class Service {
-    public function __construct(private Repository $repo)
+    public function __construct(private Repository $repo, private Factory $account)
     {
     }
 
-    public function save(DataCreateAccountRequest $user): Error|Success
+    public function save(CreateAccountRequestData $user): Error|Success
     {
-        $account = new Account();
-
-        $account
-        ->setEmailAddress($user->emailAddress)
-        ->setPassword($user->password)
-        ->setFirstName($user->firstName)
-        ->setSurname($user->surname)
-        ->setCreatedAt(new DateTimeImmutable());
+        $account = $this->account->create(
+            $user->emailAddress,
+            $user->password,
+            $user->firstName,
+            $user->surname
+        );
 
         try {
             $this->repo->save($account, true);
         } catch(UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
-        } catch(Exception $err) {
-            return new Error($err->getMessage(), 500);
+        } catch(Exception) {
+            return new Error("Error", 500);
         }
 
-        return new Success("AccounCreated");
+        return new Success("AccountCreated");
     }
 }

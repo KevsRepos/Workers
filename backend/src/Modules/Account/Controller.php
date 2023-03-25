@@ -2,7 +2,7 @@
 
 namespace App\Modules\Account;
 
-use App\Modules\Account\DataCreateAccountRequest;
+use App\Modules\Account\CreateAccountRequestData;
 use App\Modules\Account\Asserter;
 use App\Modules\Account\Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +29,7 @@ class Controller extends AbstractController {
             return new JsonResponse($errors->__toString(), 400);
         }
 
-        $userRequest = new DataCreateAccountRequest(
+        $userRequest = new CreateAccountRequestData(
             $accountAsserter->getEmailAddress(),
             $accountAsserter->getFirstName(),
             $accountAsserter->getSurname(),
