@@ -8,19 +8,31 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class Asserter {
-    #[Assert\Email]
+    #[Assert\Email(message: "EmailAddressNotValid")]
     private string $emailAddress;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "FirstNameTooShort",
+        maxMessage: "FirstNameTooLong"
+    )]
     private string $firstName;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "SurnameTooShort",
+        maxMessage: "SurnameTooLong"
+    )]
     private string $surname;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
+    #[Assert\Length(
+        min: 12,
+        max: 50,
+        minMessage: "PasswordTooShort",
+        maxMessage: "PasswordTooLong"
+    )]
     private string $rawPassword;
     
     private string $hashedPassword;
@@ -29,9 +41,16 @@ final class Asserter {
     {   
     }
 
-    public function validate(): ConstraintViolationListInterface
+    public function validate(): array|false
     {
-        return $this->validator->validate($this);
+        $errors = $this->validator->validate($this);
+        $arr = [];
+
+        foreach ($errors as $value) {
+            array_push($arr, $value->getMessage());
+        }
+
+        return count($arr) ? $arr : false;
     }
 
     public function getEmailAddress(): string

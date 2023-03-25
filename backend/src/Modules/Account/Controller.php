@@ -25,9 +25,7 @@ class Controller extends AbstractController {
 
         $errors = $accountAsserter->validate();
 
-        if(count($errors)) {
-            return new JsonResponse($errors->__toString(), 400);
-        }
+        if($errors) return new JsonResponse($errors, 400);
 
         $userRequest = new CreateAccountRequestData(
             $accountAsserter->getEmailAddress(),
