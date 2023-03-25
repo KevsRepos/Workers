@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace App\Modules\Account;
+namespace App\Modules\Account\Create;
 
 use App\Service\StringNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class Asserter {

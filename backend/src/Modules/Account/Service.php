@@ -2,7 +2,7 @@
 
 namespace App\Modules\Account;
 
-use App\Modules\Account\CreateAccountRequestData;
+use App\Modules\Account\Create\AccountRequestData;
 use App\Modules\Account\Repository;
 use App\Modules\Account\Factory;
 use App\Lib\Success;
@@ -15,7 +15,7 @@ final class Service {
     {
     }
 
-    public function save(CreateAccountRequestData $user): Error|Success
+    public function save(AccountRequestData $user): Error|Success
     {
         $account = $this->account->create(
             $user->emailAddress,
