@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Account;
+namespace App\Controller;
 
 use App\DTO\DataCreateAccountRequest;
 use App\Service\AccountAsserter;
@@ -14,7 +14,6 @@ class AccountController extends AbstractController {
     #[Route(path: '/accounts', methods: [Request::METHOD_POST])]
     public function createAccount(array $data, AccountAsserter $accountAsserter, AccountService $accountService): JsonResponse
     {
-        
         $accountAsserter
         ->setEmailAddress($data['emailAddress'] ?? "")
         ->setFirstName($data['firstName'] ?? "")
@@ -24,7 +23,7 @@ class AccountController extends AbstractController {
 
         $errors = $accountAsserter->validate();
 
-        if(count($accountAsserter->validate())) {
+        if(count($errors)) {
             return new JsonResponse($errors->__toString(), 400);
         }
 
@@ -35,6 +34,8 @@ class AccountController extends AbstractController {
             $accountAsserter->getHashedPassword()
         );
 
-        return new JsonResponse($accountService->save($userRequest));
+        $response = $accountService->save($userRequest);
+
+        return new JsonResponse($response->getMessage(), $response->getCode());
     }
 }
