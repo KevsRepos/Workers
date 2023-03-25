@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Repository\AccountRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
+#[UniqueEntity('emailAddress')]
 class Account
 {
     #[ORM\Id]
