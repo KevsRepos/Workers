@@ -33,8 +33,6 @@ final class Asserter {
         maxMessage: "PasswordTooLong"
     )]
     private string $rawPassword;
-    
-    private string $hashedPassword;
 
     public function __construct(private StringNormalizer $normalize, private ValidatorInterface $validator)
     {   
@@ -88,21 +86,14 @@ final class Asserter {
         return $this;
     }
 
+    public function getRawPassword(): string
+    {
+        return $this->rawPassword;
+    }
+
     public function setRawPassword(string $rawPassword): self
     {
         $this->rawPassword = $rawPassword;
-
-        return $this;
-    }
-
-    public function getHashedPassword(): string
-    {
-        return $this->hashedPassword;
-    }
-
-    public function setHashedPassword(): self
-    {
-        $this->hashedPassword = password_hash($this->rawPassword, PASSWORD_DEFAULT);
 
         return $this;
     }

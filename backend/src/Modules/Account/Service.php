@@ -9,9 +9,10 @@ use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Error;
 use Exception;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class Service {
-    public function __construct(private Repository $repo, private Factory $account)
+    public function __construct(private Repository $repo, private Factory $account, private UserPasswordHasherInterface $hasher)
     {
     }
 
@@ -19,10 +20,16 @@ final class Service {
     {
         $account = $this->account->create(
             $user->emailAddress,
-            $user->password,
             $user->firstName,
             $user->surname
         );
+
+        $hashedPassword = $this->hasher->hashPassword(
+            $account,
+            $user->password
+        );
+
+        $account->setPassword($hashedPassword);
 
         try {
             $this->repo->save($account, true);

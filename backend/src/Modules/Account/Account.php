@@ -5,10 +5,12 @@ namespace App\Modules\Account;
 use App\Modules\Account\Repository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: Repository::class)]
 #[UniqueEntity('emailAddress')]
-class Account
+class Account implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,6 +34,18 @@ class Account
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    public function getRoles(): array
+    {
+        return [];        
+    }
+
+    public function eraseCredentials(){}
+
+    public function getUserIdentifier(): string
+    {
+        return $this->emailAddress;
+    }
 
     public function getAccountId(): ?int
     {

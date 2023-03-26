@@ -20,8 +20,7 @@ class Controller extends AbstractController {
         ->setEmailAddress($data['emailAddress'] ?? "")
         ->setFirstName($data['firstName'] ?? "")
         ->setSurname($data['surname'] ?? "")
-        ->setRawPassword($data['password'] ?? "")
-        ->setHashedPassword();
+        ->setRawPassword($data['password'] ?? "");
 
         $errors = $accountAsserter->validate();
 
@@ -31,7 +30,7 @@ class Controller extends AbstractController {
             $accountAsserter->getEmailAddress(),
             $accountAsserter->getFirstName(),
             $accountAsserter->getSurname(),
-            $accountAsserter->getHashedPassword()
+            $accountAsserter->getRawPassword()
         );
 
         $response = $accountService->save($userRequest);
