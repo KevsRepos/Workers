@@ -12,7 +12,7 @@ final class Success {
         return $this->code;
     }
 
-    public function getResponse()
+    public function getMessage()
     {
         return $this->response;
     }
