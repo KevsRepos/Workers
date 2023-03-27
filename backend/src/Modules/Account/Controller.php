@@ -37,4 +37,7 @@ class Controller extends AbstractController {
 
         return new JsonResponse($response->getMessage(), $response->getCode());
     }
+
+    #[Route(path: '/login', methods: [Request::METHOD_POST])]
+    public function login(){}
 }

@@ -5,7 +5,29 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
+        entity_user:
+            entity:
+                class: App\Modules\Account\Account
+                property: emailAddress
+
+    enable_authenticator_manager: true
+
     firewalls:
+        login:
+            pattern: ^/login
+            stateless: true
+            json_login:
+                check_path: /login
+                provider: entity_user
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/
+            stateless: true
+            jwt: ~
+            provider: entity_user
+        
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -22,6 +44,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - {path: ^/accounts, roles: PUBLIC_ACCESS}
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        # access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

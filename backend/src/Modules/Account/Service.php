@@ -7,14 +7,13 @@ use App\Modules\Account\Repository;
 use App\Modules\Account\Factory;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Error;
 use Exception;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class Service {
     public function __construct(private Repository $repo, private Factory $account, private UserPasswordHasherInterface $hasher)
-    {
-    }
+    {}
 
     public function save(AccountRequestData $user): Error|Success
     {

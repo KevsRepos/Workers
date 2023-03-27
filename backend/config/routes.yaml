@@ -3,3 +3,6 @@ controllers:
         path: ../src/Modules
         namespace: App\Modules
     type: attribute
+# config/routes.yaml
+api_login_check:
+    path: /login
