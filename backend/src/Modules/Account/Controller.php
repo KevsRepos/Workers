@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
 class Controller extends AbstractController {
-    #[Route(path: '/accounts', methods: [Request::METHOD_POST])]
+    #[Route(path: '/register', methods: [Request::METHOD_POST])]
     public function createAccount(array $data, Asserter $accountAsserter, Service $accountService): JsonResponse
     {
         $accountAsserter
