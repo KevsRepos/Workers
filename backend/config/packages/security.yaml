@@ -9,6 +9,8 @@ security:
             entity:
                 class: App\Modules\Account\Account
                 property: emailAddress
+        jwt:
+            lexik_jwt: ~
 
     enable_authenticator_manager: true
 
@@ -26,7 +28,7 @@ security:
             pattern: ^/
             stateless: true
             jwt: ~
-            provider: entity_user
+            provider: jwt
         
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
