@@ -47,6 +47,12 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->emailAddress;
     }
 
+    /**lexik jwt needs this to get the id */
+    public function getId(): ?int
+    {
+        return $this->accountId;
+    }
+
     public function getAccountId(): ?int
     {
         return $this->accountId;
