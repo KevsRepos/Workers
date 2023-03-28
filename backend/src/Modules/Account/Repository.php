@@ -39,6 +39,11 @@ class Repository extends ServiceEntityRepository
         }
     }
 
+    public function flush()
+    {
+        $this->getEntityManager()->flush();
+    }
+
 //    /**
 //     * @return Account[] Returns an array of Account objects
 //     */

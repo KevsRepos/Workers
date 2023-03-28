@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class Asserter {
     #[Assert\Email(message: "EmailAddressNotValid")]
-    private string $emailAddress;
+    private ?string $emailAddress = null;
 
     #[Assert\Length(
         min: 2,
@@ -16,7 +16,7 @@ final class Asserter {
         minMessage: "FirstNameTooShort",
         maxMessage: "FirstNameTooLong"
     )]
-    private string $firstName;
+    private ?string $firstName = null;
 
     #[Assert\Length(
         min: 2,
@@ -24,7 +24,7 @@ final class Asserter {
         minMessage: "SurnameTooShort",
         maxMessage: "SurnameTooLong"
     )]
-    private string $surname;
+    private ?string $surname = null;
 
     #[Assert\Length(
         min: 12,
@@ -32,7 +32,7 @@ final class Asserter {
         minMessage: "PasswordTooShort",
         maxMessage: "PasswordTooLong"
     )]
-    private string $rawPassword;
+    private ?string $rawPassword = null;
 
     public function __construct(private StringNormalizer $normalize, private ValidatorInterface $validator)
     {   
@@ -50,48 +50,48 @@ final class Asserter {
         return count($arr) ? $arr : false;
     }
 
-    public function getEmailAddress(): string
+    public function getEmailAddress(): ?string
     {
         return $this->emailAddress;
     }
 
-    public function setEmailAddress(string $emailAddress = ""): self
+    public function setEmailAddress(?string $emailAddress = ""): self
     {
         $this->emailAddress = $emailAddress;
 
         return $this;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName = ""): self
+    public function setFirstName(?string $firstName = ""): self
     {
         $this->firstName = $this->normalize->asNoun($firstName);
 
         return $this;
     }
 
-    public function getSurname(): string
+    public function getSurname(): ?string
     {
         return $this->surname;
     }
 
-    public function setSurname(string $surname = ""): self
+    public function setSurname(?string $surname = ""): self
     {
         $this->surname = $this->normalize->asNoun($surname);
 
         return $this;
     }
 
-    public function getRawPassword(): string
+    public function getRawPassword(): ?string
     {
         return $this->rawPassword;
     }
 
-    public function setRawPassword(string $rawPassword): self
+    public function setRawPassword(?string $rawPassword): self
     {
         $this->rawPassword = $rawPassword;
 
