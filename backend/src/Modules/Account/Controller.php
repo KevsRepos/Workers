@@ -4,6 +4,7 @@ namespace App\Modules\Account;
 
 use App\Modules\Account\DTO\CreateAccountRequest;
 use App\Modules\Account\Create\Asserter;
+use App\Modules\Account\DTO\SendAccountRequest;
 use App\Modules\Account\DTO\UpdateAccountRequest;
 use App\Modules\Account\Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -71,5 +72,21 @@ class Controller extends AbstractController {
         $response = $accountService->update($update);
 
         return new JsonResponse($response->getMessage(), $response->getCode());
+    }
+
+    #[Route(path: 'account/my')]
+    public function getAccountData(Service $accountService): JsonResponse
+    {
+        $account = $accountService->getAccountByAuthId();
+
+        $response = new SendAccountRequest(
+            $account->getEmailAddress(),
+            $account->getFirstName(),
+            $account->getSurname(),
+            $account->getCreatedAt(),
+            $account->getUpdatedAt()
+        );
+
+        return new JsonResponse($response);
     }
 }

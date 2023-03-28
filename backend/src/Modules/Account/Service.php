@@ -78,4 +78,13 @@ final class Service {
 
         return new Success("AccountUpdated");
     }
+
+    public function getAccountByAuthId(): Account
+    {
+        $account = $this->repo->findOneBy(
+            ['accountId' => $this->jwtExtractor->getUserId()]
+        );
+
+        return $account;
+    }
 }
