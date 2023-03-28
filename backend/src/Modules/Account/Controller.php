@@ -11,9 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpKernel\Attribute\AsController;
 
-#[AsController]
 class Controller extends AbstractController {
     #[Route(path: '/register', methods: [Request::METHOD_POST])]
     public function createAccount(array $data, Asserter $accountAsserter, Service $accountService): JsonResponse
