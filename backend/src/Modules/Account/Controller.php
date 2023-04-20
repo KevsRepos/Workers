@@ -3,7 +3,7 @@
 namespace App\Modules\Account;
 
 use App\Modules\Account\DTO\CreateAccountRequest;
-use App\Modules\Account\Create\Asserter;
+use App\Modules\Account\Asserter;
 use App\Modules\Account\DTO\SendAccountRequest;
 use App\Modules\Account\DTO\UpdateAccountRequest;
 use App\Modules\Account\Service;

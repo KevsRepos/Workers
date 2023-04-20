@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Modules\Account\Create;
+namespace App\Modules\Account;
 
 use App\Service\StringNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
