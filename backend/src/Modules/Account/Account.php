@@ -10,7 +10,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: Repository::class)]
-#[UniqueEntity('emailAddress')]
 class Account implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -18,7 +17,7 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $accountId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $emailAddress = null;
 
     #[ORM\Column(length: 100)]
