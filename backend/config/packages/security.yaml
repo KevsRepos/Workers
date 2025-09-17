@@ -12,8 +12,6 @@ security:
         jwt:
             lexik_jwt: ~
 
-    enable_authenticator_manager: true
-
     firewalls:
         login:
             pattern: ^/login

@@ -9,11 +9,10 @@ class Factory {
     {
         $account = new Account();
 
-        $account
-        ->setEmailAddress($emailAddress)
-        ->setFirstName($firstName)
-        ->setSurname($surname)
-        ->setCreatedAt(new DateTimeImmutable());
+        $account->emailAddress = $emailAddress;
+        $account->firstName = $firstName;
+        $account->surname = $surname;
+        $account->createdAt = new DateTimeImmutable();
         
         return $account;
     }
