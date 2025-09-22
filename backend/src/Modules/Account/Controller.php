@@ -2,11 +2,9 @@
 
 namespace App\Modules\Account;
 
-use App\Modules\Account\DTO\CreateAccountRequest;
-use App\Modules\Account\Asserter;
-use App\Modules\Account\DTO\LoginRequestDto;
-use App\Modules\Account\DTO\SendAccountRequest;
-use App\Modules\Account\DTO\UpdateAccountRequest;
+use App\Modules\Account\DTO\AccountDataResponseDto;
+use App\Modules\Account\DTO\UpdateAccountRequestDto;
+use App\Modules\Account\DTO\CreateAccountRequestDto;
 use App\Modules\Account\Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,26 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class Controller extends AbstractController {
     #[Route(path: '/register', methods: [Request::METHOD_POST, Request::METHOD_GET])]
-    public function createAccount(array $data, Asserter $accountAsserter, Service $accountService): JsonResponse
+    public function createAccount(
+        #[MapRequestPayload] CreateAccountRequestDto $dto,
+        Service $accountService
+    ): JsonResponse
     {
-        $accountAsserter
-        ->setEmailAddress($data['emailAddress'] ?? "")
-        ->setFirstName($data['firstName'] ?? "")
-        ->setSurname($data['surname'] ?? "")
-        ->setRawPassword($data['password'] ?? "");
-
-        $errors = $accountAsserter->validate();
-
-        if($errors) return new JsonResponse($errors, 400);
-
-        $userRequest = new CreateAccountRequest(
-            $accountAsserter->getEmailAddress(),
-            $accountAsserter->getFirstName(),
-            $accountAsserter->getSurname(),
-            $accountAsserter->getRawPassword()
-        );
-
-        $response = $accountService->save($userRequest);
+        $response = $accountService->save($dto);
 
         return new JsonResponse($response->getMessage(), $response->getCode());
     }
@@ -48,50 +32,36 @@ class Controller extends AbstractController {
     public function login() {}
 
     #[Route(path: "/account", methods: [Request::METHOD_PUT])]
-    public function updateAccountData(array $data, Asserter $accountAsserter, Service $accountService): JsonResponse
+    public function updateAccountData(
+        #[MapRequestPayload] UpdateAccountRequestDto $dto,
+        Service $accountService
+    ): JsonResponse
     {
-        if(
-            empty($data['emailAddress']) &&
-            empty($data['firstName']) &&
-            empty($data['surname']) &&
-            empty($data['password'])
-        ) return new JsonResponse("NoDataProvided", 400);
-
-        !empty($data['emailAddress']) && $accountAsserter->setEmailAddress($data['emailAddress']);
-        !empty($data['firstName']) && $accountAsserter->setFirstName($data['firstName']);
-        !empty($data['surname']) && $accountAsserter->setSurname($data['surname']);
-        !empty($data['password']) && $accountAsserter->setRawPassword($data['password']);
-
-        $errors = $accountAsserter->validate();
-
-        if($errors) return new JsonResponse($errors, 400);
-
-        $update = new UpdateAccountRequest(
-            $accountAsserter->getEmailAddress(),
-            $accountAsserter->getFirstName(),
-            $accountAsserter->getSurname(),
-            $accountAsserter->getRawPassword()
-        );
-
-        $response = $accountService->update($update);
-
+        if (
+            empty($dto->emailAddress) &&
+            empty($dto->firstName) &&
+            empty($dto->surname) &&
+            empty($dto->password)
+        ) {
+            return new JsonResponse("NoDataProvided", 400);
+        }
+        $response = $accountService->update($dto);
         return new JsonResponse($response->getMessage(), $response->getCode());
     }
 
     #[Route(path: '/account/my', methods: [Request::METHOD_GET])]
     public function getAccountData(Service $accountService): JsonResponse
     {
-		return new JsonResponse(['hello' => 'world']);
-        // $account = $accountService->getAccountByAuthId();
+        $account = $accountService->getAccountByAuthId();
 
-        // $response = new SendAccountRequest(
-        //     $account->emailAddress,
-        //     $account->firstName,
-        //     $account->surname,
-        //     $account->createdAt,
-        //     $account->updatedAt
-        // );
+        $response = new AccountDataResponseDto(
+            $account->emailAddress,
+            $account->firstName,
+            $account->surname,
+            $account->createdAt,
+            $account->updatedAt
+        );
 
-        // return new JsonResponse($response);
+        return new JsonResponse($response);
     }
 }

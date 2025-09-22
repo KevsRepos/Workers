@@ -4,12 +4,13 @@ namespace App\Modules\Account\DTO;
 
 use DateTimeImmutable;
 
-readonly final class SendAccountRequest {
+readonly final class AccountDataResponseDto
+{
     public function __construct(
         public string $emailAddress,
         public string $firstName,
         public string $surname,
         public DateTimeImmutable $createdAt,
-        public DateTimeImmutable $updatedAt
+        public ?DateTimeImmutable $updatedAt
     ){}
 }

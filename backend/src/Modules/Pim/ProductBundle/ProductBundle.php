@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Modules\Pim\ProductInBundle;
+namespace App\Modules\Pim\ProductBundle;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Modules\Pim\Product\Product;
 
-#[ORM\Entity]
+// #[ORM\Entity]
 class ProductBundle {
     #[ORM\Id]
     #[ORM\GeneratedValue]

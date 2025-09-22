@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
 namespace App\Modules\Account;
-
+use App\Modules\Account\DTO\UpdateAccountRequestDto;
+use App\Modules\Account\DTO\CreateAccountRequestDto;
 use Error;
 use Exception;
-use App\Modules\Account\DTO\CreateAccountRequest;
 use App\Modules\Account\Repository;
 use App\Modules\Account\Factory;
 use App\Lib\Success;
-use App\Modules\Account\DTO\UpdateAccountRequest;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Lib\JWTExtractor;
@@ -24,7 +23,7 @@ final class Service {
 		private JWTTokenManagerInterface $jwtManager,
     ){}
 
-    public function save(CreateAccountRequest $data): Error|Success
+    public function save(CreateAccountRequestDto $data): Error|Success
     {
         $account = $this->account->create(
             $data->emailAddress,
@@ -43,14 +42,14 @@ final class Service {
             $this->repo->save($account, true);
         } catch(UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
-        } catch(Exception) {
+        } catch(Exception $e) {
             return new Error("Error", 500);
         }
 
         return new Success("AccountCreated");
     }
 
-    public function update(UpdateAccountRequest $data): Error|Success
+    public function update(UpdateAccountRequestDto $data): Error|Success
     {
         $account = $this->repo->findOneBy(
             ['accountId' => $this->jwtExtractor->getUserId()]
