@@ -2,6 +2,7 @@
 
 namespace App\Modules\Account;
 
+use App\Lib\Entity;
 use App\Modules\Account\Repository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,13 +10,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: Repository::class)]
-class Account implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\HasLifecycleCallbacks]
+class Account extends Entity implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    public ?int $accountId = null;
-
     #[ORM\Column(length: 255, unique: true)]
     public ?string $emailAddress = null;
 
@@ -28,12 +25,6 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     public ?string $password = null;
 
-    #[ORM\Column]
-    public ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(nullable: true)]
-    public ?\DateTimeImmutable $updatedAt = null;
-
     public function getRoles(): array
     {
         return [];        
@@ -44,12 +35,6 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->emailAddress;
-    }
-
-    /**lexik jwt needs this to get the id */
-    public function getId(): ?int
-    {
-        return $this->accountId;
     }
 
     public function getPassword(): ?string

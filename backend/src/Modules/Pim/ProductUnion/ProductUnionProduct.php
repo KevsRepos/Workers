@@ -2,22 +2,19 @@
 
 namespace App\Modules\Pim\ProductUnion;
 
+use App\Lib\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Modules\Pim\Product\Product;
 use App\Modules\Pim\ProductUnion\ProductUnion;
 
 #[ORM\Entity]
-class ProductUnionProduct {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'uuid')]
-    public ?string $productUnionProductId;
-
+#[ORM\HasLifecycleCallbacks]
+class ProductUnionProduct extends Entity {
     #[ORM\ManyToOne(targetEntity: ProductUnion::class)]
-    #[ORM\JoinColumn(name: "product_union_id", referencedColumnName: "product_union_id")]
+    #[ORM\JoinColumn(name: "product_union_id", referencedColumnName: "id")]
     public string $productUnionId;
 
     #[ORM\ManyToOne(targetEntity: Product::class)]
-    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "product_id")]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id")]
     public string $productId;
 }

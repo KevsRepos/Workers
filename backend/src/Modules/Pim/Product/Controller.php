@@ -21,7 +21,7 @@ class Controller extends AbstractController
     }
 
     #[Route('/products/{id}', methods: ['GET'])]
-    public function getProductById(int $id): JsonResponse
+    public function getProductById(string $id): JsonResponse
     {
         // TODO: Fetch product by $id from database
         $product = null;
@@ -42,7 +42,7 @@ class Controller extends AbstractController
     }
 
     #[Route('/products/{id}', methods: ['PUT'])]
-    public function updateProduct(int $id, Request $request): JsonResponse
+    public function updateProduct(string $id, Request $request): JsonResponse
     {
         // TODO: Update product by $id with request data
         $data = json_decode($request->getContent(), true);
@@ -51,7 +51,7 @@ class Controller extends AbstractController
     }
 
     #[Route('/products/{id}', methods: ['DELETE'])]
-    public function deleteProduct(int $id): JsonResponse
+    public function deleteProduct(string $id): JsonResponse
     {
         // TODO: Delete product by $id
         return $this->json(['status' => 'deleted', 'id' => $id]);

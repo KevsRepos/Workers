@@ -9,10 +9,10 @@ class JWTExtractor {
     public function __construct(private TokenStorageInterface $tokenStorage, private JWTTokenManagerInterface $jwtManager)
     {}
 
-    public function getUserId(): int
+    public function getUserId(): ?string
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorage->getToken());
 
-        return $decodedJwtToken['id'];
+        return $decodedJwtToken['id'] ?: null;
     }
 }

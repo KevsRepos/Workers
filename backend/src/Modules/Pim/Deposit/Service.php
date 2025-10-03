@@ -8,6 +8,7 @@ use App\Modules\Pim\Deposit\Dto\CreateDepositRequestDto;
 use App\Modules\Pim\Deposit\Repository;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Uid\Uuid;
 
 final class Service
 {

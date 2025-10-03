@@ -11,7 +11,7 @@ class Factory
         $deposit = new Deposit();
         $deposit->singleAmount = $singleAmount;
         $deposit->crateAmount = $crateAmount;
-        $deposit->createdAt = new DateTimeImmutable();
+        
         return $deposit;
     }
 }

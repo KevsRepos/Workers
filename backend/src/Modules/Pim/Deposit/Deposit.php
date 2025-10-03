@@ -2,25 +2,16 @@
 
 namespace App\Modules\Pim\Deposit;
 
+use App\Lib\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class Deposit
+#[ORM\HasLifecycleCallbacks]
+class Deposit extends Entity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'uuid')]
-    public ?string $depositId;
-
     #[ORM\Column]
     public int $singleAmount;
 
     #[ORM\Column]
     public ?int $crateAmount;
-
-    #[ORM\Column(type: 'datetime_immutable')]
-    public \DateTimeImmutable $createdAt;
-
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    public ?\DateTimeImmutable $updatedAt = null;
 }

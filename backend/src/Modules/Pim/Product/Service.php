@@ -33,7 +33,7 @@ final class Service {
         } catch(UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
         } catch(Exception $e) {
-            return new Error("Error", 500);
+            return new Error($e->getMessage(), 500);
         }
 
         return new Success("ProductCreated");

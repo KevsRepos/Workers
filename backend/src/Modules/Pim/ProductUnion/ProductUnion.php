@@ -2,15 +2,12 @@
 
 namespace App\Modules\Pim\ProductUnion;
 
+use App\Lib\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class ProductUnion {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'uuid')]
-    public ?string $productUnionId;
-
+#[ORM\HasLifecycleCallbacks]
+class ProductUnion extends Entity {
     #[ORM\Column]
     public string $name;
 }

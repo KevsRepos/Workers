@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 class Controller extends AbstractController {
-    #[Route(path: '/register', methods: [Request::METHOD_POST, Request::METHOD_GET])]
+    #[Route(path: '/register', methods: [Request::METHOD_POST])]
     public function createAccount(
         #[MapRequestPayload] CreateAccountRequestDto $dto,
         Service $accountService

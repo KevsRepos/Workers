@@ -52,14 +52,12 @@ final class Service {
     public function update(UpdateAccountRequestDto $data): Error|Success
     {
         $account = $this->repo->findOneBy(
-            ['accountId' => $this->jwtExtractor->getUserId()]
+            ['id' => $this->jwtExtractor->getUserId()]
         );
 
         !empty($data->emailAddress) && $account->emailAddress = $data->emailAddress;
         !empty($data->firstName) && $account->firstName = $data->firstName;
         !empty($data->surname) && $account->surname = $data->surname;
-
-        $account->updatedAt = new DateTimeImmutable();
 
         if(!empty($data->password)) {
             $hashedPassword = $this->hasher->hashPassword(
@@ -101,7 +99,7 @@ final class Service {
     public function getAccountByAuthId(): Account
     {
         $account = $this->repo->findOneBy(
-            ['accountId' => $this->jwtExtractor->getUserId()]
+            ['id' => $this->jwtExtractor->getUserId()]
         );
 
         return $account;
