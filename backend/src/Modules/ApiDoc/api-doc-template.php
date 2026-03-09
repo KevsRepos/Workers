@@ -11,7 +11,7 @@
             padding: 0;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 40px auto;
             background: #fff;
             border-radius: 10px;
@@ -168,10 +168,26 @@
                 });
             });
 
+            // Angepasster Fetch-Handler: unterstützt Platzhalter-Eingaben (z.B. {id})
             document.querySelectorAll('.api-interact').forEach(function(block) {
                 var button = block.querySelector('button');
                 var textarea = block.querySelector('textarea');
                 var responseDiv = block.querySelector('.api-response');
+
+                function buildUrl(url) {
+                    var inputs = block.querySelectorAll('[data-param]');
+                    inputs.forEach(function(inp) {
+                        var name = inp.getAttribute('data-param');
+                        var val = (inp.value || '').trim();
+                        if (val === '') {
+                            throw new Error('Missing parameter: ' + name);
+                        }
+                        // Ersetze alle Vorkommen von {name} mit URL-encodiertem Wert
+                        url = url.replace(new RegExp('\\{' + name + '\\}', 'g'), encodeURIComponent(val));
+                    });
+                    return url;
+                }
+
                 button.addEventListener('click', function() {
                     var url = button.getAttribute('data-url');
                     var method = button.getAttribute('data-method');
@@ -188,15 +204,60 @@
                         method: method,
                         headers: headers
                     };
-                    if (method !== 'GET') {
+                    if (method !== 'GET' && body !== undefined) {
                         fetchOptions.body = body;
                     }
+
+                    try {
+                        url = buildUrl(url);
+                    } catch (e) {
+                        responseDiv.textContent = e.message + ' — bitte Parameter ausfüllen.';
+                        return;
+                    }
+
+                    // Neuer Fetch-Handler: prüfe Content-Type und/oder Text-Inhalt,
+                    // rendere als HTML wenn es HTML ist, sonst sichere Text-/JSON-Ausgabe.
                     fetch(url, fetchOptions)
-                    .then(res => res.text())
-                    .then(text => {
+                    .then(function(res) {
+                        return res.text().then(function(text) {
+                            return {
+                                status: res.status,
+                                contentType: (res.headers.get('content-type') || '').toLowerCase(),
+                                text: text
+                            };
+                        });
+                    })
+                    .then(function(obj) {
+                        var ct = obj.contentType || '';
+                        var text = obj.text || '';
+
+                        // heuristische Erkennung von HTML:
+                        var isHtml = ct.indexOf('text/html') !== -1 ||
+                                     ct.indexOf('application/xhtml+xml') !== -1 ||
+                                     /^\s*<\s*(!doctype|html|svg|[a-zA-Z]+)/i.test(text);
+
+                        if (isHtml) {
+                            // HTML-Antworten werden als HTML gerendert
+                            responseDiv.innerHTML = text;
+                            return;
+                        }
+
+                        // JSON-Erkennung und schönformatierte Ausgabe
+                        var isJson = ct.indexOf('application/json') !== -1 || /^\s*[\{\[]/.test(text);
+                        if (isJson) {
+                            try {
+                                var parsed = JSON.parse(text);
+                                responseDiv.textContent = JSON.stringify(parsed, null, 2);
+                            } catch (e) {
+                                responseDiv.textContent = text;
+                            }
+                            return;
+                        }
+
+                        // Standard: sichere Text-Ausgabe
                         responseDiv.textContent = text;
                     })
-                    .catch(err => {
+                    .catch(function(err) {
                         responseDiv.textContent = 'Error: ' + err;
                     });
                 });
@@ -220,6 +281,27 @@
         </form>
         <div id="login-message" style="margin-bottom:12px; color:#c53030;"></div>
         <div id="jwt-token-display" style="margin-bottom: 24px;"></div>
+
+        <!-- BIN -> UUID Konverter (neu) -->
+        <div id="bin-to-uuid" style="background:#f8fafc;border-radius:6px;padding:12px 14px;margin-bottom:18px;max-width:500px;">
+            <label style="font-weight:600;color:#2d3748;display:block;margin-bottom:6px;">BIN → UUID Konverter</label>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                <select id="b2u-type" style="padding:6px;border-radius:4px;border:1px solid #cbd5e1;">
+                    <option value="hex">Hex (32 chars)</option>
+                    <option value="base64">Base64 (16 bytes)</option>
+                </select>
+                <input id="b2u-input" placeholder="z. B. 4a7d... oder ABe...==" style="flex:1;padding:7px;border-radius:4px;border:1px solid #cbd5e1;font-family:monospace;">
+                <button id="b2u-convert" style="background:#4299e1;color:#fff;border:none;border-radius:4px;padding:7px 12px;cursor:pointer;">Convert</button>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <div id="b2u-output" style="flex:1;background:#edf2f7;border-radius:6px;padding:10px;font-family:'Fira Mono',monospace;color:#2d3748;word-break:break-all;"></div>
+                <button id="b2u-copy" style="background:#2b6cb0;color:#fff;border:none;border-radius:4px;padding:7px 12px;cursor:pointer;">Copy</button>
+            </div>
+            <div id="b2u-error" style="color:#c53030;margin-top:8px;"></div>
+            <div style="margin-top:8px;font-size:0.92rem;color:#4a5568;">Unterstützt: Hex (32 hex digits) oder Base64 (kodierte 16 Bytes).</div>
+        </div>
+        <!-- /BIN -> UUID Konverter -->
+
         <script>
         // Login form logic and JWT display
         document.getElementById('login-form').addEventListener('submit', function(e) {
@@ -264,6 +346,86 @@
             });
         });
         </script>
+
+        <script>
+        // BIN -> UUID Converter JS (neu)
+        (function() {
+            var inp = document.getElementById('b2u-input');
+            var typeSel = document.getElementById('b2u-type');
+            var out = document.getElementById('b2u-output');
+            var err = document.getElementById('b2u-error');
+            var btn = document.getElementById('b2u-convert');
+            var copyBtn = document.getElementById('b2u-copy');
+
+            function bytesToHex(bytes) {
+                return Array.prototype.map.call(bytes, function(b){
+                    return ('0' + (b & 0xFF).toString(16)).slice(-2);
+                }).join('');
+            }
+            function hexToUuid(hex) {
+                hex = hex.replace(/[^0-9a-fA-F]/g,'').toLowerCase();
+                if (hex.length !== 32) return null;
+                return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
+            }
+            function tryBase64ToHex(s) {
+                try {
+                    var bin = atob(s);
+                    if (bin.length !== 16) return null;
+                    var hex = '';
+                    for (var i=0;i<bin.length;i++) {
+                        hex += ('0' + bin.charCodeAt(i).toString(16)).slice(-2);
+                    }
+                    return hex;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            btn.addEventListener('click', function() {
+                err.textContent = '';
+                out.textContent = '';
+                var val = (inp.value || '').trim();
+                if (!val) { err.textContent = 'Bitte Eingabewert angeben.'; return; }
+
+                var uuid = null;
+
+                if (typeSel.value === 'hex') {
+                    var cleaned = val.replace(/[^0-9a-fA-F]/g,'');
+                    if (cleaned.length === 32) {
+                        uuid = hexToUuid(cleaned);
+                    } else {
+                        err.textContent = 'Ungültiges Hex: Erwartet 32 Hex-Zeichen (16 Bytes).';
+                        return;
+                    }
+                } else if (typeSel.value === 'base64') {
+                    var hex = tryBase64ToHex(val);
+                    if (hex) {
+                        uuid = hexToUuid(hex);
+                    } else {
+                        err.textContent = 'Ungültiges Base64 oder nicht 16 Bytes nach Decodierung.';
+                        return;
+                    }
+                } else {
+                    err.textContent = 'Unbekannter Typ.';
+                    return;
+                }
+
+                if (!uuid) {
+                    err.textContent = 'Konvertierung fehlgeschlagen.';
+                    return;
+                }
+
+                out.textContent = uuid;
+            });
+
+            copyBtn.addEventListener('click', function() {
+                var text = out.textContent || '';
+                if (!text) return;
+                navigator.clipboard ? navigator.clipboard.writeText(text) : (function(t){ var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); })(text);
+            });
+        })();
+        </script>
+
         <div class="accordion">
             <?php foreach ($routes as $route): ?>
                 <div class="accordion-item">
@@ -286,7 +448,19 @@
                                 <div class="example-block">
                                     <?= json_encode($route['controllerInfo']['requestExample'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?>
                                 </div>
+                                <?php
+                                    // Parameter aus Pfad extrahieren
+                                    preg_match_all('/\{([^}]+)\}/', $route['path'], $paramMatches);
+                                    $hasParams = !empty($paramMatches[1]);
+                                ?>
                                 <div class="api-interact">
+                                    <?php if ($hasParams): ?>
+                                        <div class="param-inputs" style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                                            <?php foreach ($paramMatches[1] as $p): ?>
+                                                <input data-param="<?= htmlspecialchars($p) ?>" placeholder="<?= htmlspecialchars($p) ?>" style="padding:6px;border-radius:4px;border:1px solid #cbd5e1;font-family:monospace;" />
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
                                     <textarea></textarea>
                                     <button data-url="<?= htmlspecialchars($route['path']) ?>" data-method="<?= htmlspecialchars($route['methods'][0] ?? 'POST') ?>">Send</button>
                                     <div class="api-response"></div>
@@ -300,7 +474,18 @@
                             <?php endif; ?>
                         <?php endif; ?>
                         <?php if (in_array('GET', $route['methods'])): ?>
+                            <?php
+                                preg_match_all('/\{([^}]+)\}/', $route['path'], $paramMatches2);
+                                $hasParamsGet = !empty($paramMatches2[1]);
+                            ?>
                             <div class="api-interact">
+                                <?php if ($hasParamsGet): ?>
+                                    <div class="param-inputs" style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                                        <?php foreach ($paramMatches2[1] as $p): ?>
+                                            <input data-param="<?= htmlspecialchars($p) ?>" placeholder="<?= htmlspecialchars($p) ?>" style="padding:6px;border-radius:4px;border:1px solid #cbd5e1;font-family:monospace;" />
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
                                 <button data-url="<?= htmlspecialchars($route['path']) ?>" data-method="GET">Request</button>
                                 <div class="api-response"></div>
                             </div>

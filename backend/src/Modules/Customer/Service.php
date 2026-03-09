@@ -19,7 +19,7 @@ final class Service
     {
         $customer = $this->factory->create(
             $data->firstName,
-            $data->surName
+            $data->surname
         );
 
         try {

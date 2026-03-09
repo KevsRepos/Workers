@@ -4,11 +4,11 @@ namespace App\Modules\Customer;
 
 class Factory
 {
-    public function create(string $firstName, string $surName): Customer
+    public function create(string $firstName, string $surname): Customer
     {
         $customer = new Customer();
         $customer->firstName = $firstName;
-        $customer->surName = $surName;
+        $customer->surname = $surname;
 
         return $customer;
     }

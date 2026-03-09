@@ -16,14 +16,8 @@ class Customer extends Entity
     public string $firstName;
 
     #[ORM\Column(length: 255)]
-    public string $surName;
+    public string $surname;
 
     #[ORM\OneToMany(mappedBy: "customer", targetEntity: CustomerAddress::class)]
     public Collection $addresses;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->addresses = new ArrayCollection();
-    }
 }

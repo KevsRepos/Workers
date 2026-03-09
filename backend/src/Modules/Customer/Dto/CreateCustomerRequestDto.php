@@ -10,5 +10,5 @@ class CreateCustomerRequestDto
     public string $firstName;
 
     #[Assert\NotBlank]
-    public string $surName;
+    public string $surname;
 }

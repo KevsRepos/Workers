@@ -37,4 +37,14 @@ final class Service
 
         return new Success("CustomerAddressCreated");
     }
+
+    public function listAddresses(): array
+    {
+        return $this->repo->findAll();
+    }
+
+    public function getAddress(string $id): ?CustomerAddress
+    {
+        return $this->repo->find($id);
+    }
 }

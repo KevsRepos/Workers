@@ -5,6 +5,7 @@ namespace App\Modules\Customer\Address;
 use App\Lib\Entity;
 use App\Modules\Customer\Customer;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
@@ -12,6 +13,7 @@ class CustomerAddress extends Entity
 {
     #[ORM\ManyToOne(targetEntity: Customer::class)]
     #[ORM\JoinColumn(name: "customer_id", referencedColumnName: "id", nullable: false)]
+    #[Ignore]
     public ?Customer $customer = null;
 
     #[ORM\Column(length: 255)]
