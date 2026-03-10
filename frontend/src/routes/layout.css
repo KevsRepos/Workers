@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton-svelte';
+@import '@skeletonlabs/skeleton/themes/rocket';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+	font-family: 'Falcon-Poster-Bold';
+	src: url('/Falcon-Poster-Bold.ttf') format('truetype');
+}
+
+.falcon-poster-bold {
+	font-family: 'Falcon-Poster-Bold', sans-serif;
+}
