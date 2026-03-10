@@ -13,6 +13,10 @@ security:
             lexik_jwt: ~
 
     firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
         login:
             pattern: ^/login
             stateless: true
@@ -27,10 +31,6 @@ security:
             stateless: true
             jwt: ~
             provider: jwt
-        
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
         main:
             lazy: true
             provider: users_in_memory
