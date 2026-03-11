@@ -20,6 +20,14 @@ class Controller extends AbstractController
         return $this->json($products);
     }
 
+    #[Route('/products/search', methods: ['GET'])]
+    public function searchProducts(Request $request, Service $service): JsonResponse {
+        $query = $request->query->get('productName', '');
+        $results = $service->search($query);
+
+        return $this->json($results);
+    }
+
     #[Route('/products/{id}', methods: ['GET'])]
     public function getProductById(string $id): JsonResponse
     {

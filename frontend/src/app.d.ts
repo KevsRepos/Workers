@@ -4,7 +4,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			jwt?: string;
+			loggedIn: boolean;
 		}
 		// interface PageData {}
 		// interface PageState {}

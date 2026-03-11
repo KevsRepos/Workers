@@ -4,7 +4,7 @@ namespace App\Modules\Pim\DeliveryNote;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Modules\Pim\DeliveryNote\Service;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
@@ -19,7 +19,7 @@ class Controller extends AbstractController
         return $this->json($deliveryNotes);
     }
 
-    #[Route('/delivery-notes/{id}', methods: ['GET'])]
+    #[Route('/delivery-note/{id}', methods: ['GET'])]
     public function getDeliveryNoteById(string $id, Service $service): JsonResponse
     {
         $deliveryNote = $service->getById($id);

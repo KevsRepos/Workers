@@ -1,3 +1,5 @@
 export const load = async ({ locals }) => {
-    return { loggedIn: !!locals.jwt };
+    return { 
+        loggedIn: locals.loggedIn
+    };
 };

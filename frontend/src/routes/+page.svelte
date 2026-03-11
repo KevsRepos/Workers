@@ -5,13 +5,13 @@ import { Navigation } from "@skeletonlabs/skeleton-svelte";
 let { data } = $props();
 </script>
 
-<Navigation class="bg-gray-100 shadow-md mb-3">
+<Navigation class="mb-3">
     <Navigation.Menu>
         <Navigation.TriggerAnchor href="/delivery-note/create">
-            <NotebookPen size="48"/>
+            <NotebookPen />
         </Navigation.TriggerAnchor>
         <Navigation.TriggerAnchor>
-            <Printer size="48"/>
+            <Printer />
         </Navigation.TriggerAnchor>
     </Navigation.Menu>
 </Navigation>
@@ -21,7 +21,7 @@ let { data } = $props();
 
     <div class="flex col gap-2">
         {#each data.deliveryNotes as deliveryNote}
-            <a href="/delivery-note/[id]" class="flex row justify-between p-2 w-full shadow-sm font-bold">
+            <a href="/delivery-note/{deliveryNote.id}" class="flex row justify-between p-2 w-full shadow-sm font-bold">
                 <div>{deliveryNote.customer.firstName} {deliveryNote.customer.surname}</div>
                 <div>{new Date(deliveryNote.deliveryDate).toLocaleDateString('de-DE')}</div>
             </a>

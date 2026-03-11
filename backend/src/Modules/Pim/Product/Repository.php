@@ -41,4 +41,17 @@ class Repository extends ServiceEntityRepository
     {
         $this->getEntityManager()->flush();
     }
+
+    public function search(string $query): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('p')
+            ->from(Product::class, 'p')
+            ->where('LOWER(p.name) LIKE LOWER(:query)')
+            ->setParameter('query', '%' . $query . '%')
+            ->orderBy('p.name', 'ASC')
+            ->setMaxResults(20)
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

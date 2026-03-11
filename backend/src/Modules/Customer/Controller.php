@@ -4,10 +4,12 @@ namespace App\Modules\Customer;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use App\Modules\Customer\Service;
 use App\Modules\Customer\Dto\CreateCustomerRequestDto;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+
+use Symfony\Component\HttpFoundation\Request;
 
 class Controller extends AbstractController
 {
@@ -17,6 +19,14 @@ class Controller extends AbstractController
         // ...existing code...
         $customers = []; // quick placeholder
         return $this->json($customers);
+    }
+
+    #[Route('/customers/search', methods: ['GET'])]
+    public function searchCustomers(Request $request, Service $service): JsonResponse {
+        $query = $request->query->get('customerName', '');
+        $results = $service->search($query);
+
+        return $this->json($results);
     }
 
     #[Route('/customers', methods: ['POST'])]

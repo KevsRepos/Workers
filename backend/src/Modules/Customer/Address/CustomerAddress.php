@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 #[ORM\HasLifecycleCallbacks]
 class CustomerAddress extends Entity
 {
-    #[ORM\ManyToOne(targetEntity: Customer::class)]
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: "addresses")]
     #[ORM\JoinColumn(name: "customer_id", referencedColumnName: "id", nullable: false)]
     #[Ignore]
     public ?Customer $customer = null;

@@ -38,4 +38,9 @@ final class Service {
 
         return new Success("ProductCreated");
     }
+
+    public function search(string $query): array
+    {
+        return $this->repo->search($query);
+    }
 }

@@ -32,4 +32,9 @@ final class Service
 
         return new Success("CustomerCreated");
     }
+
+    public function search(string $query): array
+    {
+        return $this->repo->search($query);
+    }
 }

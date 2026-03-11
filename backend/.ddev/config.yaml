@@ -16,6 +16,8 @@ mutagen_enabled: false
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
+host_webserver_port: "59001"
+bind_all_interfaces: true
 
 # Key features of ddev's config.yaml:
 
