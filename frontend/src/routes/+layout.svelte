@@ -4,14 +4,14 @@ import favicon from '$lib/assets/favicon.svg';
 import { Menu } from '@lucide/svelte';
 import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
-import { PUBLIC_BACKEND_URL } from '$env/static/public';
-import { user } from '$lib/state/user.svelte';
+import { auth } from '$lib/auth.svelte';
 
 let { data, children } = $props();
 
-// Init user state from server data
+// Hydrate auth state from server data
 $effect(() => {
-    user.init();
+    $inspect(data);
+    auth.hydrate(data.token);
 });
 
 let username = $state('');
@@ -20,22 +20,15 @@ let error = $state('');
 
 async function handleLogin(e: Event) {
     e.preventDefault();
-    error = 'hier';
+    error = '';
     
-    const response = await fetch(`${PUBLIC_BACKEND_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    });
-
-    if (!response.ok) {
-        error = 'Login fehlgeschlagen';
+    const result = await auth.login(username, password);
+    
+    if (!result.success) {
+        error = result.error || 'Login fehlgeschlagen';
         return;
     }
 
-    const result = await response.json();
-    user.setAuth(result.token);
-    
     await invalidateAll();
 }
 </script>
@@ -43,7 +36,7 @@ async function handleLogin(e: Event) {
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 
-{#if !data.loggedIn}
+{#if !auth.isLoggedIn}
 	<form class="flex flex-col gap-2 p-4" onsubmit={handleLogin}>
 		<input placeholder="username" bind:value={username} />
 		<input placeholder="password" bind:value={password} />

@@ -1,28 +1,39 @@
 import { PUBLIC_BACKEND_URL } from "$env/static/public";
-import { user } from "$lib/state/user.svelte";
-import { invalidateAll } from "$app/navigation";
+import { auth } from "$lib/auth.svelte";
+import { browser } from "$app/environment";
 
-export const fetchApi = async (endpoint: string, method: string = 'GET', body: string | null = null) => {
+export const fetchApi = async (
+    endpoint: string, 
+    method: string = 'GET', 
+    body: any = null, 
+    token?: string | null,
+    customFetch: typeof fetch = fetch
+) => {
+    // On server: use passed token, on client: use auth.token
+    const authToken = browser ? auth.token : token;
+
     const headers: Record<string, string> = { 
         'Content-Type': 'application/json'
     };
-
-    if (user.jwt) {
-        headers['Authorization'] = `Bearer ${user.jwt}`;
+    
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/${endpoint}`, {
+    console.log('I RUN');
+    
+
+    const res = await customFetch(`${PUBLIC_BACKEND_URL}/${endpoint}`, {
         method,
         headers,
-        body
+        body: body ? JSON.stringify(body) : undefined
     });
 
-    if (res.status === 401) {
-        user.logout();
-        await invalidateAll();
+    if (res.status === 401 && browser) {
+        // await auth.logout();
     }
 
-    if(!res.ok) {
+    if (!res.ok) {
         const errorText = await res.text();
         throw new Error(`API request failed: ${res.status} ${res.statusText} - ${errorText}`);
     }

@@ -10,11 +10,20 @@ interface Customer {
     surname: string;
 }
 
-class DeliveryNoteForm {
+export class DeliveryNoteForm {
+    id: string|null = $state(null);
     customer: Customer | null = $state(null);
     deliveryDate: string = $state('');
     delivery: boolean = $state(true);
     products: DeliveryNoteProductDto[] = $state([]);
+
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = []) {
+        this.id = id;
+        this.customer = customer;
+        this.deliveryDate = deliveryDate;
+        this.delivery = delivery;
+        this.products = products;
+    }
 
     get customerId(): number | null {
         return this.customer?.id ?? null;
@@ -60,5 +69,5 @@ class DeliveryNoteForm {
     }
 }
 
-export const deliveryNoteForm = new DeliveryNoteForm();
+// export const deliveryNoteForm = new DeliveryNoteForm();
 export type { DeliveryNoteProductDto, Customer };

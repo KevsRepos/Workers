@@ -13,7 +13,7 @@ class Factory {
         private EntityManagerInterface $em
     ) {}
 
-    public function createDeliveryNote(
+    public function createNewDeliveryNote(
         string $customerId,
         string $deliveryDate,
         bool $delivery,
@@ -24,6 +24,33 @@ class Factory {
         $deliveryNote->deliveryDate = new DateTimeImmutable($deliveryDate);
         $deliveryNote->delivery = $delivery;
         $deliveryNote->status = DeliveryNoteStatus::OPEN;
+
+        return $deliveryNote;
+    }
+
+    public function createDeliveryNote(
+        string $id,
+        ?string $customerId,
+        ?string $deliveryDate,
+        ?bool $delivery,
+        ?DeliveryNoteStatus $status,
+    ): DeliveryNote {
+        $deliveryNote = new DeliveryNote();
+
+        $deliveryNote->id = $id;
+
+        if ($customerId !== null) {
+            $deliveryNote->customer = $this->em->getRepository(Customer::class)->find($customerId);
+        }
+        if ($deliveryDate !== null) {
+            $deliveryNote->deliveryDate = new DateTimeImmutable($deliveryDate);
+        }
+        if ($delivery !== null) {
+            $deliveryNote->delivery = $delivery;
+        }
+        if ($status !== null) {
+            $deliveryNote->status = $status;
+        }
 
         return $deliveryNote;
     }

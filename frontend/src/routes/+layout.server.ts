@@ -1,5 +1,6 @@
-export const load = async ({ locals }) => {
+export const load = async ({ locals }) => {    
     return { 
-        loggedIn: locals.loggedIn
+        loggedIn: locals.loggedIn,
+        token: locals.token
     };
 };

@@ -10,12 +10,14 @@ class Repository
         private EntityManagerInterface $em
     ) {}
 
-    public function save(Customer $customer, bool $flush = false): void
+    public function save(Customer $customer, bool $flush = false): Customer
     {
         $this->em->persist($customer);
         if ($flush) {
             $this->em->flush();
         }
+
+        return $customer;
     }
 
     // ... you can add find/findBy helpers if needed ...
@@ -41,5 +43,10 @@ class Repository
             ->setMaxResults(20)
             ->getQuery()
             ->getArrayResult();
+    }
+
+    public function findById(string $id): ?Customer
+    {
+        return $this->em->getRepository(Customer::class)->find($id);
     }
 }

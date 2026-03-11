@@ -21,7 +21,7 @@ abstract class Entity
     public function onPrePersist(): void
     {
         if (!$this->id) {
-            $this->id = Uuid::v7()->toBinary();
+            $this->id = Uuid::v7()->toRfc4122();
             $this->createdAt = new \DateTimeImmutable();
         }
     }

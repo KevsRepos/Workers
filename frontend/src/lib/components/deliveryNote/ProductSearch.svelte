@@ -1,9 +1,8 @@
 <script lang="ts">
 import { fetchApi } from '$lib/fetchApi';
-import { deliveryNoteForm } from '$lib/formDtos/deliveryNote.svelte';
 import { Combobox, Portal, type ComboboxRootProps, useListCollection } from '@skeletonlabs/skeleton-svelte';
 
-let { selectedProducts = $bindable(), focus } = $props();
+let { selectedProducts = $bindable(), deliveryNoteForm, jump } = $props();
 
 let products = $state([]);
 
@@ -13,11 +12,6 @@ let quantityInput = $state<HTMLInputElement>();
 let comboboxWrapper = $state<HTMLDivElement>();
 
 let searchTimeout: ReturnType<typeof setTimeout>;
-
-const focusCombobox = () => {
-    const input = comboboxWrapper?.querySelector('input');
-    input?.focus();
-};
 
 const collection = $derived(useListCollection({ 
     items: products,
@@ -50,12 +44,12 @@ const selectProduct: ComboboxRootProps['onSelect'] = (event) => {
 }
 
 const enterQuantity = () => {
-    const product = deliveryNoteForm.products.find(p => p.productId === currentProduct.id);
+    const product = selectedProducts.find(p => p.productId === currentProduct.id);
     if (product) {
         product.quantity = parseInt(quantityInput.value) || 1;
     }
 
-    focusCombobox();
+    jump();
 
     if (quantityInput) {
         quantityInput.value = '';
@@ -64,7 +58,7 @@ const enterQuantity = () => {
 </script>
 
 <div bind:this={comboboxWrapper}>
-<Combobox {collection} open={focus} onSelect={selectProduct} onInputValueChange={searchProduct} placeholder="Artikel" multiple>
+<Combobox ids={{input: 'product-search-input'}} {collection} onSelect={selectProduct} onInputValueChange={searchProduct} placeholder="Artikel" multiple>
     <Combobox.Label>Artikel</Combobox.Label>
     <Combobox.Control>
         <Combobox.Input />

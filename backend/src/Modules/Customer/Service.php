@@ -23,18 +23,23 @@ final class Service
         );
 
         try {
-            $this->repo->save($customer, true);
+            $customer = $this->repo->save($customer, true);
+
+            return new Success("CustomerCreated", ['customer' => $customer]);
         } catch (UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
         } catch (Exception $e) {
             return new Error($e->getMessage(), 500);
         }
-
-        return new Success("CustomerCreated");
     }
 
     public function search(string $query): array
     {
         return $this->repo->search($query);
+    }
+
+    public function findById(string $id): ?Customer
+    {
+        return $this->repo->findById($id);
     }
 }

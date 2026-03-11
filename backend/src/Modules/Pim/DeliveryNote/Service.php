@@ -5,14 +5,17 @@ namespace App\Modules\Pim\DeliveryNote;
 use Error;
 use Exception;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
+use App\Modules\Pim\DeliveryNote\Dto\UpdateDeliveryNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Repository;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use App\Modules\Customer\Service as CustomerService;
 
 final class Service {
     public function __construct(
         private Repository $repo,
-        private Factory $factory
+        private Factory $factory,
+        private CustomerService $customerService,
     ) {}
 
     public function getById(string $id): ?DeliveryNote
@@ -30,7 +33,7 @@ final class Service {
 
     public function save(CreateDeliveryNoteRequestDto $data): Error|Success
     {
-        $deliveryNote = $this->factory->createDeliveryNote(
+        $deliveryNote = $this->factory->createNewDeliveryNote(
             $data->customerId,
             $data->deliveryDate,
             $data->delivery,
@@ -44,12 +47,42 @@ final class Service {
                 $data->deliveryNoteProducts,
             );
             $this->repo->saveDeliveryNoteProducts($deliveryNoteProducts, true);
+
+            return new Success("DeliveryNoteCreated", ['id' => $deliveryNoteId]);
         } catch(UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
         } catch(Exception $e) {
             return new Error($e->getMessage(), 500);
         }
+    }
 
-        return new Success("DeliveryNoteCreated");
+    public function update(string $id, UpdateDeliveryNoteRequestDto $data): Error|Success
+    {
+        $deliveryNote = new DeliveryNote();
+        $deliveryNote->id = $id;
+
+        if ($data->customerId) {
+            $deliveryNote->customer = $this->customerService->findById($data->customerId);
+        }
+
+        if ($data->deliveryDate) {
+            $deliveryNote->deliveryDate = new \DateTimeImmutable($data->deliveryDate);
+        }
+
+        if ($data->delivery !== null) {
+            $deliveryNote->delivery = $data->delivery;
+        }
+
+        if ($data->status !== null) {
+            $deliveryNote->status = $data->status;
+        }
+
+        try {
+            $this->repo->saveDeliveryNote($deliveryNote, true);
+            
+            return new Success("DeliveryNoteUpdated", ['id' => $id]);
+        } catch (Exception $e) {
+            return new Error($e->getMessage(), 500);
+        }
     }
 }

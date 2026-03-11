@@ -3,7 +3,7 @@
 namespace App\Lib;
 
 final class Success {
-    public function __construct(private mixed $response = "", private int $code = 200)
+    public function __construct(private mixed $response = "", private array $data = [], private int $code = 200)
     {
     }
 
@@ -15,5 +15,21 @@ final class Success {
     public function getMessage()
     {
         return $this->response;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return array{message: string, data: array}
+     */
+    public function getResponse(): array
+    {
+        return [
+            'message' => $this->response,
+            'data' => $this->data
+        ];
     }
 }

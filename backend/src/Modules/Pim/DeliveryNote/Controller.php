@@ -8,18 +8,19 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Modules\Pim\DeliveryNote\Service;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
+use App\Modules\Pim\DeliveryNote\Dto\UpdateDeliveryNoteRequestDto;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 class Controller extends AbstractController
 {
     #[Route('/delivery-notes/{status}', methods: ['GET'])]
-    public function listDeliveryNotes(int $status, Service $service): JsonResponse
+    public function listDeliveryNotes(string $status, Service $service): JsonResponse
     {
-        $deliveryNotes = $service->listByStatus($status);
+        $deliveryNotes = $service->listByStatus((int)$status);
         return $this->json($deliveryNotes);
     }
 
-    #[Route('/delivery-note/{id}', methods: ['GET'])]
+    #[Route('/delivery-notes/{id}', methods: ['GET'])]
     public function getDeliveryNoteById(string $id, Service $service): JsonResponse
     {
         $deliveryNote = $service->getById($id);
@@ -52,16 +53,19 @@ class Controller extends AbstractController
         if ($result instanceof \Error) {
             return new JsonResponse($result, $result->getCode());
         }
-        return new JsonResponse($result->getMessage(), 201);
+
+        return new JsonResponse($result->getResponse(), 201);
     }
 
     #[Route('/delivery-notes/{id}', methods: ['PUT'])]
-    public function updateDeliveryNote(string $id, Request $request): JsonResponse
+    public function updateDeliveryNote(#[MapRequestPayload] UpdateDeliveryNoteRequestDto $dto, string $id, Service $service): JsonResponse
     {
-        // TODO: Update delivery note by $id with request data
-        $data = json_decode($request->getContent(), true);
-        // $deliveryNote = ...
-        return $this->json(['status' => 'updated', 'id' => $id, 'data' => $data]);
+        $result = $service->update($id, $dto);
+        if ($result instanceof \Error) {
+            return new JsonResponse($result, $result->getCode());
+        }
+
+        return new JsonResponse($result->getResponse());
     }
 
     #[Route('/delivery-notes/{id}', methods: ['DELETE'])]

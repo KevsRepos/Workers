@@ -39,6 +39,9 @@ class Controller extends AbstractController
         if ($result instanceof \Error) {
             return new JsonResponse($result, $result->getCode());
         }
-        return new JsonResponse($result->getMessage(), 201);
+
+        $res = $result->getResponse();
+
+        return new JsonResponse($res, 201);
     }
 }
