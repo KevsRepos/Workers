@@ -29,8 +29,8 @@ services:
     build: ./frontend
     depends_on:
       - backend
-    ports:
-      - "3000:80"
+    expose:
+      - "80"
     volumes:
       - ./frontend:/app
 
