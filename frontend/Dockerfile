@@ -9,7 +9,7 @@ RUN npm run build || yarn build || pnpm build
 # Production stage
 FROM node:20-alpine AS prod
 WORKDIR /app
-COPY --from=build /app/build ./build
+COPY --from=build /app/.svelte-kit ./build
 COPY --from=build /app/package.json ./
 RUN npm install --omit=dev || yarn install --production || pnpm install --prod
 
