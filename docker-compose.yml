@@ -30,9 +30,7 @@ services:
     depends_on:
       - backend
     expose:
-      - "80"
-    volumes:
-      - ./frontend:/app
+      - "3000"
 
   nginx:
     image: nginx:1.25-alpine
