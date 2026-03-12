@@ -1,12 +1,9 @@
-FROM php:8.2-apache
+FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev zip unzip git mariadb-client \
+    libzip-dev zip unzip git mariadb-client nginx \
     && docker-php-ext-install pdo pdo_mysql zip
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -17,8 +14,8 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-# Apache config for public dir
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Copy nginx config for backend
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]

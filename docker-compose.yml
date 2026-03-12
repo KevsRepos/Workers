@@ -19,8 +19,8 @@ services:
       - db
     environment:
       DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}"
-    ports:
-      - "8000:80"
+    expose:
+      - "80"
     volumes:
       - ./backend:/var/www/html
 
