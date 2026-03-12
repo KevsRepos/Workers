@@ -61,7 +61,7 @@ const addCustomer = async () => {
 }
 </script>
 
-<Combobox open={open} autoFocus={true} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full">
+<Combobox defaultInputValue={selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.surname}` : ''} open={open} autoFocus={true} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full px-4">
     <Combobox.Label>Kunde</Combobox.Label>
     <Combobox.Control>
         <Combobox.Input oninput={searchCustomer} />

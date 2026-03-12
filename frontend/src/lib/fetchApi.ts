@@ -7,7 +7,7 @@ export const fetchApi = async (
     method: string = 'GET', 
     body: any = null, 
     token?: string | null,
-    customFetch: typeof fetch = fetch
+    customFetch: typeof fetch | null = fetch
 ) => {
     // On server: use passed token, on client: use auth.token
     const authToken = browser ? auth.token : token;
@@ -20,13 +20,14 @@ export const fetchApi = async (
         headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    console.log('I RUN');
-    
+    if(!customFetch) {
+        customFetch = fetch;
+    }
 
     const res = await customFetch(`${PUBLIC_BACKEND_URL}/${endpoint}`, {
         method,
         headers,
-        body: body ? JSON.stringify(body) : undefined
+        body: body ? JSON.stringify(body) : null
     });
 
     if (res.status === 401 && browser) {
@@ -35,7 +36,7 @@ export const fetchApi = async (
 
     if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(`API request failed: ${res.status} ${res.statusText} - ${errorText}`);
+        throw new Error(`API request failed: ${res.status} ${res.statusText}`);
     }
 
     return res.json();

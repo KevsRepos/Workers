@@ -5,7 +5,7 @@ export const load = async ({ params }) => {
     const { id } = params;
 
     // Fetch the delivery note data from the backend using the ID
-    const json = await fetchApi(`delivery-notes/${id}`);
+    const json = await fetchApi(`delivery-note/${id}`);
     
     if(json.error) {
         error(404, 'Delivery note not found');

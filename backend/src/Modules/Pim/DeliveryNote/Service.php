@@ -58,8 +58,11 @@ final class Service {
 
     public function update(string $id, UpdateDeliveryNoteRequestDto $data): Error|Success
     {
-        $deliveryNote = new DeliveryNote();
-        $deliveryNote->id = $id;
+        $deliveryNote = $this->repo->findById($id);
+
+        if (!$deliveryNote) {
+            return new Error("DeliveryNote not found", 404);
+        }
 
         if ($data->customerId) {
             $deliveryNote->customer = $this->customerService->findById($data->customerId);
@@ -75,6 +78,19 @@ final class Service {
 
         if ($data->status !== null) {
             $deliveryNote->status = $data->status;
+        }
+
+        if ($data->deliveryNoteProducts) {
+            // $deliveryNote->deliveryNoteProducts = $data->deliveryNoteProducts;
+            $deliveryNote->deliveryNoteProducts = $this->factory->createDeliveryNoteProducts(
+                $id,
+                $data->deliveryNoteProducts,
+            );
+            // $this->repo->saveDeliveryNoteProducts($deliveryNoteProducts, true);
+        }
+
+        if ($data->removedProductIds) {
+                $this->repo->removeDeliveryNoteProducts($data->removedProductIds);
         }
 
         try {

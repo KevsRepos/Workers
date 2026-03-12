@@ -7,15 +7,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateDeliveryNoteRequestDto
 {
-    public ?string $customerId;
+    public ?string $customerId = null;
 
-    public string $deliveryDate;
+    public string $deliveryDate = '';
 
     public ?bool $delivery = false;
 
     /** @var DeliveryNoteProductDto[] */
     #[Assert\Valid]
     public array $deliveryNoteProducts = [];
+
+    /** @var string[] */
+    public array $removedProductIds = [];
 
     public ?DeliveryNoteStatus $status = null;
 }

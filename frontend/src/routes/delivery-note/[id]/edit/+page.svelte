@@ -11,17 +11,23 @@ const deliveryNoteForm = new DeliveryNoteForm(
     data.customer,
     data.deliveryDate,
     data.delivery,
-    data.products.map((p: any) => ({ productId: p.product.id, quantity: p.quantity, name: p.product.name }))
+    data.deliveryNoteProducts.map((p: any) => ({ id: p.id, productId: p.product.id, quantity: p.quantity, name: p.product.name }))
 );
+
+const removedProductIds: string[] = $state([]);
+
+$inspect(removedProductIds);
 
 const saveEdits = async () => {
     console.log(deliveryNoteForm);
     
     try {
         const json = await fetchApi(`delivery-notes/${deliveryNoteForm.id}`, 'PUT', {
+            customerId: deliveryNoteForm.customer?.id,
             deliveryDate: deliveryNoteForm.deliveryDate,
-            deliveryNoteProducts: deliveryNoteForm.products.map(p => ({ productId: p.productId, quantity: p.quantity })),
+            deliveryNoteProducts: deliveryNoteForm.products.map(p => ({ id: p.id, productId: p.productId, quantity: p.quantity })),
             delivery: deliveryNoteForm.delivery,
+            removedProductIds: removedProductIds,
         });
 
         console.log(json);
@@ -34,4 +40,4 @@ const saveEdits = async () => {
 }
 </script>
 
-<EditDeliveryNote deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveEdits} />
+<EditDeliveryNote deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveEdits} removedProductIds={removedProductIds} />

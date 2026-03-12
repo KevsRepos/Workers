@@ -7,7 +7,7 @@ let { data } = $props();
 
 <Navigation class="mb-3">
     <Navigation.Menu>
-        <Navigation.TriggerAnchor href="/delivery-note/create">
+        <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
             <Pen />
         </Navigation.TriggerAnchor>
         <Navigation.TriggerAnchor href="/delivery-note/create">
@@ -36,7 +36,7 @@ let { data } = $props();
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Menge</th>
+                <th class="text-right!">Menge</th>
             </tr>
         </thead>
         <tbody>

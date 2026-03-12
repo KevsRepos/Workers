@@ -20,7 +20,7 @@ class Controller extends AbstractController
         return $this->json($deliveryNotes);
     }
 
-    #[Route('/delivery-notes/{id}', methods: ['GET'])]
+    #[Route('/delivery-note/{id}', methods: ['GET'])]
     public function getDeliveryNoteById(string $id, Service $service): JsonResponse
     {
         $deliveryNote = $service->getById($id);

@@ -4,6 +4,7 @@ namespace App\Modules\Pim\DeliveryNote;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @extends ServiceEntityRepository<DeliveryNote>
@@ -42,7 +43,7 @@ class Repository extends ServiceEntityRepository
         return $entity->id;
     }
 
-    public function saveDeliveryNoteProducts(array $entities, bool $flush = false): void
+    public function saveDeliveryNoteProducts(ArrayCollection $entities, bool $flush = false): void
     {
         foreach ($entities as $entity) {
             $this->getEntityManager()->persist($entity);
@@ -58,6 +59,19 @@ class Repository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function removeDeliveryNoteProducts(array $deliveryNoteProductIds): void
+    {
+        foreach ($deliveryNoteProductIds as $id) {
+            $entity = $this->getEntityManager()->getRepository(DeliveryNoteProduct::class)->find($id);
+
+            if ($entity) {
+                $this->getEntityManager()->remove($entity);
+            }
+        }
+
+        $this->getEntityManager()->flush();
     }
 
     public function flush()

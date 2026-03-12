@@ -10,7 +10,6 @@ let { data, children } = $props();
 
 // Hydrate auth state from server data
 $effect(() => {
-    $inspect(data);
     auth.hydrate(data.token);
 });
 
@@ -36,7 +35,7 @@ async function handleLogin(e: Event) {
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 
-{#if !auth.isLoggedIn}
+{#if !data.loggedIn}
 	<form class="flex flex-col gap-2 p-4" onsubmit={handleLogin}>
 		<input placeholder="username" bind:value={username} />
 		<input placeholder="password" bind:value={password} />
@@ -52,5 +51,5 @@ async function handleLogin(e: Event) {
 		</AppBar.Toolbar>
 	</AppBar>
 
-	{@render children()}
+    {@render children()}
 {/if}

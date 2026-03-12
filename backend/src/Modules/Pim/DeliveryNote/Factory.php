@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Modules\Customer\Customer;
 use App\Modules\Pim\Product\Product;
 use App\Modules\Pim\DeliveryNote\Dto\DeliveryNoteProductDto;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Factory {
     public function __construct(
@@ -57,21 +58,30 @@ class Factory {
 
     /**
      * @param DeliveryNoteProductDto[] $deliveryNoteProducts
-     * @return DeliveryNoteProduct[]
      */
     public function createDeliveryNoteProducts(
         string $deliveryNoteId,
         array $deliveryNoteProducts,
-    ): array {
+    ): ArrayCollection {
         $deliveryNote = $this->em->getRepository(DeliveryNote::class)->find($deliveryNoteId);
-        $entities = [];
+        $entities = new ArrayCollection();
 
         foreach ($deliveryNoteProducts as $productDto) {
             $deliveryNoteProduct = new DeliveryNoteProduct();
+
+            if ($productDto->id) {
+                $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->find($productDto->id);
+                if (!$deliveryNoteProduct) {
+                    continue;
+                }
+            }
+
             $deliveryNoteProduct->deliveryNote = $deliveryNote;
             $deliveryNoteProduct->product = $this->em->getRepository(Product::class)->find($productDto->productId);
             $deliveryNoteProduct->quantity = $productDto->quantity;
-            $entities[] = $deliveryNoteProduct;
+
+            $entities->add($deliveryNoteProduct);
+            // $entities[] = $deliveryNoteProduct;
         }
 
         return $entities;

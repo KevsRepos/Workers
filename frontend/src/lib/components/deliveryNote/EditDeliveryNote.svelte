@@ -6,13 +6,32 @@ import CustomerSearch from "./CustomerSearch.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { goto } from "$app/navigation";
 
-let { deliveryNoteForm, saveDeliveryNote } = $props();
+
+let { deliveryNoteForm, saveDeliveryNote, removedProductIds = [] } = $props();
+// Helper to format date as yyyy-MM-dd for input[type=date]
+const formatDateForInput = (dateStr: string): string => {
+    if (!dateStr) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    return d.toISOString().slice(0, 10);
+}
+
+let deliveryDate = $state(formatDateForInput(deliveryNoteForm.deliveryDate));
+
+$effect(() => {
+    if (deliveryNoteForm.deliveryDate !== deliveryDate) {
+        deliveryNoteForm.deliveryDate = deliveryDate;
+    }
+});
 
 let scrollAnchor2 = $state<HTMLSpanElement>();
 let scrollAnchor3 = $state<HTMLSpanElement>();
 let scrollAnchor4 = $state<HTMLSpanElement>();
 
 let deliveryDatePicker = $state<HTMLInputElement>();
+
+$inspect(deliveryNoteForm.deliveryDate);
 
 const focusProductSearch = () => {
     scrollAnchor4?.scrollIntoView({ behavior: 'smooth' });
@@ -34,14 +53,21 @@ const dateSelected = () => {
     focusProductSearch();
 }
 
-$inspect(deliveryNoteForm);
+const removeProduct = (index: number) => {
+    const removed = deliveryNoteForm.products.splice(index, 1);
+
+    if (removed[0].id) {
+        removedProductIds.push(removed[0].id);
+    }
+}
 </script>
 
-<main class="px-4" style="min-height: 4000px">
-    <h1 class="mt-4 mb-2 text-center font-bold">Lieferschein erstellen</h1>
+<h1 class="mt-4 mb-2 pb-2 text-center font-bold border-b border-surface-200-800">Lieferschein erstellen</h1>
+
+<main class="lg:max-w-[800px] mx-auto">
 
     <div class="flex flex-col gap-2">
-        <div class="pt-9 pb-18 border-b border-surface-200-800">
+        <div class="pt-2 pb-9 border-b border-surface-200-800">
             <CustomerSearch bind:selectedCustomer={deliveryNoteForm.customer} jump={focusDeliverySelection} />
         </div>
 
@@ -61,29 +87,33 @@ $inspect(deliveryNoteForm);
         </div>
 
         <span bind:this={scrollAnchor3}></span>
-        <label class="label py-18 border-b border-surface-200-800">
-            <span class="label-text">Liefer-/Abholdatum</span>
-            <input class="input" type="date" oninput={dateSelected} bind:this={deliveryDatePicker} bind:value={deliveryNoteForm.deliveryDate} />
-        </label>
+        <div class="border-b border-surface-200-800">
+            <label class="label pb-9 px-4">
+                <span class="label-text">Liefer-/Abholdatum</span>
+                <input class="input" type="date" oninput={dateSelected} bind:this={deliveryDatePicker} bind:value={deliveryDate} />
+            </label>
+        </div>
 
         <span bind:this={scrollAnchor4}></span>
-        <div class="flex flex-col gap-4 py-18">
-            <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} jump={focusProductSearch} />
+        <div class="flex flex-col gap-4 pb-9">
+            <div class="px-4">
+                <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} jump={focusProductSearch} />
 
-            <div class="flex flex-col gap-2 divider-y">
-                {#each deliveryNoteForm.products as product, index}
-                    <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
-                        <button onclick={() => deliveryNoteForm.products.splice(index, 1)} type="button">
-                            <CircleX />
-                        </button>
-                        <div>{product.name}</div>
-                        <input class="input bg-surface-300-700 w-24" type="number" min="1" bind:value={deliveryNoteForm.products[index].quantity} />
-                    </div>
-                {/each}
+                <div class="flex flex-col gap-2 divider-y">
+                    {#each deliveryNoteForm.products as product, index}
+                        <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
+                            <button onclick={() => removeProduct(index)} type="button">
+                                <CircleX />
+                            </button>
+                            <div>{product.name}</div>
+                            <input class="input bg-surface-300-700 w-24" type="number" min="1" bind:value={deliveryNoteForm.products[index].quantity} />
+                        </div>
+                    {/each}
+                </div>
             </div>
         </div>
 
-        <button onclick={saveDeliveryNote} type="button" class="btn preset-filled">
+        <button onclick={saveDeliveryNote} type="button" class="btn preset-filled mx-4 mb-[600px]">
             <span>Speichern</span>
             <ChevronRight />
         </button>

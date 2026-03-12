@@ -1,12 +1,25 @@
+import { PUBLIC_BACKEND_URL } from '$env/static/public';
 import { fetchApi } from '$lib/fetchApi.js';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ params, fetch }) => {
-    const res = await fetchApi(`delivery-notes/${params.id}`);
+export const load = async ({ parent, params, fetch }) => {
+    const { token } = await parent();
+    // const res = await fetchApi(`delivery-notes/${params.id}`);
 
-    if (res.error) {
-        error(404, 'Delivery note not found');
-    }   
+    const res = await fetch(`${PUBLIC_BACKEND_URL}/delivery-note/${params.id}`, {
+        method: 'GET',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: null
+    });
 
-    return res;
+    // if (res.error) {
+    //     error(404, 'Delivery note not found');
+    // }
+
+    const data = await res.json();
+
+    return {deliveryNote: data };
 }

@@ -1,5 +1,6 @@
 interface DeliveryNoteProductDto {
-    productId: number;
+    id?: string;
+    productId: string;
     quantity: number;
     name: string;
 }
