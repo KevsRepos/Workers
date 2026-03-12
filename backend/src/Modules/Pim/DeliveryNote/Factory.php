@@ -86,4 +86,30 @@ class Factory {
 
         return $entities;
     }
+
+    public function addReturnNoteData(array $returnedNoteData): ArrayCollection
+    {
+        $entities = new ArrayCollection();
+
+        foreach ($returnedNoteData as $returnNoteProductDto) {
+            $deliveryNoteProduct = new DeliveryNoteProduct();
+
+            if ($returnNoteProductDto->deliveryNoteProductId) {
+                $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->find($returnNoteProductDto->deliveryNoteProductId);
+                if (!$deliveryNoteProduct) {
+                    continue;
+                }
+            }
+
+            $deliveryNoteProduct->returnedTotal = $returnNoteProductDto->returnedTotal;
+            $deliveryNoteProduct->returnedTotalBottles = $returnNoteProductDto->returnedTotalBottles;
+            $deliveryNoteProduct->returnedFull = $returnNoteProductDto->returnedFull;
+            $deliveryNoteProduct->returnedFullBottles = $returnNoteProductDto->returnedFullBottles;
+
+            $entities->add($deliveryNoteProduct);
+            // $entities[] = $deliveryNoteProduct;
+        }
+
+        return $entities;
+    }
 }

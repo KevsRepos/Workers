@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Modules\Pim\DeliveryNote\Service;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
+use App\Modules\Pim\DeliveryNote\Dto\CreateReturnNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\UpdateDeliveryNoteRequestDto;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
@@ -73,5 +74,16 @@ class Controller extends AbstractController
     {
         // TODO: Delete delivery note by $id
         return $this->json(['status' => 'deleted', 'id' => $id]);
+    }
+
+    #[Route('/delivery-notes/{id}/return-note', methods: ['POST'])]
+    public function createReturnNote(#[MapRequestPayload] CreateReturnNoteRequestDto $dto, Service $service): JsonResponse
+    {
+        $result = $service->createReturnNote($dto);
+        if ($result instanceof \Error) {
+            return new JsonResponse($result, $result->getCode());
+        }
+
+        return new JsonResponse($result->getResponse());
     }
 }

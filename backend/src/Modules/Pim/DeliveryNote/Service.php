@@ -10,6 +10,7 @@ use App\Modules\Pim\DeliveryNote\Repository;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Modules\Customer\Service as CustomerService;
+use App\Modules\Pim\DeliveryNote\Dto\CreateReturnNoteRequestDto;
 
 final class Service {
     public function __construct(
@@ -100,5 +101,28 @@ final class Service {
         } catch (Exception $e) {
             return new Error($e->getMessage(), 500);
         }
+    }
+
+    public function createReturnNote(CreateReturnNoteRequestDto $data): Error|Success
+    {
+        $deliveryNote = $this->repo->findById($data->deliveryNoteId);
+
+        if (!$deliveryNote) {
+            return new Error("DeliveryNote not found", 404);
+        }
+
+        $deliveryNote->deliveryNoteProducts = $this->factory->addReturnNoteData(
+            $data->returnNoteProducts,
+        );
+
+        $deliveryNote->status = DeliveryNoteStatus::RETURNED;
+
+        try {
+            $this->repo->saveDeliveryNote($deliveryNote, true);
+        } catch (Exception $e) {
+            return new Error($e->getMessage(), 500);
+        }
+
+        return new Success("ReturnNoteCreated", ['id' => $data->deliveryNoteId]);
     }
 }

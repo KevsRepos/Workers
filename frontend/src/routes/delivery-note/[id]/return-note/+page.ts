@@ -1,5 +1,4 @@
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
-import { fetchApi } from '$lib/fetchApi.js';
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ parent, params, fetch }) => {

@@ -13,6 +13,14 @@ let { data } = $props();
         <Navigation.TriggerAnchor>
             <Printer />
         </Navigation.TriggerAnchor>
+        <Navigation.TriggerAnchor>
+            <select>
+                <option value="1">Offen</option>
+                <option value="2">Ausgeliefert</option>
+                <option value="5">Zurückgeschrieben</option>
+                <option value="3">Storniert</option>
+            </select>
+        </Navigation.TriggerAnchor>
     </Navigation.Menu>
 </Navigation>
 

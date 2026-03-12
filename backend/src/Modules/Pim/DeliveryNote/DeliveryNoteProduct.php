@@ -22,4 +22,16 @@ class DeliveryNoteProduct extends Entity
 
     #[ORM\Column]
     public int $quantity;
+
+    #[ORM\Column(nullable: true)]
+    public ?int $returnedTotal = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?int $returnedTotalBottles = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?int $returnedFull = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?int $returnedFullBottles = null;
 }

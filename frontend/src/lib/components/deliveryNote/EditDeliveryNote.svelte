@@ -64,7 +64,7 @@ const removeProduct = (index: number) => {
 
 <h1 class="mt-4 mb-2 pb-2 text-center font-bold border-b border-surface-200-800">Lieferschein erstellen</h1>
 
-<main class="lg:max-w-[800px] mx-auto">
+<main class="lg:max-w-200 mx-auto">
 
     <div class="flex flex-col gap-2">
         <div class="pt-2 pb-9 border-b border-surface-200-800">
@@ -113,7 +113,7 @@ const removeProduct = (index: number) => {
             </div>
         </div>
 
-        <button onclick={saveDeliveryNote} type="button" class="btn preset-filled mx-4 mb-[600px]">
+        <button onclick={saveDeliveryNote} type="button" class="btn preset-filled mx-4 mb-150">
             <span>Speichern</span>
             <ChevronRight />
         </button>
