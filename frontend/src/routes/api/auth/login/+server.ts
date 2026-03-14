@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     cookies.set('jwt_token', result.token, {
         path: '/',
         httpOnly: true,
-        secure: !dev, // only secure in production (HTTPS)
+        secure: false, // only secure in production (HTTPS)
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7 // 7 days
     });
