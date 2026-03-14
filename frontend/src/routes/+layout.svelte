@@ -5,6 +5,7 @@ import { Menu } from '@lucide/svelte';
 import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
 import { auth } from '$lib/auth.svelte';
+import PageHeadline from '$lib/components/PageHeadline.svelte';
 
 let { data, children } = $props();
 
@@ -34,22 +35,24 @@ async function handleLogin(e: Event) {
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-
+<AppBar>
+	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
+		{#if data.loggedIn}
+			<button><Menu /></button>
+		{/if}
+		
+		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>
+	</AppBar.Toolbar>
+</AppBar>
 {#if !data.loggedIn}
-	<form class="flex flex-col gap-2 p-4" onsubmit={handleLogin}>
-		<input placeholder="username" bind:value={username} />
-		<input placeholder="password" bind:value={password} />
+	<PageHeadline>Login</PageHeadline>
+
+	<form class="flex flex-col gap-2 p-4 md:max-w-200 mx-auto" onsubmit={handleLogin}>
+		<input class="input bg-surface-200-800" placeholder="E-Mail" bind:value={username} />
+		<input class="input bg-surface-200-800" placeholder="Passwort" type="password" bind:value={password} />
 		{#if error}<p class="text-red-500">{error}</p>{/if}
-		<button>Login</button>
+		<button class="btn preset-filled">Login</button>
 	</form>
 {:else}
-	<AppBar>
-		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
-			<button><Menu /></button>
-			
-			<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>
-		</AppBar.Toolbar>
-	</AppBar>
-
     {@render children()}
 {/if}

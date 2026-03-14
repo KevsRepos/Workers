@@ -115,7 +115,7 @@ final class Service {
             $data->returnNoteProducts,
         );
 
-        $deliveryNote->status = DeliveryNoteStatus::RETURNED;
+        $deliveryNote->status = DeliveryNoteStatus::COMPLETED;
 
         try {
             $this->repo->saveDeliveryNote($deliveryNote, true);

@@ -1,80 +1,163 @@
 <script>
+import PrintedDeliveryNoteCustomer from '$lib/components/deliveryNote/PrintedDeliveryNoteCustomer.svelte';
+import PrintedDeliveryNoteInternal from '$lib/components/deliveryNote/PrintedDeliveryNoteInternal.svelte';
+import PrintedReturnNote from '$lib/components/deliveryNote/PrintedReturnNote.svelte';
+import PageHeadline from '$lib/components/PageHeadline.svelte';
+import { formatDate } from '$lib/functions/formatDate.js';
 import { NotebookText, Printer, Pen } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
+import { tick } from 'svelte';
 
 let { data } = $props();
+
+let printing = $state(false);
+let printingReturnNote = $state(false);
+
+const printDeliveryNote = async () => {
+    printing = true;
+
+    await tick();
+
+    window.print();
+}
+
+const printReturnNote = async () => {
+    printingReturnNote = true;
+
+    await tick();
+
+    window.print();
+}
+
+$inspect(data);
 </script>
 
-<Navigation class="mb-3">
-    <Navigation.Menu>
-        <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
-            <Pen />
-        </Navigation.TriggerAnchor>
-        <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/return-note">
-            <NotebookText />
-        </Navigation.TriggerAnchor>
-        <Navigation.TriggerAnchor onclick={() => print()}>
-            <Printer />
-        </Navigation.TriggerAnchor>
-    </Navigation.Menu>
-</Navigation>
+<svelte:window onafterprint={async () => {printing = false; printingReturnNote = false}} />
 
-<main>
-    <h1 class="mt-2 mb-2 px-4 text-2xl font-bold">Lieferschein</h1>
+{#if !printing && !printingReturnNote}
+    <Navigation class="mb-3">
+        <Navigation.Menu class="overflow-x-auto">
+            <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
+                <Pen />
+                <Navigation.TriggerText>Bearbeiten</Navigation.TriggerText>
+            </Navigation.TriggerAnchor>
+            <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/return-note">
+                <NotebookText />
+                <Navigation.TriggerText>Zurückschreiben</Navigation.TriggerText>
+            </Navigation.TriggerAnchor>
+            <Navigation.TriggerAnchor onclick={() => printDeliveryNote()}>
+                <Printer />
+                <Navigation.TriggerText>Drucken</Navigation.TriggerText>
+            </Navigation.TriggerAnchor>
+            {#if data.deliveryNote.status >= 5}
+                <Navigation.TriggerAnchor onclick={() => printReturnNote()}>
+                    <Printer />
+                    <Navigation.TriggerText>Rückschrift drucken</Navigation.TriggerText>
+                </Navigation.TriggerAnchor>
+            {/if}
+        </Navigation.Menu>
+    </Navigation>
 
-    <div class="customer-name font-bold px-4">{data.deliveryNote.customer.firstName} {data.deliveryNote.customer.surname}</div>
+    <PageHeadline>Lieferschein</PageHeadline>
 
-    <div class="delivery-info px-4">
-        {#if data.deliveryNote.delivery}
-            Zum liefern am {new Date(data.deliveryNote.deliveryDate).toLocaleDateString('de-DE')}
-        {:else}
-            Zum abholen am {new Date(data.deliveryNote.deliveryDate).toLocaleDateString('de-DE')}
+    <main class="lg:max-w-200 mx-auto">
+        {#if data.deliveryNote.status >= 5}
+            <div class="badge preset-tonal-success mx-2 mb-2">Zurückgeschrieben</div>
         {/if}
-    </div>
 
-    <table class="mt-4 table">
-        <thead>
-            <tr>
-                <th>Artikel</th>
-                <th class="text-right!">Menge</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each data.deliveryNote.deliveryNoteProducts as item}
+        <div class="customer-name font-bold px-2">{data.deliveryNote.customer.firstName} {data.deliveryNote.customer.surname}</div>
+
+        <div class="delivery-info px-2">
+            {#if data.deliveryNote.delivery}
+                Zum liefern am {formatDate(data.deliveryNote.deliveryDate)}
+            {:else}
+                Zum abholen am {formatDate(data.deliveryNote.deliveryDate)}
+            {/if}
+        </div>
+
+        <table class="mt-4 table">
+            <thead>
                 <tr>
-                    <td>{item.product.name}</td>
-                    <td class="text-right">{item.quantity} Stk.</td>
+                    <th>Artikel</th>
+                    <th class={{'text-right!': data.deliveryNote.status < 5, 'text-center!': data.deliveryNote.status >= 5}}>Menge</th>
+                    {#if data.deliveryNote.status >= 5}
+                        <th class="text-center!">Zurück</th>
+                        <th class="text-center!">Gesamt</th>
+                    {/if}
                 </tr>
-            {/each}
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="[&>tr>td]:border-l [&>tr>td]:border-r [&>tr>td]:border-surface-800 border-b border-surface-800">
+                {#each data.deliveryNote.deliveryNoteProducts as item}
+                    <tr>
+                        <td>{item.product.name}</td>
+                        <td class={{'text-right!': data.deliveryNote.status < 5, 'text-center!': data.deliveryNote.status >= 5}}>{item.quantity} Stk.</td>
 
-    <p class="print-only text-center mt-10 w-full">Alle gelieferten Waren bleiben bis zur Bezahlung Eigentum des Lieferanten.</p>
-</main>
-
-<style>
-.print-only {
-    display: none;
-}
-@page {
-    size: A4;
-    margin: 20mm;
-}
-@media print {
-    .print-only {
-        display: block;
-    }
-    :global(header) {
-        display: none;
-    }
-    :global([data-scope="navigation"]) {
-        display: none;
-    }
-    tr {
-        border-bottom: .05cm rgb(48, 48, 48) solid;
-    }
-    h1, .customer-name, .delivery-info {
-        padding: 0px;
-    }
-}
-</style>
+                        {#if data.deliveryNote.status >= 5}
+                            <td class="text-center!">
+                                {#if item.returnedFull !== null}
+                                    {item.returnedFull} Stk.
+                                {:else}
+                                    -
+                                {/if}
+                                {#if item.returnedFullBottles !== null}
+                                    <br />{item.returnedFullBottles} Fl.
+                                {:else}
+                                    <br />-
+                                {/if}
+                            </td>
+                            <td class="text-right!">
+                                {#if item.returnedTotal !== null}
+                                    {#if item.product.deposit}
+                                        {item.returnedTotal} * {((item.product.deposit.crateAmount + (item.product.deposit.singleAmount * item.product.quantityInCrate)) / 100).toFixed(2)}€
+                                    {:else}
+                                        {item.returnedTotal} Stk.
+                                    {/if}
+                                {:else}
+                                    -
+                                {/if}
+                                {#if item.returnedTotalBottles !== null}
+                                    {#if item.product.deposit}
+                                        <br />{item.returnedTotalBottles} * {(item.product.deposit.singleAmount / 100).toFixed(2)}€
+                                    {:else}
+                                        <br />{item.returnedTotalBottles} Fl.
+                                    {/if}
+                                {:else}
+                                    <br />-
+                                {/if}
+                            </td>
+                        {/if}
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
+    </main>
+{:else if printing}
+    <PrintedDeliveryNoteCustomer deliveryNote={{
+        id: data.deliveryNote.id,
+        customerName: `${data.deliveryNote.customer.firstName} ${data.deliveryNote.customer.surname}`,
+        delivery: data.deliveryNote.delivery,
+        deliveryDate: data.deliveryNote.deliveryDate,
+        deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
+        address: '',
+        status: data.deliveryNote.status
+    }} />
+    <PrintedDeliveryNoteInternal deliveryNote={{
+        id: data.deliveryNote.id,
+        customerName: `${data.deliveryNote.customer.firstName} ${data.deliveryNote.customer.surname}`,
+        delivery: data.deliveryNote.delivery,
+        deliveryDate: data.deliveryNote.deliveryDate,
+        deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
+        address: '',
+        status: data.deliveryNote.status
+    }} />
+{:else if printingReturnNote}
+    <PrintedReturnNote deliveryNote={{
+        id: data.deliveryNote.id,
+        customerName: `${data.deliveryNote.customer.firstName} ${data.deliveryNote.customer.surname}`,
+        delivery: data.deliveryNote.delivery,
+        deliveryDate: data.deliveryNote.deliveryDate,
+        deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
+        address: '',
+        status: data.deliveryNote.status
+    }} />
+{/if}

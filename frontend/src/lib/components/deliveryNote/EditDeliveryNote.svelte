@@ -5,6 +5,7 @@ import { ChevronRight, CircleX } from "@lucide/svelte";
 import CustomerSearch from "./CustomerSearch.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { goto } from "$app/navigation";
+import { onMount } from "svelte";
 
 
 let { deliveryNoteForm, saveDeliveryNote, removedProductIds = [] } = $props();
@@ -19,6 +20,9 @@ const formatDateForInput = (dateStr: string): string => {
 
 let deliveryDate = $state(formatDateForInput(deliveryNoteForm.deliveryDate));
 
+onMount(() => {
+    deliveryNoteForm.delivery = null;
+});
 $effect(() => {
     if (deliveryNoteForm.deliveryDate !== deliveryDate) {
         deliveryNoteForm.deliveryDate = deliveryDate;
@@ -62,8 +66,6 @@ const removeProduct = (index: number) => {
 }
 </script>
 
-<h1 class="mt-4 mb-2 pb-2 text-center font-bold border-b border-surface-200-800">Lieferschein erstellen</h1>
-
 <main class="lg:max-w-200 mx-auto">
 
     <div class="flex flex-col gap-2">
@@ -99,7 +101,7 @@ const removeProduct = (index: number) => {
             <div class="px-4">
                 <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} jump={focusProductSearch} />
 
-                <div class="flex flex-col gap-2 divider-y">
+                <div class="flex flex-col gap-2 mt-2 divider-y">
                     {#each deliveryNoteForm.products as product, index}
                         <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
                             <button onclick={() => removeProduct(index)} type="button">

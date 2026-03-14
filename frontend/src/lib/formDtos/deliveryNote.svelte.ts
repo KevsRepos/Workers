@@ -15,7 +15,7 @@ export class DeliveryNoteForm {
     id: string|null = $state(null);
     customer: Customer | null = $state(null);
     deliveryDate: string = $state('');
-    delivery: boolean = $state(true);
+    delivery = $state<boolean|null>();
     products: DeliveryNoteProductDto[] = $state([]);
 
     constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = []) {
