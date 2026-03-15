@@ -1,5 +1,11 @@
 <?php
 // Guard clauses: ensure template variables exist for static analyzers / composers.
+// Prevent accidental rendering when PHP is invoked from CLI (e.g. during
+// `php bin/console ...` or image build steps) which can pollute build logs.
+if (PHP_SAPI === 'cli') {
+    return;
+}
+
 // These should never change runtime behaviour when the app passes correct data,
 // but prevent "undefined variable" notices from parsers and static checks.
 if (!isset($routes) || !is_iterable($routes)) {
