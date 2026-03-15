@@ -26,6 +26,12 @@ services:
     volumes:
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
     command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm -F"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 9000"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+      start_period: 5s
 
   mkcert:
     image: ubuntu:22.04
@@ -60,9 +66,10 @@ services:
     ports:
       - "3000:3000"
     # wait until build exists (created during image build)
-    command: /bin/sh -c "while [ ! -f /var/www/migrate_state/done ]; do echo 'waiting for migrations...'; sleep 1; done; while [ ! -f build/index.js ]; do echo 'waiting for build...'; sleep 1; done; node build/index.js"
+    command: /bin/sh -c "until nc -z php 9000; do echo 'waiting for php-fpm...'; sleep 1; done; while [ ! -f /var/www/migrate_state/done ]; do echo 'waiting for migrations...'; sleep 1; done; while [ ! -f build/index.js ]; do echo 'waiting for build...'; sleep 1; done; node build/index.js"
     depends_on:
       - setup-migrate
+      - php
     volumes:
       - migrate_state:/var/www/migrate_state:rw
 
