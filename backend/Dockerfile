@@ -28,5 +28,11 @@ RUN if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
     php bin/console lexik:jwt:generate-keypair --no-interaction || true; \
   fi
 
+# Create var dirs and set permissions at build time
+RUN mkdir -p var/cache var/log var/sessions \
+ && chown -R www-data:www-data var || true \
+ && chmod -R 775 var || true
+
+# Add entrypoint to ensure permissions at container start (handles host bind-mounts)
 EXPOSE 9000
 CMD ["php-fpm"]
