@@ -1,11 +1,12 @@
 <script lang="ts">
 import './layout.css';
 import favicon from '$lib/assets/favicon.svg';
-import { Menu } from '@lucide/svelte';
+import { Ham, Menu } from '@lucide/svelte';
 import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
 import { auth } from '$lib/auth.svelte';
 import PageHeadline from '$lib/components/PageHeadline.svelte';
+import HamburgerMenu from '$lib/components/HamburgerMenu.svelte';
 
 let { data, children } = $props();
 
@@ -17,6 +18,10 @@ $effect(() => {
 let username = $state('');
 let password = $state('');
 let error = $state('');
+
+let menuOpen = $state(false);
+
+let menuBtn = $state<HTMLButtonElement>();
 
 async function handleLogin(e: Event) {
     e.preventDefault();
@@ -35,10 +40,14 @@ async function handleLogin(e: Event) {
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
+<HamburgerMenu bind:open={menuOpen} {menuBtn} />
+
 <AppBar>
 	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
 		{#if data.loggedIn}
-			<button><Menu /></button>
+			<!-- <AppBar.Lead> -->
+				<button bind:this={menuBtn} onclick={() => menuOpen = !menuOpen}><Menu /></button>
+			<!-- </AppBar.Lead> -->
 		{/if}
 		
 		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>

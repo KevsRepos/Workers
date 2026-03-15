@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import { PUBLIC_BACKEND_URL } from "$env/static/public";
+import { auth } from "$lib/auth.svelte";
 import { fetchApi } from "$lib/fetchApi.js";
 import { error } from "@sveltejs/kit";
 
@@ -20,9 +21,9 @@ export const load = async ({ parent, fetch}) => {
         body: null
     });
 
-    // if (res.status === 401 && browser) {
-    //     // await auth.logout();
-    // }
+    if (res.status === 401 && browser) {
+        await auth.logout();
+    }
 
     // if (!res.ok) {
         // const errorText = await res.text();
