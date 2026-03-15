@@ -7,7 +7,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libonig-dev \
   zip \
   netcat-openbsd \
- && docker-php-ext-install pdo pdo_mysql zip
+   libssl-dev \
+   openssl \
+ && docker-php-ext-install pdo pdo_mysql zip openssl
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -23,9 +25,9 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 # Copy application
 COPY . ./
 
-# Generate JWT keys if missing (best-effort during build)
+# Generate JWT keys if missing during build (fail loudly if generation fails)
 RUN if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
-    php bin/console lexik:jwt:generate-keypair --no-interaction || true; \
+    php bin/console lexik:jwt:generate-keypair --no-interaction; \
   fi
 
 # Create var dirs and set permissions at build time
