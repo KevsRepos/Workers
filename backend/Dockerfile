@@ -39,10 +39,24 @@ RUN composer dump-autoload --optimize
 RUN mkdir -p config/jwt \
  && chown -R www-data:www-data config/jwt
 
+# Debug output: show config dir after ensuring jwt directory
+RUN echo '--- JWT: config directory contents (after mkdir/chown) ---' \
+ && echo "WORKDIR: $(pwd)" \
+ && echo "ABS CONFIG: /var/www/workers/backend/config" \
+ && ls -la /var/www/workers/backend/config \
+ && echo "www-data uid/gid: $(id -u www-data 2>/dev/null || echo 'n/a')/$(id -g www-data 2>/dev/null || echo 'n/a')" \
+ && echo "www-data groups: $(id -Gn www-data 2>/dev/null || echo 'n/a')"
+
 # Generate JWT keys if missing during build (fail loudly if generation fails)
 RUN if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
     php bin/console lexik:jwt:generate-keypair --no-interaction; \
   fi
+
+# Debug output: list jwt directory after generation attempt
+RUN echo '--- JWT: config/jwt directory contents (after generation attempt) ---' \
+ && echo "WORKDIR: $(pwd)" \
+ && echo "ABS JWT: /var/www/workers/backend/config/jwt" \
+ && if [ -d /var/www/workers/backend/config/jwt ]; then ls -la /var/www/workers/backend/config/jwt; else echo '/var/www/workers/backend/config/jwt not found'; fi
 
 # Create var dirs and set permissions at build time
 RUN mkdir -p var/cache var/log var/sessions \
