@@ -26,8 +26,6 @@ services:
     volumes:
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
     command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm"
-    volumes:
-      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
 
   mkcert:
     image: ubuntu:22.04
