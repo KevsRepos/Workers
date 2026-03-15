@@ -50,19 +50,11 @@ services:
     image: workers-frontend:latest
     working_dir: /app
     healthcheck:
-      test: ["CMD", "node", "-e", "const http=require('http'); http.get('http://127.0.0.1:3000',res=>{process.exit(res.statusCode===200?0:1)}).on('error',()=>process.exit(1))"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-      command:
-        - /bin/sh
-        - -c
-        - |
-          until node -e "const net=require('net'); const s=net.createConnection({host:'php',port:9000}); s.on('connect',()=>process.exit(0)); s.on('error',()=>process.exit(1));" ; do echo 'waiting for php-fpm...'; sleep 1; done
-          while [ ! -f /var/www/migrate_state/done ]; do echo 'waiting for migrations...'; sleep 1; done
-          while [ ! -f build/index.js ]; do echo 'waiting for build...'; sleep 1; done
-          node build/index.js
     depends_on:
       - setup-migrate
       - php
