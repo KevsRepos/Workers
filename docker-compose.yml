@@ -33,7 +33,7 @@ services:
     tty: false
     command: /bin/sh -c "set -eux; apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates wget libnss3-tools gnupg; \ \
       MKCERT_VER=$(wget -qO- https://api.github.com/repos/FiloSottile/mkcert/releases/latest | grep 'tag_name' | cut -d\" -f4); \ \
-      wget https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VER}/mkcert-${MKCERT_VER#v}-linux-amd64 -O /usr/local/bin/mkcert; chmod +x /usr/local/bin/mkcert; \ \
+      wget https://github.com/FiloSottile/mkcert/releases/download/$${MKCERT_VER}/mkcert-$${MKCERT_VER#v}-linux-amd64 -O /usr/local/bin/mkcert; chmod +x /usr/local/bin/mkcert; \ \
       /usr/local/bin/mkcert -install || true; /usr/local/bin/mkcert -cert-file /certs/91.151.16.155.pem -key-file /certs/91.151.16.155-key.pem 91.151.16.155;"
     restart: "no"
 
