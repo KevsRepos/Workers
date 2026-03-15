@@ -54,7 +54,7 @@ services:
     build:
       context: ./frontend
     image: workers-frontend:latest
-    working_dir: /var/www/workers/frontend
+    working_dir: /app
     ports:
       - "3000:3000"
     # wait until build exists (created during image build)
