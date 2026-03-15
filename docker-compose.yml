@@ -55,7 +55,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    command: /bin/sh -c "until node -e 'const net=require("net"); const s=net.createConnection({host:\"php\",port:9000}); s.on(\"connect\",()=>process.exit(0)); s.on(\"error\",()=>process.exit(1));' ; do echo 'waiting for php-fpm...'; sleep 1; done; while [ ! -f /var/www/migrate_state/done ]; do echo 'waiting for migrations...'; sleep 1; done; while [ ! -f build/index.js ]; do echo 'waiting for build...'; sleep 1; done; node build/index.js"
+      command:
+        - /bin/sh
+        - -c
+        - |
+          until node -e "const net=require('net'); const s=net.createConnection({host:'php',port:9000}); s.on('connect',()=>process.exit(0)); s.on('error',()=>process.exit(1));" ; do echo 'waiting for php-fpm...'; sleep 1; done
+          while [ ! -f /var/www/migrate_state/done ]; do echo 'waiting for migrations...'; sleep 1; done
+          while [ ! -f build/index.js ]; do echo 'waiting for build...'; sleep 1; done
+          node build/index.js
     depends_on:
       - setup-migrate
       - php
