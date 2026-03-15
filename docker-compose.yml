@@ -72,6 +72,8 @@ services:
       - mariadb
       - php
     restart: "no"
+    volumes:
+      - migrate_state:/var/www/migrate_state:rw
 
 volumes:
   db_data:
