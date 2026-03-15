@@ -1,3 +1,12 @@
+<?php
+// Guard clauses: ensure template variables exist for static analyzers / composers.
+// These should never change runtime behaviour when the app passes correct data,
+// but prevent "undefined variable" notices from parsers and static checks.
+if (!isset($routes) || !is_iterable($routes)) {
+    $routes = [];
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
