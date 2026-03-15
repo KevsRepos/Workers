@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+      MYSQL_USER: db
+      MYSQL_PASSWORD: "123456"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  php:
+    image: php:8.4-fpm
+    volumes:
+      - ./backend:/var/www/workers/backend:delegated
+      - ./backend/vendor:/var/www/workers/backend/vendor
+    working_dir: /var/www/workers/backend
+    depends_on:
+      - mariadb
+
+  mkcert:
+    image: ubuntu:22.04
+    volumes:
+      - ./certs:/certs
+    working_dir: /certs
+    tty: false
+    command: /bin/sh -c "set -eux; apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates wget libnss3-tools gnupg; \ \
+      MKCERT_VER=$(wget -qO- https://api.github.com/repos/FiloSottile/mkcert/releases/latest | grep 'tag_name' | cut -d\" -f4); \ \
+      wget https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VER}/mkcert-${MKCERT_VER#v}-linux-amd64 -O /usr/local/bin/mkcert; chmod +x /usr/local/bin/mkcert; \ \
+      /usr/local/bin/mkcert -install || true; /usr/local/bin/mkcert -cert-file /certs/91.151.16.155.pem -key-file /certs/91.151.16.155-key.pem 91.151.16.155;"
+    restart: "no"
+
+  nginx:
+    image: nginx:stable
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/var/www:ro
+      - ./backend:/var/www/workers/backend:ro
+    depends_on:
+      - php
+      - node
+      - mkcert
+    command: /bin/sh -c "sed -i 's/127.0.0.1:3000/node:3000/g' /etc/nginx/conf.d/default.conf || true && nginx -g 'daemon off;'"
+
+  node:
+    image: node:24.15.0
+    working_dir: /var/www/workers/frontend
+    volumes:
+      - ./frontend:/var/www/workers/frontend:delegated
+    ports:
+      - "3000:3000"
+    # wait until build exists (created by setup-frontend)
+    command: /bin/sh -c "while [ ! -f build/index.js ]; do echo 'waiting for build...'; sleep 1; done; node build/index.js"
+    depends_on:
+      - setup-frontend
+
+  setup-php:
+    image: php:8.4-cli
+    volumes:
+      - ./backend:/var/www/workers/backend:delegated
+      - ./backend/vendor:/var/www/workers/backend/vendor
+    working_dir: /var/www/workers/backend
+    command: /bin/sh -c "set -eux; \
+      until nc -z mariadb 3306; do echo 'waiting for mariadb...'; sleep 1; done; \
+      php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"; \
+      php composer-setup.php --install-dir=/usr/local/bin --filename=composer || true; \
+      rm -f composer-setup.php; \
+      composer install --no-interaction --prefer-dist --optimize-autoloader || true; \
+      if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
+        php bin/console lexik:jwt:generate-keypair --no-interaction || true; \
+      fi"
+    depends_on:
+      - mariadb
+    restart: "no"
+
+  setup-frontend:
+    image: node:24.15.0
+    volumes:
+      - ./frontend:/var/www/workers/frontend:delegated
+    working_dir: /var/www/workers/frontend
+    command: /bin/sh -c "set -eux; npm ci --silent; npm run build"
+    restart: "no"
+    depends_on:
+      - setup-php
+
+  setup-migrate:
+    image: php:8.4-cli
+    volumes:
+      - ./backend:/var/www/workers/backend:delegated
+    working_dir: /var/www/workers/backend
+    command: /bin/sh -c "set -eux; until nc -z mariadb 3306; do echo 'waiting for mariadb...'; sleep 1; done; php bin/console doctrine:migrations:migrate --no-interaction"
+    depends_on:
+      - mariadb
+      - setup-php
+    restart: "no"
+
+volumes:
+  db_data:
+  
+
+networks:
+  default:
+    driver: bridge
