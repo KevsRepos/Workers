@@ -24,10 +24,16 @@ WORKDIR /var/www/workers/backend
 
 # Install PHP dependencies from composer (copy only composer files for better caching)
 COPY composer.json composer.lock* ./
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+# Install dependencies but skip running composer scripts (bin/console not yet copied)
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 # Copy application
+
+# Copy application sources
 COPY . ./
+
+# Rebuild optimized autoloader now that sources are present
+RUN composer dump-autoload --optimize
 
 # Ensure JWT config dir exists and is writable before attempting generation
 RUN mkdir -p config/jwt \
