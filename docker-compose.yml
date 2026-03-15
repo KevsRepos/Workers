@@ -66,6 +66,8 @@ services:
         condition: service_healthy
     volumes:
       - migrate_state:/var/www/migrate_state:rw
+      - ./nginx/ssl/ca.pem:/usr/local/share/ca-certificates/local-ca.crt:ro
+    command: /bin/sh -c "update-ca-certificates || true; node build/index.js"
 
   setup-migrate:
     image: workers-backend:latest
