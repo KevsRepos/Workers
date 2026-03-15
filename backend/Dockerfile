@@ -7,8 +7,12 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libonig-dev \
   zip \
   netcat-openbsd \
-   libssl-dev \
-   openssl \
+  libssl-dev \
+  openssl \
+  build-essential \
+  autoconf \
+  pkg-config \
+  zlib1g-dev \
  && docker-php-ext-install pdo pdo_mysql zip openssl
 
 # Install composer
