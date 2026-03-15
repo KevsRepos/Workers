@@ -63,6 +63,6 @@ RUN mkdir -p var/cache var/log var/sessions \
  && chown -R www-data:www-data var \
  && chmod -R 775 var
 
-# Add entrypoint to ensure permissions at container start (handles host bind-mounts)
+# Install entrypoint that will generate JWT keys into a host-mounted folder at container start
 EXPOSE 9000
 CMD ["php-fpm"]

@@ -23,6 +23,11 @@ services:
     working_dir: /var/www/workers/backend
     depends_on:
       - mariadb
+    volumes:
+      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
+    command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm"
+    volumes:
+      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
 
   mkcert:
     image: ubuntu:22.04
@@ -74,6 +79,14 @@ services:
     restart: "no"
     volumes:
       - migrate_state:/var/www/migrate_state:rw
+
+  setup-jwt:
+    image: workers-backend:latest
+    working_dir: /var/www/workers/backend
+    command: /bin/sh -c "set -eux; mkdir -p config/jwt; php bin/console lexik:jwt:generate-keypair --no-interaction"
+    restart: "no"
+    volumes:
+      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
 
 volumes:
   db_data:
