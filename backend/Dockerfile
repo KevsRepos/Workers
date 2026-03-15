@@ -64,5 +64,9 @@ RUN mkdir -p var/cache var/log var/sessions \
  && chmod -R 775 var
 
 # Install entrypoint that will generate JWT keys into a host-mounted folder at container start
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 EXPOSE 9000
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["php-fpm"]
