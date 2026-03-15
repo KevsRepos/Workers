@@ -31,7 +31,7 @@ services:
       - /home/wonderbear/.local/share/mkcert:/root/.local/share/mkcert:ro
       - /usr/local/bin/mkcert:/usr/local/bin/mkcert:ro
     working_dir: /certs
-    command: /bin/sh -c "/usr/local/bin/mkcert -cert-file /certs/91.151.16.155.pem -key-file /certs/91.151.16.155-key.pem 91.151.16.155 localhost || true"
+    command: /bin/sh -c "/usr/local/bin/mkcert -cert-file /certs/91.151.16.155.pem -key-file /certs/91.151.16.155-key.pem 91.151.16.155 localhost"
     restart: "no"
 
   

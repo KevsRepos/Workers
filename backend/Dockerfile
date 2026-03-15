@@ -37,7 +37,7 @@ RUN composer dump-autoload --optimize
 
 # Ensure JWT config dir exists and is writable before attempting generation
 RUN mkdir -p config/jwt \
- && chown -R www-data:www-data config/jwt || true
+ && chown -R www-data:www-data config/jwt
 
 # Generate JWT keys if missing during build (fail loudly if generation fails)
 RUN if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
@@ -46,8 +46,8 @@ RUN if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
 
 # Create var dirs and set permissions at build time
 RUN mkdir -p var/cache var/log var/sessions \
- && chown -R www-data:www-data var || true \
- && chmod -R 775 var || true
+ && chown -R www-data:www-data var \
+ && chmod -R 775 var
 
 # Add entrypoint to ensure permissions at container start (handles host bind-mounts)
 EXPOSE 9000
