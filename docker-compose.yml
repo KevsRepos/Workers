@@ -29,13 +29,13 @@ services:
     image: ubuntu:22.04
     volumes:
       - ./certs:/certs
+      - /home/wonderbear/.local/share/mkcert:/root/.local/share/mkcert:ro
+      - /usr/local/bin/mkcert:/usr/local/bin/mkcert:ro
     working_dir: /certs
-    tty: false
-    command: /bin/sh -c "set -eux; apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates wget libnss3-tools gnupg; \ \
-      MKCERT_VER=$(wget -qO- https://api.github.com/repos/FiloSottile/mkcert/releases/latest | grep 'tag_name' | cut -d\" -f4); \ \
-      wget https://github.com/FiloSottile/mkcert/releases/download/$${MKCERT_VER}/mkcert-$${MKCERT_VER#v}-linux-amd64 -O /usr/local/bin/mkcert; chmod +x /usr/local/bin/mkcert; \ \
-      /usr/local/bin/mkcert -install || true; /usr/local/bin/mkcert -cert-file /certs/91.151.16.155.pem -key-file /certs/91.151.16.155-key.pem 91.151.16.155;"
+    command: /bin/sh -c "/usr/local/bin/mkcert -cert-file /certs/91.151.16.155.pem -key-file /certs/91.151.16.155-key.pem 91.151.16.155 localhost || true"
     restart: "no"
+
+  
 
   nginx:
     image: nginx:stable
@@ -53,7 +53,7 @@ services:
     command: /bin/sh -c "sed -i 's/127.0.0.1:3000/node:3000/g' /etc/nginx/conf.d/default.conf || true && nginx -g 'daemon off;'"
 
   node:
-    image: node:24.15.0
+    image: node:24-bullseye
     working_dir: /var/www/workers/frontend
     volumes:
       - ./frontend:/var/www/workers/frontend:delegated
@@ -84,7 +84,7 @@ services:
     restart: "no"
 
   setup-frontend:
-    image: node:24.15.0
+    image: node:24-bullseye
     volumes:
       - ./frontend:/var/www/workers/frontend:delegated
     working_dir: /var/www/workers/frontend
