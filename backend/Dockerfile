@@ -1,11 +1,12 @@
 FROM php:8.4-fpm
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    git \
-    unzip \
-    libzip-dev \
-    libonig-dev \
-    zip \
+  git \
+  unzip \
+  libzip-dev \
+  libonig-dev \
+  zip \
+  netcat-openbsd \
  && docker-php-ext-install pdo pdo_mysql zip
 
 # Install composer

@@ -48,7 +48,7 @@ services:
       - php
       - node
       - mkcert
-    command: /bin/sh -c "sed -i 's/127.0.0.1:3000/node:3000/g' /etc/nginx/conf.d/default.conf || true && nginx -g 'daemon off;'"
+    command: /bin/sh -c "nginx -g 'daemon off;'"
 
   node:
     build:
