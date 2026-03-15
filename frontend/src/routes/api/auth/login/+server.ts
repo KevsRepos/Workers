@@ -11,9 +11,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         body: JSON.stringify({ username, password })
     });
 
-    // if (!response.ok) {
-    //     return json({ error: 'Login fehlgeschlagen' }, { status: 401 });
-    // }
+    if (!response.ok) {
+        return json({ error: await response.text() }, { status: 401 });
+    }
 
     const result = await response.json();
 
