@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20 AS build
+FROM node:24-bullseye AS build
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install --frozen-lockfile
@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20 AS prod
+FROM node:24-bullseye AS prod
 WORKDIR /app
 COPY --from=build /app/package.json ./
 COPY --from=build /app/build ./build
