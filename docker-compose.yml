@@ -26,6 +26,7 @@ services:
     volumes:
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
     command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm"
+    command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm -F"
 
   mkcert:
     image: ubuntu:22.04
@@ -81,7 +82,7 @@ services:
   setup-jwt:
     image: workers-backend:latest
     working_dir: /var/www/workers/backend
-    command: /bin/sh -c "set -eux; mkdir -p config/jwt; php bin/console lexik:jwt:generate-keypair --no-interaction"
+    command: /bin/sh -c "set -eux; mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; fi"
     restart: "no"
     volumes:
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw

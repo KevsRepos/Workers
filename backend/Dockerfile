@@ -48,7 +48,7 @@ RUN echo '--- JWT: config directory contents (after mkdir/chown) ---' \
  && echo "www-data groups: $(id -Gn www-data 2>/dev/null || echo 'n/a')"
 
 # Generate JWT keys if missing during build (fail loudly if generation fails)
-RUN if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then \
+RUN if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then \
     php bin/console lexik:jwt:generate-keypair --no-interaction; \
   fi
 
@@ -63,10 +63,5 @@ RUN mkdir -p var/cache var/log var/sessions \
  && chown -R www-data:www-data var \
  && chmod -R 775 var
 
-# Install entrypoint that will generate JWT keys into a host-mounted folder at container start
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 EXPOSE 9000
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["php-fpm", "-F"]
