@@ -13,7 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   autoconf \
   pkg-config \
   zlib1g-dev \
- && docker-php-ext-install pdo pdo_mysql zip openssl
+ && docker-php-ext-install pdo pdo_mysql zip
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
