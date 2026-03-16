@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import PrintedDeliveryNoteCustomer from '$lib/components/deliveryNote/PrintedDeliveryNoteCustomer.svelte';
 import PrintedDeliveryNoteInternal from '$lib/components/deliveryNote/PrintedDeliveryNoteInternal.svelte';
 import PrintedReturnNote from '$lib/components/deliveryNote/PrintedReturnNote.svelte';
@@ -13,7 +13,10 @@ let { data } = $props();
 let printing = $state(false);
 let printingReturnNote = $state(false);
 
+let desiredPrint: string|null = $state(null);
+
 const printDeliveryNote = async () => {
+    desiredPrint = 'deliveryNote';
     printing = true;
 
     await tick();
@@ -22,6 +25,7 @@ const printDeliveryNote = async () => {
 }
 
 const printReturnNote = async () => {
+    desiredPrint = 'returnNote';
     printingReturnNote = true;
 
     await tick();
@@ -32,10 +36,10 @@ const printReturnNote = async () => {
 $inspect(data);
 </script>
 
-<svelte:window onafterprint={async () => {printing = false; printingReturnNote = false}} />
+<svelte:window onbeforeprint={() => {if(desiredPrint === 'deliveryNote') {printing = true;} else if(desiredPrint === 'returnNote') {printingReturnNote = true;} }} onafterprint={async () => {printing = false; printingReturnNote = false}} />
 
 {#if !printing && !printingReturnNote}
-    <Navigation class="mb-3">
+    <Navigation class="mb-3 no-scrollbar">
         <Navigation.Menu class="overflow-x-auto">
             <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
                 <Pen />

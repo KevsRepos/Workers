@@ -20,9 +20,9 @@ const handleClick = (event: MouseEvent) => {
 
 <svelte:document on:click={handleClick} />
 
-<nav bind:this={nav} class="{open ? 'visible slide-in' : 'slide-out invisible'} pt-8 flex flex-col w-11/12 h-screen fixed top-0 bg-surface-900 z-50 shadow-md [&>a]:border-b [&>a]:border-surface-950">
+<nav bind:this={nav} class="{open ? 'visible slide-in' : 'slide-out invisible'} pt-4 flex flex-col w-9/12 h-screen fixed top-0 bg-surface-100-900 z-50 shadow-md [&>a]:border-surface-950">
     {#each menuItems as item}
-        <a onclick={() => open = false} class="p-2 font-bold flex justify-between items-center" href={item.href}>
+        <a onclick={() => open = false} class="px-2 py-4 flex justify-between items-center" href={item.href}>
             <div class="flex gap-2 items-center">
                 <item.icon />
                 {item.label}

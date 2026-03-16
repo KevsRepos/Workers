@@ -31,12 +31,12 @@ export const fetchApi = async (
     });
 
     if (res.status === 401 && browser) {
-        // await auth.logout();
+        await auth.logout();
     }
 
     if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(`API request failed: ${res.status} ${res.statusText}`);
+        throw new Error(`API request failed: ${res.status} ${res.statusText} - ${errorText} `);
     }
 
     return res.json();

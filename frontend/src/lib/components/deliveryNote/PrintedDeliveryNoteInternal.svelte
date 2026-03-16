@@ -38,10 +38,20 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
 @media print {
     @page {
         size: A4;
-        /* margin: 5mm; */
+        margin: 20mm;
+            .page {
+                height: auto !important;
+                min-height: 0 !important;
+                margin-top: 0 !important;
+            }
+        padding: 0;
+        height: auto !important;
     }
+
     .page {
-        height: 100vh;
+        height: auto !important;
+        min-height: 0 !important;
+        margin-top: 0 !important;
     }
     :global(header) {
         display: none;

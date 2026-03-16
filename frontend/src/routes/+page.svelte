@@ -13,12 +13,21 @@ let deliveryNotes = $state(data.deliveryNotes);
 
 let status: string = $state("1");
 
+
+let dererror = $state("");
+
 const filterStatus = async () => {
     await tick();
 
-    const json = await fetchApi(`delivery-notes/${status}`, "GET");
+    // dererror = 'looooool';
 
-    deliveryNotes = json;
+    try {
+        const json = await fetchApi(`delivery-notes/${status}`, "GET");
+
+        deliveryNotes = json;
+    } catch (error) {
+        dererror = `Fehler beim Laden der Lieferscheine: ${error.message}`;
+    }
 }
 </script>
 
@@ -40,7 +49,7 @@ const filterStatus = async () => {
         </Navigation.TriggerAnchor>
     </Navigation.Menu>
 </Navigation>
-
+{dererror}
 <PageHeadline>Lieferscheine</PageHeadline>
 
 <main class="p-4">

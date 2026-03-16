@@ -1,9 +1,9 @@
 @import 'tailwindcss';
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton-svelte';
-@import '@skeletonlabs/skeleton/themes/modern';
+@import '@skeletonlabs/skeleton/themes/cerberus';
 
-/* @custom-variant dark (&:where(.dark, .dark *)); */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
 	font-family: 'Falcon-Poster-Bold';
@@ -12,4 +12,16 @@
 
 .falcon-poster-bold {
 	font-family: 'Falcon-Poster-Bold', sans-serif;
+}
+
+@layer utilities {
+    /* Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
 }

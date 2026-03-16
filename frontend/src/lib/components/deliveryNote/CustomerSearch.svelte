@@ -2,7 +2,7 @@
 import { fetchApi } from "$lib/fetchApi";
 import { useListCollection, type ComboboxRootProps, Combobox, Portal } from "@skeletonlabs/skeleton-svelte";
 
-let { selectedCustomer = $bindable(), jump } = $props();
+let { selectedCustomer = $bindable(), autoFocus = false, jump } = $props();
 
 let searchTimeout: ReturnType<typeof setTimeout>;
 let customers: Array<any> = $state([]);
@@ -61,7 +61,7 @@ const addCustomer = async () => {
 }
 </script>
 
-<Combobox defaultInputValue={selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.surname}` : ''} open={open} autoFocus={true} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full px-4">
+<Combobox defaultInputValue={selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.surname}` : ''} open={open} autoFocus={autoFocus} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full px-4">
     <Combobox.Label>Kunde</Combobox.Label>
     <Combobox.Control>
         <Combobox.Input oninput={searchCustomer} />

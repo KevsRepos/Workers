@@ -21,7 +21,9 @@ const formatDateForInput = (dateStr: string): string => {
 let deliveryDate = $state(formatDateForInput(deliveryNoteForm.deliveryDate));
 
 onMount(() => {
-    deliveryNoteForm.delivery = null;
+    if(deliveryNoteForm.customer === null || deliveryNoteForm.delivery === undefined) {
+        deliveryNoteForm.delivery = null;
+    }
 });
 $effect(() => {
     if (deliveryNoteForm.deliveryDate !== deliveryDate) {
@@ -67,10 +69,9 @@ const removeProduct = (index: number) => {
 </script>
 
 <main class="lg:max-w-200 mx-auto">
-
     <div class="flex flex-col gap-2">
         <div class="pt-2 pb-9 border-b border-surface-200-800">
-            <CustomerSearch bind:selectedCustomer={deliveryNoteForm.customer} jump={focusDeliverySelection} />
+            <CustomerSearch autoFocus={deliveryNoteForm.customer === null} bind:selectedCustomer={deliveryNoteForm.customer} jump={focusDeliverySelection} />
         </div>
 
         <span bind:this={scrollAnchor2}></span>
@@ -101,7 +102,7 @@ const removeProduct = (index: number) => {
             <div class="px-4">
                 <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} jump={focusProductSearch} />
 
-                <div class="flex flex-col gap-2 mt-2 divider-y">
+                <div class="flex flex-col gap-2 mt-2 divider-y max-h-64 overflow-y-auto">
                     {#each deliveryNoteForm.products as product, index}
                         <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
                             <button onclick={() => removeProduct(index)} type="button">
@@ -115,9 +116,11 @@ const removeProduct = (index: number) => {
             </div>
         </div>
 
-        <button onclick={saveDeliveryNote} type="button" class="btn preset-filled mx-4 mb-150">
-            <span>Speichern</span>
-            <ChevronRight />
-        </button>
+        {#if deliveryNoteForm.products.length > 0 && deliveryNoteForm.customer && deliveryNoteForm.delivery !== null && deliveryNoteForm.deliveryDate}
+            <button onclick={saveDeliveryNote} type="button" class="btn mx-2 py-4 preset-filled mb-150">
+                <span>Speichern</span>
+                <ChevronRight />
+            </button>
+        {/if}
     </div>
 </main>

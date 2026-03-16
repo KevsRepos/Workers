@@ -40,7 +40,7 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
 
 <style>
 @media print {
-    @page {
+    @page :first {
         size: A4;
         margin: 20mm;
     }
