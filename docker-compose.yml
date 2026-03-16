@@ -68,6 +68,8 @@ services:
       - migrate_state:/var/www/migrate_state:rw
       - ./nginx/ssl/ca.pem:/usr/local/share/ca-certificates/local-ca.crt:ro
     # Entrypoint will import mounted CA and then exec the default CMD
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
 
   setup-migrate:
     image: workers-backend:latest
