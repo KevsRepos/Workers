@@ -4,20 +4,25 @@ namespace App\Modules\Pim\Product;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Modules\Pim\Product\Service;
 use App\Modules\Pim\Product\Dto\CreateProductRequestDto;
+use App\Modules\Pim\Product\Dto\UpdateProductRequestDto;
+use App\Modules\Pim\Product\Dto\ProductDetailResponseDto;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 class Controller extends AbstractController
 {
-    #[Route('/products', methods: ['GET'])]
-    public function listProducts(): JsonResponse
+    #[Route('/products/list/{filter}/{page}', methods: ['GET'])]
+    public function listProducts(string $filter, int $page, Service $service): JsonResponse
     {
-        // TODO: Fetch products from database
-        $products = [];
-        return $this->json($products);
+        $page = max(1, $page);
+        $filterEnum = ProductListFilter::tryFrom($filter) ?? ProductListFilter::ALL;
+
+        $result = $service->list($page, $filterEnum);
+
+        return $this->json($result);
     }
 
     #[Route('/products/search', methods: ['GET'])]
@@ -29,11 +34,30 @@ class Controller extends AbstractController
     }
 
     #[Route('/products/{id}', methods: ['GET'])]
-    public function getProductById(string $id): JsonResponse
+    public function getProductById(string $id, Service $service): JsonResponse
     {
-        // TODO: Fetch product by $id from database
-        $product = null;
-        return $this->json($product);
+        $product = $service->getById($id);
+        if (!$product) {
+            return new JsonResponse(['error' => 'Product not found'], 404);
+        }
+
+        $response = new ProductDetailResponseDto(
+            $product->id,
+            $product->name,
+            $product->salesPrice,
+            $product->sellable,
+            $product->rentable,
+            $product->quantityInCrate,
+            $product->deposit ? [
+                'id' => $product->deposit->id,
+                'singleAmount' => $product->deposit->singleAmount,
+                'crateAmount' => $product->deposit->crateAmount,
+            ] : null,
+            $product->createdAt,
+            $product->updatedAt
+        );
+
+        return new JsonResponse($response);
     }
 
     #[Route('/products', methods: ['POST'])]
@@ -50,12 +74,17 @@ class Controller extends AbstractController
     }
 
     #[Route('/products/{id}', methods: ['PUT'])]
-    public function updateProduct(string $id, Request $request): JsonResponse
+    public function updateProduct(
+        string $id,
+        #[MapRequestPayload] UpdateProductRequestDto $dto,
+        Service $service
+    ): JsonResponse
     {
-        // TODO: Update product by $id with request data
-        $data = json_decode($request->getContent(), true);
-        // $product = ...
-        return $this->json(['status' => 'updated', 'id' => $id, 'data' => $data]);
+        $result = $service->update($id, $dto);
+        if ($result instanceof \Error) {
+            return new JsonResponse(['error' => $result->getMessage()], $result->getCode());
+        }
+        return new JsonResponse($result->getMessage(), 200);
     }
 
     #[Route('/products/{id}', methods: ['DELETE'])]

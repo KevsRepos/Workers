@@ -1,11 +1,13 @@
 <script lang="ts">
-import { BottleWine, ChevronRight, NotebookPen, UserPen } from "@lucide/svelte";
+import { invalidateAll } from "$app/navigation";
+import { auth } from "$lib/auth.svelte";
+import { BottleWine, ChevronRight, LogOut, NotebookPen, UserPen } from "@lucide/svelte";
 
 let { open = $bindable<boolean>(), menuBtn } = $props();
 
 const menuItems = [
     { icon: NotebookPen, label: 'Lieferscheine', href: '/' },
-    { icon: BottleWine, label: 'Artikel', href: '/products' },
+    { icon: BottleWine, label: 'Artikel', href: '/products/list/all/1' },
     { icon: UserPen, label: 'Kunden', href: '/customers' },
 ];
 
@@ -30,6 +32,10 @@ const handleClick = (event: MouseEvent) => {
             <ChevronRight />
         </a>
     {/each}
+    <button onclick={async () => {await auth.logout(); invalidateAll(); open = false;}} class="px-2 py-4 flex gap-2 mt-8 border-t items-center">
+        <LogOut />
+        Ausloggen
+    </button>
 </nav>
 
 <style>

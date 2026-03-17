@@ -34,4 +34,9 @@ final class Service
 
         return new Success("DepositCreated");
     }
+
+    public function list(): array
+    {
+        return $this->repo->listAll();
+    }
 }

@@ -32,14 +32,16 @@ const filterStatus = async () => {
 </script>
 
 <Navigation class="mb-3">
-    <Navigation.Menu>
+    <Navigation.Menu class="overflow-x-auto">
         <Navigation.TriggerAnchor href="/delivery-note/create">
             <NotebookPen />
+            <Navigation.TriggerText>Erstellen</Navigation.TriggerText>
         </Navigation.TriggerAnchor>
         <Navigation.TriggerAnchor>
             <Printer />
+            <Navigation.TriggerText>Alle drucken</Navigation.TriggerText>
         </Navigation.TriggerAnchor>
-        <Navigation.TriggerAnchor>
+        <Navigation.TriggerAnchor class="border">
             <select bind:value={status} onchange={filterStatus}>
                 <option value="1">Offen</option>
                 <option value="2">Ausgeliefert</option>
@@ -49,13 +51,13 @@ const filterStatus = async () => {
         </Navigation.TriggerAnchor>
     </Navigation.Menu>
 </Navigation>
-{dererror}
+
 <PageHeadline>Lieferscheine</PageHeadline>
 
 <main class="p-4">
     <div class="flex flex-col gap-2">
         {#each deliveryNotes as deliveryNote}
-            <a href="/delivery-note/{deliveryNote.id}" class="bg-surface-200-800 flex row justify-between p-2 w-full shadow-sm font-bold rounded">
+            <a href="/delivery-note/{deliveryNote.id}" class="bg-surface-100-900 flex row justify-between p-2 w-full font-bold rounded">
                 <div>{deliveryNote.customer.firstName} {deliveryNote.customer.surname}</div>
                 <div>
                    { formatDate(deliveryNote.deliveryDate) }

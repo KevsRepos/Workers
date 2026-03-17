@@ -41,4 +41,14 @@ class Repository extends ServiceEntityRepository
     {
         $this->getEntityManager()->flush();
     }
+
+    public function listAll(): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('d')
+            ->from(Deposit::class, 'd')
+            ->orderBy('d.singleAmount', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }
