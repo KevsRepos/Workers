@@ -69,6 +69,16 @@ class Controller extends AbstractController
         return new JsonResponse($result->getResponse());
     }
 
+    #[Route('/delivery-note/{id}/status/{status}', methods: ['PUT'])]
+    public function updateStatus(string $id, int $status, Service $service): JsonResponse
+    {
+        $result = $service->updateStatus($id, $status);
+        if ($result instanceof \Error) {
+            return new JsonResponse(['error' => $result->getMessage()], $result->getCode());
+        }
+        return new JsonResponse($result->getMessage(), 200);
+    }
+
     #[Route('/delivery-notes/{id}', methods: ['DELETE'])]
     public function deleteDeliveryNote(string $id): JsonResponse
     {

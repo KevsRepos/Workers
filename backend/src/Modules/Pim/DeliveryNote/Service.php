@@ -103,6 +103,28 @@ final class Service {
         }
     }
 
+    public function updateStatus(string $id, int $status): Error|Success
+    {
+        $deliveryNote = $this->repo->findById($id);
+        if (!$deliveryNote) {
+            return new Error("DeliveryNote not found", 404);
+        }
+
+        $statusEnum = DeliveryNoteStatus::tryFrom($status);
+        if (!$statusEnum) {
+            return new Error("Invalid status", 400);
+        }
+
+        $deliveryNote->status = $statusEnum;
+
+        try {
+            $this->repo->saveDeliveryNote($deliveryNote, true);
+            return new Success("StatusUpdated");
+        } catch (Exception $e) {
+            return new Error($e->getMessage(), 500);
+        }
+    }
+
     public function createReturnNote(CreateReturnNoteRequestDto $data): Error|Success
     {
         $deliveryNote = $this->repo->findById($data->deliveryNoteId);
@@ -115,7 +137,7 @@ final class Service {
             $data->returnNoteProducts,
         );
 
-        $deliveryNote->status = DeliveryNoteStatus::COMPLETED;
+        $deliveryNote->status = DeliveryNoteStatus::RETURNED;
 
         try {
             $this->repo->saveDeliveryNote($deliveryNote, true);

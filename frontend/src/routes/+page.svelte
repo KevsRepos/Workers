@@ -1,5 +1,5 @@
 <script lang="ts">
-import { NotebookPen, Printer } from "@lucide/svelte";
+import { Calendar1, Car, NotebookPen, Printer, User, Van } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { formatDate } from "$lib/functions/formatDate.js";
@@ -44,7 +44,8 @@ const filterStatus = async () => {
         <select bind:value={status} onchange={filterStatus}>
             <option value="1">Offen</option>
             <option value="2">Ausgeliefert</option>
-            <option value="5">Zurückgeschrieben</option>
+            <option value="4">Zurückgeschrieben</option>
+            <option value="5">Abgeschlossen</option>
             <option value="3">Storniert</option>
         </select>
     </Navigation.TriggerAnchor>
@@ -52,13 +53,28 @@ const filterStatus = async () => {
 
 <PageHeadline>Lieferscheine</PageHeadline>
 
-<main class="p-4">
-    <div class="flex flex-col gap-2">
+<main>
+    <div class="flex flex-col">
         {#each deliveryNotes as deliveryNote}
-            <a href="/delivery-note/{deliveryNote.id}" class="bg-surface-100-900 flex row justify-between p-2 w-full font-bold rounded">
-                <div>{deliveryNote.customer.firstName} {deliveryNote.customer.surname}</div>
-                <div>
-                   { formatDate(deliveryNote.deliveryDate) }
+            <a href="/delivery-note/{deliveryNote.id}" class="flex flex-col gap-4 p-2 w-full not-last:border-b">
+                <div class="flex justify-between">
+                    <div class="flex gap-2 font-bold">
+                        <User />
+                        {deliveryNote.customer.firstName} {deliveryNote.customer.surname}
+                    </div>
+                    <div class="flex items-center gap-2 font-bold">
+                        <div>{formatDate(deliveryNote.deliveryDate)}</div>
+                        <Calendar1 />
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    {#if deliveryNote.delivery}
+                        <Van />
+                        Zum liefern
+                    {:else}
+                        <Car />
+                        Zum abholen
+                    {/if}
                 </div>
             </a>
         {:else}

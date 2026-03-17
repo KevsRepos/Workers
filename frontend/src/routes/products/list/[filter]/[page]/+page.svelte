@@ -40,17 +40,17 @@ function onFilterChange() {
 
 <PageHeadline>Artikel</PageHeadline>
 
-<main class="p-4">
-    <div class="pb-2 font-bold">{data.products.total} Artikel gesamt</div>
+<main class="">
+    <div class="px-4 pb-2 font-bold">{data.products.total} Artikel gesamt</div>
 
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col">
         {#each data.products.data as product}
-            <div class=" bg-surface-100-900 flex w-full rounded">
+            <div class="flex w-full not-last:border-b py-2">
                 <a class="flex items-center py-2 px-6" href="/products/{product.id}">
                     <Pen />
                 </a>
                 <div class="flex flex-col py-2">
-                    <div class="font-bold">{product.name}</div>
+                    <div class="font-bold pb-4">{product.name}</div>
                     <div>
                         {#if product.sellable}
                             Verkäuflich

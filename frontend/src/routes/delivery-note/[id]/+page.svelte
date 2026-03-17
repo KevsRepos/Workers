@@ -4,6 +4,7 @@ import PrintedDeliveryNoteInternal from '$lib/components/deliveryNote/PrintedDel
 import PrintedReturnNote from '$lib/components/deliveryNote/PrintedReturnNote.svelte';
 import PageHeadline from '$lib/components/PageHeadline.svelte';
 import TopNavigation from '$lib/components/TopNavigation.svelte';
+import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
 import { NotebookText, Printer, Pen } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
@@ -23,6 +24,8 @@ const printDeliveryNote = async () => {
     await tick();
 
     window.print();
+
+    await fetchApi(`delivery-note/${data.deliveryNote.id}/status/2`, 'PUT');
 }
 
 const printReturnNote = async () => {
@@ -32,6 +35,8 @@ const printReturnNote = async () => {
     await tick();
 
     window.print();
+
+    await fetchApi(`delivery-note/${data.deliveryNote.id}/status/5`, 'PUT');
 }
 
 $inspect(data);
