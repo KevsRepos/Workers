@@ -31,12 +31,12 @@ const setType = (type: 'sellable' | 'rentable') => {
 <main class="p-4 flex flex-col gap-4 md:max-w-200 mx-auto">
     <label class="label">
         <span class="label-text">Name</span>
-        <input class="input bg-surface-100-900" type="text" bind:value={name} />
+        <input class="input" type="text" bind:value={name} />
     </label>
 
     <label class="label">
         <span class="label-text">Verkaufspreis (Cent)</span>
-        <input class="input bg-surface-100-900" type="number" bind:value={salesPrice} />
+        <input class="input" type="number" bind:value={salesPrice} />
     </label>
 
     <div class="flex flex-col gap-2">
@@ -44,7 +44,7 @@ const setType = (type: 'sellable' | 'rentable') => {
             <input type="checkbox" class="checkbox" bind:checked={hasCrate} />
             <span class="label-text">In Kiste</span>
         </label>
-        <input class="input bg-surface-100-900" type="number" min="1" bind:value={quantityInCrate} disabled={!hasCrate} />
+        <input class="input" type="number" min="1" bind:value={quantityInCrate} disabled={!hasCrate} />
     </div>
 
     <div class="flex gap-4">
@@ -61,7 +61,7 @@ const setType = (type: 'sellable' | 'rentable') => {
 
     <label class="label">
         <span class="label-text">Pfand</span>
-        <select class="select bg-surface-100-900 p-2" bind:value={depositId}>
+        <select class="select p-2" bind:value={depositId}>
             <option value="">Kein Pfand</option>
             {#each deposits as deposit}
                 <option value={deposit.id}>

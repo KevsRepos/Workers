@@ -5,6 +5,7 @@ import { CirclePlus, Pen } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import { centToEuro } from "$lib/functions/helpers";
 import { goto } from "$app/navigation";
+import TopNavigation from "$lib/components/TopNavigation.svelte";
 
 let { data } = $props();
 
@@ -23,21 +24,19 @@ function onFilterChange() {
 }
 </script>
 
-<Navigation class="mb-3 no-scrollbar">
-    <Navigation.Menu class="overflow-x-auto">
-        <Navigation.TriggerAnchor href="/products/create">
-            <CirclePlus />
-            <Navigation.TriggerText>Anlegen</Navigation.TriggerText>
-        </Navigation.TriggerAnchor>
-        <Navigation.TriggerAnchor class="border">
-            <select bind:value={filter} onchange={onFilterChange}>
-                {#each filterOptions as opt}
-                    <option value={opt.value}>{opt.label}</option>
-                {/each}
-            </select>
-        </Navigation.TriggerAnchor>
-    </Navigation.Menu>
-</Navigation>
+<TopNavigation>
+    <Navigation.TriggerAnchor href="/products/create">
+        <CirclePlus />
+        <Navigation.TriggerText>Anlegen</Navigation.TriggerText>
+    </Navigation.TriggerAnchor>
+    <Navigation.TriggerAnchor>
+        <select bind:value={filter} onchange={onFilterChange}>
+            {#each filterOptions as opt}
+                <option value={opt.value}>{opt.label}</option>
+            {/each}
+        </select>
+    </Navigation.TriggerAnchor>
+</TopNavigation>
 
 <PageHeadline>Artikel</PageHeadline>
 

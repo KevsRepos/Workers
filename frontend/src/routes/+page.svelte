@@ -1,11 +1,11 @@
 <script lang="ts">
 import { NotebookPen, Printer } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
-import Page from "./delivery-note/[id]/+page.svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { formatDate } from "$lib/functions/formatDate.js";
 import { fetchApi } from "$lib/fetchApi.js";
-import { onMount, tick } from "svelte";
+import TopNavigation from "$lib/components/TopNavigation.svelte";
+import { tick } from "svelte";
 
 let { data } = $props();
 
@@ -31,26 +31,24 @@ const filterStatus = async () => {
 }
 </script>
 
-<Navigation class="mb-3">
-    <Navigation.Menu class="overflow-x-auto">
-        <Navigation.TriggerAnchor href="/delivery-note/create">
-            <NotebookPen />
-            <Navigation.TriggerText>Erstellen</Navigation.TriggerText>
-        </Navigation.TriggerAnchor>
-        <Navigation.TriggerAnchor>
-            <Printer />
-            <Navigation.TriggerText>Alle drucken</Navigation.TriggerText>
-        </Navigation.TriggerAnchor>
-        <Navigation.TriggerAnchor class="border">
-            <select bind:value={status} onchange={filterStatus}>
-                <option value="1">Offen</option>
-                <option value="2">Ausgeliefert</option>
-                <option value="5">Zurückgeschrieben</option>
-                <option value="3">Storniert</option>
-            </select>
-        </Navigation.TriggerAnchor>
-    </Navigation.Menu>
-</Navigation>
+<TopNavigation>
+    <Navigation.TriggerAnchor href="/delivery-note/create">
+        <NotebookPen />
+        <Navigation.TriggerText>Erstellen</Navigation.TriggerText>
+    </Navigation.TriggerAnchor>
+    <Navigation.TriggerAnchor>
+        <Printer />
+        <Navigation.TriggerText>Alle drucken</Navigation.TriggerText>
+    </Navigation.TriggerAnchor>
+    <Navigation.TriggerAnchor>
+        <select bind:value={status} onchange={filterStatus}>
+            <option value="1">Offen</option>
+            <option value="2">Ausgeliefert</option>
+            <option value="5">Zurückgeschrieben</option>
+            <option value="3">Storniert</option>
+        </select>
+    </Navigation.TriggerAnchor>
+</TopNavigation>
 
 <PageHeadline>Lieferscheine</PageHeadline>
 

@@ -3,6 +3,7 @@ import PrintedDeliveryNoteCustomer from '$lib/components/deliveryNote/PrintedDel
 import PrintedDeliveryNoteInternal from '$lib/components/deliveryNote/PrintedDeliveryNoteInternal.svelte';
 import PrintedReturnNote from '$lib/components/deliveryNote/PrintedReturnNote.svelte';
 import PageHeadline from '$lib/components/PageHeadline.svelte';
+import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { formatDate } from '$lib/functions/formatDate.js';
 import { NotebookText, Printer, Pen } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
@@ -39,34 +40,34 @@ $inspect(data);
 <svelte:window onbeforeprint={() => {if(desiredPrint === 'deliveryNote') {printing = true;} else if(desiredPrint === 'returnNote') {printingReturnNote = true;} }} onafterprint={async () => {printing = false; printingReturnNote = false}} />
 
 {#if !printing && !printingReturnNote}
-    <Navigation class="mb-3 no-scrollbar">
-        <Navigation.Menu class="overflow-x-auto">
+    <TopNavigation>
+        {#if data.deliveryNote.status < 5}
             <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
                 <Pen />
                 <Navigation.TriggerText>Bearbeiten</Navigation.TriggerText>
             </Navigation.TriggerAnchor>
-            <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/return-note">
-                <NotebookText />
-                <Navigation.TriggerText>Zurückschreiben</Navigation.TriggerText>
-            </Navigation.TriggerAnchor>
-            <Navigation.TriggerAnchor onclick={() => printDeliveryNote()}>
+        {/if}
+        <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/return-note">
+            <NotebookText />
+            <Navigation.TriggerText>Zurückschreiben</Navigation.TriggerText>
+        </Navigation.TriggerAnchor>
+        <Navigation.TriggerAnchor onclick={() => printDeliveryNote()}>
+            <Printer />
+            <Navigation.TriggerText>Drucken</Navigation.TriggerText>
+        </Navigation.TriggerAnchor>
+        {#if data.deliveryNote.status >= 5}
+            <Navigation.TriggerAnchor onclick={() => printReturnNote()}>
                 <Printer />
-                <Navigation.TriggerText>Drucken</Navigation.TriggerText>
+                <Navigation.TriggerText>Rückschrift drucken</Navigation.TriggerText>
             </Navigation.TriggerAnchor>
-            {#if data.deliveryNote.status >= 5}
-                <Navigation.TriggerAnchor onclick={() => printReturnNote()}>
-                    <Printer />
-                    <Navigation.TriggerText>Rückschrift drucken</Navigation.TriggerText>
-                </Navigation.TriggerAnchor>
-            {/if}
-        </Navigation.Menu>
-    </Navigation>
+        {/if}
+    </TopNavigation>
 
     <PageHeadline>Lieferschein</PageHeadline>
 
     <main class="lg:max-w-200 mx-auto">
         {#if data.deliveryNote.status >= 5}
-            <div class="badge preset-tonal-success mx-2 mb-2">Zurückgeschrieben</div>
+            <div class="badge preset-filled-success-500 mx-2 mb-2">Zurückgeschrieben</div>
         {/if}
 
         <div class="customer-name font-bold px-2">{data.deliveryNote.customer.firstName} {data.deliveryNote.customer.surname}</div>
@@ -90,7 +91,7 @@ $inspect(data);
                     {/if}
                 </tr>
             </thead>
-            <tbody class="[&>tr>td]:border-l [&>tr>td]:border-r [&>tr>td]:border-surface-800 border-b border-surface-800">
+            <tbody class="[&>tr>td]:border-l [&>tr>td]:border-r [&>tr>td]:border-surface-200-800 border-b border-surface-200-800">
                 {#each data.deliveryNote.deliveryNoteProducts as item}
                     <tr>
                         <td>{item.product.name}</td>

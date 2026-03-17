@@ -45,7 +45,8 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
         margin: 20mm;
     }
     .page {
-        height: 100vh;
+        min-height: 100vh;
+        break-after: page;
     }
     :global(header) {
         display: none;

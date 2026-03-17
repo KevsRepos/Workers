@@ -1,42 +1,17 @@
 <script lang="ts">
+import { goto } from "$app/navigation";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { ChevronRight } from "@lucide/svelte";
 import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
 
-interface ReturnNoteProductDto {
-    deliveryNoteProductId: string;
-    returnedTotal: number|null;
-    returnedBottles: number|null;
-    returnedFull: number|null;
-    returnedFullBottles: number|null;
-}
-
-interface CreateReturnNoteRequestDto {
-    deliveryNoteId: string;
-    returnNoteProducts: ReturnNoteProductDto[];
-}
-
 const { data } = $props();
 
-let errorText: string = $state('');
+let deliveryNote = $state(data.deliveryNote);
 
 let toaster = createToaster();
 
-let returnNote: CreateReturnNoteRequestDto = {
-    deliveryNoteId: data.deliveryNote.id,
-    returnNoteProducts: data.deliveryNote.deliveryNoteProducts.map((product) => ({
-        deliveryNoteProductId: product.id,
-        returnedTotal: null,
-        returnedTotalBottles: null,
-        returnedFull: null,
-        returnedFullBottles: null
-    }))
-};
-
 const saveReturnNote = async () => {
-    console.log(returnNote);
-
     if([...document.querySelectorAll('input[required]')].some((input: HTMLInputElement) => input.value === '')) {
         toaster.warning({
             title: 'Fehler',
@@ -46,9 +21,27 @@ const saveReturnNote = async () => {
         return;
     }
 
-    const json = await fetchApi(`delivery-notes/${returnNote.deliveryNoteId}/return-note`, 'POST', returnNote);
+    const payload = {
+        deliveryNoteId: deliveryNote.id,
+        returnNoteProducts: deliveryNote.deliveryNoteProducts.map((product: { id: number; returnedTotal: number; returnedTotalBottles: number; returnedFull: number; returnedFullBottles: any; }) => ({
+            deliveryNoteProductId: product.id,
+            returnedTotal: product.returnedTotal,
+            returnedTotalBottles: product.returnedTotalBottles,
+            returnedFull: product.returnedFull,
+            returnedFullBottles: product.returnedFullBottles
+        }))
+    };
+    
+    try {
+        await fetchApi(`delivery-notes/${deliveryNote.id}/return-note`, 'POST', payload);
 
-    console.log(json);
+        goto(`/delivery-note/${deliveryNote.id}`);
+    } catch(error) {
+        toaster.error({
+            title: 'Fehler',
+            description: error.message
+        });
+    }
 }
 </script>
 
@@ -56,7 +49,7 @@ const saveReturnNote = async () => {
 
 <main class="lg:max-w-200 mx-auto">
     <div class="flex flex-col gap-2">
-        {#each data.deliveryNote.deliveryNoteProducts as product, i}
+        {#each deliveryNote.deliveryNoteProducts as product, i}
             <div class="flex justify-between px-2">
                 <div>{product.product.name}</div>
                 <div>{product.quantity}</div>
@@ -70,7 +63,7 @@ const saveReturnNote = async () => {
                         min="0"
                         max={product.quantity}
                         placeholder="Gesamt"
-                        bind:value={returnNote.returnNoteProducts[i].returnedTotal}
+                        bind:value={product.returnedTotal}
                     />
                 </div>
             {:else if product.product.quantityInCrate === null}
@@ -82,7 +75,7 @@ const saveReturnNote = async () => {
                         min="0"
                         max={product.quantity}
                         placeholder="Gesamt"
-                        bind:value={returnNote.returnNoteProducts[i].returnedTotal}
+                        bind:value={product.returnedTotal}
                     />
                 </div>
             {:else if product.product.quantityInCrate > 0}
@@ -94,7 +87,7 @@ const saveReturnNote = async () => {
                         placeholder="Vollgut"
                         min="0"
                         max={product.quantity}
-                        bind:value={returnNote.returnNoteProducts[i].returnedFull}
+                        bind:value={product.returnedFull}
                     />
                     <input
                         required
@@ -103,7 +96,7 @@ const saveReturnNote = async () => {
                         placeholder="Gesamt"
                         min="0"
                         max={product.quantity}
-                        bind:value={returnNote.returnNoteProducts[i].returnedTotal}
+                        bind:value={product.returnedTotal}
                     />
                 </div>
                 <div class="mb-2 px-2 flex justify-between gap-2 border-b border-surface-200-800 pb-2">
@@ -114,7 +107,7 @@ const saveReturnNote = async () => {
                         placeholder="Vollgut Flaschen"
                         min="0"
                         max={product.product.quantityInCrate}
-                        bind:value={returnNote.returnNoteProducts[i].returnedFullBottles}
+                        bind:value={product.returnedFullBottles}
                     />
                     <input
                         required
@@ -123,7 +116,7 @@ const saveReturnNote = async () => {
                         placeholder="Gesamt Flaschen"
                         min="0"
                         max={product.product.quantityInCrate}
-                        bind:value={returnNote.returnNoteProducts[i].returnedBottles}
+                        bind:value={product.returnedTotalBottles}
                     />
                 </div>
             {/if}
