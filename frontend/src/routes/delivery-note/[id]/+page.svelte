@@ -46,7 +46,7 @@ $inspect(data);
 
 {#if !printing && !printingReturnNote}
     <TopNavigation>
-        {#if data.deliveryNote.status < 5}
+        {#if data.deliveryNote.status < 4}
             <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
                 <Pen />
                 <Navigation.TriggerText>Bearbeiten</Navigation.TriggerText>
@@ -60,7 +60,7 @@ $inspect(data);
             <Printer />
             <Navigation.TriggerText>Drucken</Navigation.TriggerText>
         </Navigation.TriggerAnchor>
-        {#if data.deliveryNote.status >= 5}
+        {#if data.deliveryNote.status >= 4}
             <Navigation.TriggerAnchor onclick={() => printReturnNote()}>
                 <Printer />
                 <Navigation.TriggerText>Rückschrift drucken</Navigation.TriggerText>
@@ -71,7 +71,7 @@ $inspect(data);
     <PageHeadline>Lieferschein</PageHeadline>
 
     <main class="lg:max-w-200 mx-auto">
-        {#if data.deliveryNote.status >= 5}
+        {#if data.deliveryNote.status >= 4}
             <div class="badge preset-filled-success-500 mx-2 mb-2">Zurückgeschrieben</div>
         {/if}
 
@@ -89,8 +89,8 @@ $inspect(data);
             <thead>
                 <tr>
                     <th>Artikel</th>
-                    <th class={{'text-right!': data.deliveryNote.status < 5, 'text-center!': data.deliveryNote.status >= 5}}>Menge</th>
-                    {#if data.deliveryNote.status >= 5}
+                    <th class={{'text-right!': data.deliveryNote.status < 4, 'text-center!': data.deliveryNote.status >= 4}}>Menge</th>
+                    {#if data.deliveryNote.status >= 4}
                         <th class="text-center!">Zurück</th>
                         <th class="text-center!">Gesamt</th>
                     {/if}
@@ -100,9 +100,9 @@ $inspect(data);
                 {#each data.deliveryNote.deliveryNoteProducts as item}
                     <tr>
                         <td>{item.product.name}</td>
-                        <td class={{'text-right!': data.deliveryNote.status < 5, 'text-center!': data.deliveryNote.status >= 5}}>{item.quantity} Stk.</td>
+                        <td class={{'text-right!': data.deliveryNote.status < 4, 'text-center!': data.deliveryNote.status >= 4}}>{item.quantity} Stk.</td>
 
-                        {#if data.deliveryNote.status >= 5}
+                        {#if data.deliveryNote.status >= 4}
                             <td class="text-center!">
                                 {#if item.returnedFull !== null}
                                     {item.returnedFull} Stk.
