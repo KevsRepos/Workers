@@ -55,10 +55,10 @@ const saveReturnNote = async () => {
                 <div>{product.quantity}</div>
             </div>
             {#if product.product.rentable}
-                <div class="mb-2 px-2 border-b border-surface-200-800  pb-2">
+                <div class="mb-2 px-2 border-b border-surface-200-800 pb-2">
                     <input
                         required
-                        class="input mx-2"
+                        class="input"
                         type="number"
                         min="0"
                         max={product.quantity}
@@ -66,7 +66,7 @@ const saveReturnNote = async () => {
                         bind:value={product.returnedTotal}
                     />
                 </div>
-            {:else if product.product.quantityInCrate === null}
+            {:else if product.product.quantityInCrate === 0}
                 <div class="mb-2 px-2 border-b border-surface-200-800 pb-2">
                     <input
                         required
