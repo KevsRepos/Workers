@@ -4,10 +4,14 @@ namespace App\Modules\Pim\ProductUnion;
 
 use App\Lib\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 class ProductUnion extends Entity {
     #[ORM\Column]
     public string $name;
+
+    #[ORM\OneToMany(mappedBy: "productUnion", targetEntity: ProductUnionProduct::class, cascade: ["persist", "remove"])]
+    public Collection $products;
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import Pagination from "$lib/components/Pagination.svelte";
-import { CirclePlus, Pen } from "@lucide/svelte";
+import { Boxes, CirclePlus, Pen } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import { centToEuro } from "$lib/functions/helpers";
 import { goto } from "$app/navigation";
@@ -28,6 +28,10 @@ function onFilterChange() {
     <Navigation.TriggerAnchor href="/products/create">
         <CirclePlus />
         <Navigation.TriggerText>Anlegen</Navigation.TriggerText>
+    </Navigation.TriggerAnchor>
+    <Navigation.TriggerAnchor href="/products/unions">
+        <Boxes />
+        <Navigation.TriggerText>Einheiten</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
     <Navigation.TriggerAnchor>
         <select bind:value={filter} onchange={onFilterChange}>
