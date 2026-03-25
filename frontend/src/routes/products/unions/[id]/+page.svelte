@@ -33,7 +33,7 @@ async function handleSave() {
 }
 </script>
 
-<PageHeadline>Gebinde bearbeiten</PageHeadline>
+<PageHeadline>Einheit bearbeiten</PageHeadline>
 
 <ProductUnionForm
     bind:name

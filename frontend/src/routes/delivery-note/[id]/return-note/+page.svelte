@@ -66,7 +66,7 @@ const saveReturnNote = async () => {
                         bind:value={product.returnedTotal}
                     />
                 </div>
-            {:else if product.product.quantityInCrate === 0}
+            {:else if product.product.quantityInCrate === null}
                 <div class="mb-2 px-2 border-b border-surface-200-800 pb-2">
                     <input
                         required

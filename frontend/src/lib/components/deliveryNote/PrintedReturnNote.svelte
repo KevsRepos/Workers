@@ -32,19 +32,15 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
                     <td class="text-center!">{item.quantity} Stk.</td>
 
                     <td class="text-center!">
-                        {#if item.returnedFull !== null}
+                        {#if item.returnedFull}
                             {item.returnedFull} Stk.
-                        {:else}
-                            -
                         {/if}
-                        {#if item.returnedFullBottles !== null}
+                        {#if item.returnedFullBottles}
                             <br />{item.returnedFullBottles} Fl.
-                        {:else}
-                            <br />-
                         {/if}
                     </td>
                     <td class="text-right!">
-                        {#if item.returnedTotal !== null}
+                        {#if item.returnedTotal}
                             {#if item.product.deposit}
                                 {item.returnedTotal} * {(((item.product.deposit.crateAmount || 0) + (item.product.deposit.singleAmount * (item.product.quantityInCrate || 0))) / 100).toFixed(2)}€
                             {:else}
@@ -53,14 +49,12 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
                         {:else}
                             -
                         {/if}
-                        {#if item.returnedTotalBottles !== null}
+                        {#if item.returnedTotalBottles}
                             {#if item.product.deposit}
                                 <br />{item.returnedTotalBottles} * {(item.product.deposit.singleAmount / 100).toFixed(2)}€
                             {:else}
                                 <br />{item.returnedTotalBottles} Fl.
                             {/if}
-                        {:else}
-                            <br />-
                         {/if}
                     </td>
                     
