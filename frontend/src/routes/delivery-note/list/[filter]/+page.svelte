@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Calendar1, Car, NotebookPen, Printer, User, Van } from "@lucide/svelte";
+import { BottleWine, Calendar1, Car, Dot, NotebookPen, Printer, User, Van } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { formatDate } from "$lib/functions/formatDate.js";
@@ -61,14 +61,27 @@ const onFilterChange = () => {
                         <Calendar1 />
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    {#if deliveryNote.delivery}
-                        <Van />
-                        Zum liefern
-                    {:else}
-                        <Car />
-                        Zum abholen
-                    {/if}
+                <div class="flex justify-between gap-2">
+                    <div class="flex gap-2">
+                        {#if deliveryNote.delivery}
+                            <Van />
+                            Zum liefern
+                        {:else}
+                            <Car />
+                            Zum abholen
+                        {/if}
+                    </div>
+                    <div class="flex gap-2">
+                        {deliveryNote.deliveryNoteProducts.length} Artikel
+                        <BottleWine />
+                    </div>
+
+                </div>
+                <div class="flex items-center gap-2">
+                    {#each deliveryNote.deliveryNoteProducts.slice(0, 3) as dnp, i}
+                        {dnp.product.name.slice(0, 15)}{#if dnp.product.name.length > 15}...{/if}
+                        {#if i < deliveryNote.deliveryNoteProducts.slice(0, 3).length - 1}<Dot />{/if}
+                    {/each}
                 </div>
             </a>
         {:else}
