@@ -1,0 +1,16 @@
+{
+	"name": "Workers",
+	"short_name": "Workers",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#F3F3F3",
+	"theme_color": "#003E18",
+	"orientation": "portrait-primary",
+	"icons": [
+		{
+			"src": "/img/splash_icon512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		}
+	]
+}
