@@ -4,19 +4,22 @@ namespace App\Modules\Pim\DeliveryNote;
 
 use Error;
 use Exception;
+use App\Modules\Pim\DeliveryNote\Dto\CreateReturnNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\UpdateDeliveryNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Repository;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Modules\Customer\Service as CustomerService;
-use App\Modules\Pim\DeliveryNote\Dto\CreateReturnNoteRequestDto;
+use App\Modules\Pim\ProductUnion\ProductUnionProduct;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class Service {
     public function __construct(
         private Repository $repo,
         private Factory $factory,
         private CustomerService $customerService,
+        private EntityManagerInterface $em,
     ) {}
 
     public function getById(string $id): ?DeliveryNote
@@ -133,18 +136,83 @@ final class Service {
             return new Error("DeliveryNote not found", 404);
         }
 
-        $deliveryNote->deliveryNoteProducts = $this->factory->addReturnNoteData(
-            $data->returnNoteProducts,
-        );
+        $entries = $this->factory->createReturnNoteEntries($data->returnNoteEntries);
 
         $deliveryNote->status = DeliveryNoteStatus::RETURNED;
 
         try {
+            $this->repo->saveReturnNoteEntries($entries, false);
             $this->repo->saveDeliveryNote($deliveryNote, true);
         } catch (Exception $e) {
             return new Error($e->getMessage(), 500);
         }
 
         return new Success("ReturnNoteCreated", ['id' => $data->deliveryNoteId]);
+    }
+
+    public function getReturnUnions(string $deliveryNoteId): Error|array
+    {
+        $deliveryNote = $this->repo->findById($deliveryNoteId);
+
+        if (!$deliveryNote) {
+            return new Error("DeliveryNote not found", 404);
+        }
+
+        $products = [];
+        foreach ($deliveryNote->deliveryNoteProducts as $dnp) {
+            $products[] = $dnp->product;
+        }
+
+        $productUnionMap = [];
+
+        if (!empty($products)) {
+            $unionProducts = $this->em->getRepository(ProductUnionProduct::class)
+                ->findBy(['product' => $products]);
+
+            foreach ($unionProducts as $pup) {
+                $productUnionMap[$pup->product->id] = $pup->productUnion;
+            }
+        }
+
+        $unionEntries = [];
+        $standalone = [];
+
+        foreach ($deliveryNote->deliveryNoteProducts as $dnp) {
+            $productId = $dnp->product->id;
+
+            if (isset($productUnionMap[$productId])) {
+                $union = $productUnionMap[$productId];
+                if (!isset($unionEntries[$union->id])) {
+                    $unionEntries[$union->id] = [
+                        'name' => $union->name,
+                        'isUnion' => true,
+                        'quantity' => 0,
+                        'rentable' => $dnp->product->rentable,
+                        'quantityInCrate' => $dnp->product->quantityInCrate,
+                        'deposit' => $dnp->product->deposit,
+                        'deliveryNoteProductIds' => [],
+                        'returnNoteEntry' => $dnp->returnNoteEntry,
+                    ];
+                }
+                $unionEntries[$union->id]['quantity'] += $dnp->quantity;
+                $unionEntries[$union->id]['deliveryNoteProductIds'][] = $dnp->id;
+            } else {
+                $standalone[] = [
+                    'name' => $dnp->product->name,
+                    'isUnion' => false,
+                    'quantity' => $dnp->quantity,
+                    'rentable' => $dnp->product->rentable,
+                    'quantityInCrate' => $dnp->product->quantityInCrate,
+                    'deposit' => $dnp->product->deposit,
+                    'deliveryNoteProductIds' => [$dnp->id],
+                    'returnNoteEntry' => $dnp->returnNoteEntry,
+                ];
+            }
+        }
+
+        return [
+            'deliveryNote' => $deliveryNote,
+            'returnUnions' => array_merge(array_values($unionEntries), $standalone),
+        ];
     }
 }

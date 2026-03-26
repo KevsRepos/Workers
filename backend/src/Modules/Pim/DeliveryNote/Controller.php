@@ -96,4 +96,15 @@ class Controller extends AbstractController
 
         return new JsonResponse($result->getResponse());
     }
+
+    #[Route('/delivery-notes/{id}/return-unions', methods: ['GET'])]
+    public function getReturnUnions(string $id, Service $service): JsonResponse
+    {
+        $result = $service->getReturnUnions($id);
+        if ($result instanceof \Error) {
+            return new JsonResponse(['error' => $result->getMessage()], $result->getCode());
+        }
+
+        return $this->json($result);
+    }
 }

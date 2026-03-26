@@ -53,6 +53,16 @@ class Repository extends ServiceEntityRepository
         }
     }
 
+    public function saveReturnNoteEntries(ArrayCollection $entries, bool $flush = false): void
+    {
+        foreach ($entries as $entry) {
+            $this->getEntityManager()->persist($entry);
+        }
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     public function remove(DeliveryNote $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

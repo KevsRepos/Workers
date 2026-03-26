@@ -97,39 +97,50 @@ $inspect(data);
                 </tr>
             </thead>
             <tbody class="[&>tr>td]:border-l [&>tr>td]:border-r [&>tr>td]:border-surface-200-800 border-b border-surface-200-800">
-                {#each data.deliveryNote.deliveryNoteProducts as item}
-                    <tr>
-                        <td>{item.product.name}</td>
-                        <td class={{'text-right!': data.deliveryNote.status < 4, 'text-center!': data.deliveryNote.status >= 4}}>{item.quantity} Stk.</td>
-
-                        {#if data.deliveryNote.status >= 4}
-                            <td class="text-center!">
-                                {#if item.returnedFull}
-                                    {item.returnedFull} Stk.
+                {#if data.deliveryNote.status >= 4}
+                    {#each data.returnUnions as union}
+                        <tr>
+                            <td>
+                                {union.name}
+                                {#if union.isUnion}
+                                    <span class="text-surface-500 text-sm">(Zusammengefasste Einheit)</span>
                                 {/if}
-                                {#if item.returnedFullBottles}
-                                    <br />{item.returnedFullBottles} Fl.
+                            </td>
+                            <td class="text-center!">{union.quantity} Stk.</td>
+                            <td class="text-center!">
+                                {#if union.returnNoteEntry?.returnedFull}
+                                    {union.returnNoteEntry.returnedFull} Stk.
+                                {/if}
+                                {#if union.returnNoteEntry?.returnedFullBottles}
+                                    <br />{union.returnNoteEntry.returnedFullBottles} Fl.
                                 {/if}
                             </td>
                             <td class="text-right!">
-                                {#if item.returnedTotal}
-                                    {#if item.product.deposit}
-                                        {item.returnedTotal} * {((item.product.deposit.crateAmount + (item.product.deposit.singleAmount * item.product.quantityInCrate)) / 100).toFixed(2)}€
+                                {#if union.returnNoteEntry?.returnedTotal}
+                                    {#if union.deposit}
+                                        {union.returnNoteEntry.returnedTotal} * {(((union.deposit.crateAmount || 0) + (union.deposit.singleAmount * (union.quantityInCrate || 0))) / 100).toFixed(2)}€
                                     {:else}
-                                        {item.returnedTotal} Stk.
+                                        {union.returnNoteEntry.returnedTotal} Stk.
                                     {/if}
                                 {/if}
-                                {#if item.returnedTotalBottles}
-                                    {#if item.product.deposit}
-                                        <br />{item.returnedTotalBottles} * {(item.product.deposit.singleAmount / 100).toFixed(2)}€
+                                {#if union.returnNoteEntry?.returnedTotalBottles}
+                                    {#if union.deposit}
+                                        <br />{union.returnNoteEntry.returnedTotalBottles} * {(union.deposit.singleAmount / 100).toFixed(2)}€
                                     {:else}
-                                        <br />{item.returnedTotalBottles} Fl.
+                                        <br />{union.returnNoteEntry.returnedTotalBottles} Fl.
                                     {/if}
                                 {/if}
                             </td>
-                        {/if}
-                    </tr>
-                {/each}
+                        </tr>
+                    {/each}
+                {:else}
+                    {#each data.deliveryNote.deliveryNoteProducts as item}
+                        <tr>
+                            <td>{item.product.name}</td>
+                            <td class="text-right!">{item.quantity} Stk.</td>
+                        </tr>
+                    {/each}
+                {/if}
             </tbody>
         </table>
     </main>
@@ -161,5 +172,5 @@ $inspect(data);
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
         address: '',
         status: data.deliveryNote.status
-    }} />
+    }} returnUnions={data.returnUnions} />
 {/if}

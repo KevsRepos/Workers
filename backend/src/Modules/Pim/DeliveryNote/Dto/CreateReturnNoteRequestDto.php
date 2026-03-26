@@ -9,8 +9,8 @@ class CreateReturnNoteRequestDto
     #[Assert\NotBlank]
     public string $deliveryNoteId;
 
-    /** @var ReturnNoteProductDto[] */
+    /** @var ReturnNoteEntryDto[] */
     #[Assert\NotBlank]
     #[Assert\Valid]
-    public array $returnNoteProducts;
+    public array $returnNoteEntries;
 }

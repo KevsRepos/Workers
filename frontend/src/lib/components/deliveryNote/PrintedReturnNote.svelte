@@ -1,8 +1,8 @@
 <script lang="ts">
 import { formatDate } from "$lib/functions/formatDate";
-import type { DeliveryNote } from "$lib/interfaces/DeliveryNote";
+import type { DeliveryNote, ReturnUnion } from "$lib/interfaces/DeliveryNote";
 
-const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
+const { deliveryNote, returnUnions }: { deliveryNote: DeliveryNote, returnUnions: ReturnUnion[] } = $props();
 </script>
 
 <div class="page">
@@ -26,34 +26,36 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
             </tr>
         </thead>
         <tbody class="[&>tr>td]:py-0 [&>tr>td]:border-l-[0.06cm] [&>tr>td]:border-r-[0.06cm] [&>tr>td]:border-surface-800 border-b border-surface-800">
-            {#each deliveryNote.deliveryNoteProducts as item}
+            {#each returnUnions as union}
                 <tr>
-                    <td>{item.product.name}</td>
-                    <td class="text-center!">{item.quantity} Stk.</td>
+                    <td>
+                        {union.name}
+                    </td>
+                    <td class="text-center!">{union.quantity} Stk.</td>
 
                     <td class="text-center!">
-                        {#if item.returnedFull}
-                            {item.returnedFull} Stk.
+                        {#if union.returnNoteEntry?.returnedFull}
+                            {union.returnNoteEntry.returnedFull} Stk.
                         {/if}
-                        {#if item.returnedFullBottles}
-                            <br />{item.returnedFullBottles} Fl.
+                        {#if union.returnNoteEntry?.returnedFullBottles}
+                            <br />{union.returnNoteEntry.returnedFullBottles} Fl.
                         {/if}
                     </td>
                     <td class="text-right!">
-                        {#if item.returnedTotal}
-                            {#if item.product.deposit}
-                                {item.returnedTotal} * {(((item.product.deposit.crateAmount || 0) + (item.product.deposit.singleAmount * (item.product.quantityInCrate || 0))) / 100).toFixed(2)}€
+                        {#if union.returnNoteEntry?.returnedTotal}
+                            {#if union.deposit}
+                                {union.returnNoteEntry.returnedTotal} * {(((union.deposit.crateAmount || 0) + (union.deposit.singleAmount * (union.quantityInCrate || 0))) / 100).toFixed(2)}€
                             {:else}
-                                {item.returnedTotal} Stk.
+                                {union.returnNoteEntry.returnedTotal} Stk.
                             {/if}
                         {:else}
                             -
                         {/if}
-                        {#if item.returnedTotalBottles}
-                            {#if item.product.deposit}
-                                <br />{item.returnedTotalBottles} * {(item.product.deposit.singleAmount / 100).toFixed(2)}€
+                        {#if union.returnNoteEntry?.returnedTotalBottles}
+                            {#if union.deposit}
+                                <br />{union.returnNoteEntry.returnedTotalBottles} * {(union.deposit.singleAmount / 100).toFixed(2)}€
                             {:else}
-                                <br />{item.returnedTotalBottles} Fl.
+                                <br />{union.returnNoteEntry.returnedTotalBottles} Fl.
                             {/if}
                         {/if}
                     </td>

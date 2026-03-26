@@ -3,9 +3,8 @@ import { error } from '@sveltejs/kit';
 
 export const load = async ({ parent, params, fetch }) => {
     const { token } = await parent();
-    // const res = await fetchApi(`delivery-notes/${params.id}`);
 
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/delivery-note/${params.id}`, {
+    const res = await fetch(`${PUBLIC_BACKEND_URL}/delivery-notes/${params.id}/return-unions`, {
         method: 'GET',
         headers: { 
             'Content-Type': 'application/json',
@@ -14,11 +13,11 @@ export const load = async ({ parent, params, fetch }) => {
         body: null
     });
 
-    // if (res.error) {
-    //     error(404, 'Delivery note not found');
-    // }
+    if (!res.ok) {
+        error(res.status, 'Fehler beim Laden');
+    }
 
     const data = await res.json();
 
-    return { deliveryNote: data };
+    return { deliveryNote: data.deliveryNote, returnUnions: data.returnUnions };
 }

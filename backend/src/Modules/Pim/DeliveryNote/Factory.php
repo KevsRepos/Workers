@@ -87,29 +87,30 @@ class Factory {
         return $entities;
     }
 
-    public function addReturnNoteData(array $returnedNoteData): ArrayCollection
+    /**
+     * @param Dto\ReturnNoteEntryDto[] $returnNoteEntryDtos
+     */
+    public function createReturnNoteEntries(array $returnNoteEntryDtos): ArrayCollection
     {
-        $entities = new ArrayCollection();
+        $entries = new ArrayCollection();
 
-        foreach ($returnedNoteData as $returnNoteProductDto) {
-            $deliveryNoteProduct = new DeliveryNoteProduct();
+        foreach ($returnNoteEntryDtos as $dto) {
+            $entry = new ReturnNoteEntry();
+            $entry->returnedTotal = $dto->returnedTotal;
+            $entry->returnedTotalBottles = $dto->returnedTotalBottles;
+            $entry->returnedFull = $dto->returnedFull;
+            $entry->returnedFullBottles = $dto->returnedFullBottles;
 
-            if ($returnNoteProductDto->deliveryNoteProductId) {
-                $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->find($returnNoteProductDto->deliveryNoteProductId);
-                if (!$deliveryNoteProduct) {
-                    continue;
+            foreach ($dto->deliveryNoteProductIds as $dnpId) {
+                $dnp = $this->em->getRepository(DeliveryNoteProduct::class)->find($dnpId);
+                if ($dnp) {
+                    $dnp->returnNoteEntry = $entry;
                 }
             }
 
-            $deliveryNoteProduct->returnedTotal = $returnNoteProductDto->returnedTotal;
-            $deliveryNoteProduct->returnedTotalBottles = $returnNoteProductDto->returnedTotalBottles;
-            $deliveryNoteProduct->returnedFull = $returnNoteProductDto->returnedFull;
-            $deliveryNoteProduct->returnedFullBottles = $returnNoteProductDto->returnedFullBottles;
-
-            $entities->add($deliveryNoteProduct);
-            // $entities[] = $deliveryNoteProduct;
+            $entries->add($entry);
         }
 
-        return $entities;
+        return $entries;
     }
 }

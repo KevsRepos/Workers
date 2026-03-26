@@ -20,18 +20,10 @@ class DeliveryNoteProduct extends Entity
     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id", nullable: false)]
     public Product $product;
 
+    #[ORM\ManyToOne(targetEntity: ReturnNoteEntry::class)]
+    #[ORM\JoinColumn(name: "return_note_entry_id", referencedColumnName: "id", nullable: true)]
+    public ?ReturnNoteEntry $returnNoteEntry = null;
+
     #[ORM\Column]
     public int $quantity;
-
-    #[ORM\Column(nullable: true)]
-    public ?int $returnedTotal = null;
-
-    #[ORM\Column(nullable: true)]
-    public ?int $returnedTotalBottles = null;
-
-    #[ORM\Column(nullable: true)]
-    public ?int $returnedFull = null;
-
-    #[ORM\Column(nullable: true)]
-    public ?int $returnedFullBottles = null;
 }

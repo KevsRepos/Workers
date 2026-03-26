@@ -14,10 +14,26 @@ export interface DeliveryNoteProduct {
     name: string;
     quantity: number;
     product: Product;
+    returnNoteEntry: ReturnNoteEntry | null;
+}
+
+export interface ReturnNoteEntry {
+    id: string;
     returnedTotal: number | null;
     returnedTotalBottles: number | null;
     returnedFull: number | null;
     returnedFullBottles: number | null;
+}
+
+export interface ReturnUnion {
+    name: string;
+    isUnion: boolean;
+    quantity: number;
+    rentable: boolean;
+    quantityInCrate: number | null;
+    deposit: Deposit | null;
+    deliveryNoteProductIds: string[];
+    returnNoteEntry: ReturnNoteEntry | null;
 }
 
 export interface Product {
