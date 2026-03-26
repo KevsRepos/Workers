@@ -19,7 +19,7 @@ const filterOptions = [
 
 let filter = $state(data.filter);
 
-function onFilterChange() {
+const onFilterChange = () => {
     goto(`/products/list/${filter}/1`);
 }
 </script>
