@@ -25,7 +25,9 @@ const printDeliveryNote = async () => {
 
     window.print();
 
-    await fetchApi(`delivery-note/${data.deliveryNote.id}/status/2`, 'PUT');
+    if(data.deliveryNote.status < 2) {
+        await fetchApi(`delivery-note/${data.deliveryNote.id}/status/2`, 'PUT');
+    }
 }
 
 const printReturnNote = async () => {
@@ -36,10 +38,10 @@ const printReturnNote = async () => {
 
     window.print();
 
-    await fetchApi(`delivery-note/${data.deliveryNote.id}/status/5`, 'PUT');
+    if(data.deliveryNote.status < 5) {
+        await fetchApi(`delivery-note/${data.deliveryNote.id}/status/5`, 'PUT');
+    }
 }
-
-$inspect(data);
 </script>
 
 <svelte:window onbeforeprint={() => {if(desiredPrint === 'deliveryNote') {printing = true;} else if(desiredPrint === 'returnNote') {printingReturnNote = true;} }} onafterprint={async () => {printing = false; printingReturnNote = false}} />
