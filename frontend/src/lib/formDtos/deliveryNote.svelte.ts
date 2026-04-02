@@ -6,7 +6,7 @@ interface DeliveryNoteProductDto {
 }
 
 interface Customer {
-    id: number;
+    id: string;
     firstName: string;
     surname: string;
 }
@@ -26,7 +26,7 @@ export class DeliveryNoteForm {
         this.products = products;
     }
 
-    get customerId(): number | null {
+    get customerId(): string | null {
         return this.customer?.id ?? null;
     }
 
@@ -34,7 +34,7 @@ export class DeliveryNoteForm {
         this.customer = customer;
     }
 
-    addProduct(productId: number, quantity: number = 1, name: string) {
+    addProduct(productId: string, quantity: number = 1, name: string) {
         const existing = this.products.find(p => p.productId === productId);
         if (existing) {
             existing.quantity += quantity;
@@ -43,11 +43,11 @@ export class DeliveryNoteForm {
         }
     }
 
-    removeProduct(productId: number) {
+    removeProduct(productId: string) {
         this.products = this.products.filter(p => p.productId !== productId);
     }
 
-    updateQuantity(productId: number, quantity: number) {
+    updateQuantity(productId: string, quantity: number) {
         const product = this.products.find(p => p.productId === productId);
         if (product) {
             product.quantity = quantity;
@@ -67,6 +67,67 @@ export class DeliveryNoteForm {
         return this.customerId !== null 
             && this.deliveryDate !== '' 
             && this.products.length > 0;
+    }
+
+    toStorageObject() {
+        return {
+            customerId: this.customer?.id ?? null,
+            customerFirstName: this.customer?.firstName ?? '',
+            customerSurname: this.customer?.surname ?? '',
+            customerName: this.customer ? `${this.customer.firstName} ${this.customer.surname}` : '',
+            deliveryDate: this.deliveryDate,
+            delivery: this.delivery,
+            products: this.products.map(p => ({ productId: p.productId, quantity: p.quantity, name: p.name })),
+        };
+    }
+
+    static fromStorageObject(obj: any): DeliveryNoteForm | null {
+        if (!obj || obj.customerId == null) return null;
+
+        const customer: Customer = {
+            id: obj.customerId,
+            firstName: obj.customerFirstName ?? '',
+            surname: obj.customerSurname ?? '',
+        };
+
+        const products: DeliveryNoteProductDto[] = (obj.products ?? []).map((p: any) => ({
+            productId: p.productId,
+            quantity: p.quantity,
+            name: p.name,
+        }));
+
+        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products);
+    }
+
+    private static DRAFT_KEY = 'deliveryNoteDraft';
+
+    static saveDraft(form: DeliveryNoteForm) {
+        localStorage.setItem(DeliveryNoteForm.DRAFT_KEY, JSON.stringify(form.toStorageObject()));
+    }
+
+    static loadDraft(): DeliveryNoteForm | null {
+        const raw = localStorage.getItem(DeliveryNoteForm.DRAFT_KEY);
+        if (!raw) return null;
+        try {
+            return DeliveryNoteForm.fromStorageObject(JSON.parse(raw));
+        } catch {
+            return null;
+        }
+    }
+
+    static clearDraft() {
+        localStorage.removeItem(DeliveryNoteForm.DRAFT_KEY);
+    }
+
+    static getDraftCustomerName(): string | null {
+        const raw = localStorage.getItem(DeliveryNoteForm.DRAFT_KEY);
+        if (!raw) return null;
+        try {
+            const obj = JSON.parse(raw);
+            return obj.customerName || null;
+        } catch {
+            return null;
+        }
     }
 }
 
