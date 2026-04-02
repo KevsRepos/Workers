@@ -79,6 +79,12 @@ const printReturnNote = async () => {
 
         <div class="customer-name font-bold px-2">{data.deliveryNote.customer.firstName} {data.deliveryNote.customer.surname}</div>
 
+        {#if data.deliveryNote.assignment}
+            <div class="px-2 mt-1">
+                <span class="badge preset-filled-surface-500">{data.deliveryNote.assignment}</span>
+            </div>
+        {/if}
+
         <div class="delivery-info px-2">
             {#if data.deliveryNote.delivery}
                 Zum liefern am {formatDate(data.deliveryNote.deliveryDate)}
@@ -86,6 +92,10 @@ const printReturnNote = async () => {
                 Zum abholen am {formatDate(data.deliveryNote.deliveryDate)}
             {/if}
         </div>
+
+        {#if data.deliveryNote.shortDescription}
+            <div class="px-2 mt-2 text-surface-600-400" style="white-space: pre-line;">{data.deliveryNote.shortDescription}</div>
+        {/if}
 
         <table class="mt-4 table">
             <thead>

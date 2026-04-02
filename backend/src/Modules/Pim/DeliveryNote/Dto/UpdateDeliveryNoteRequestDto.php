@@ -13,6 +13,10 @@ class UpdateDeliveryNoteRequestDto
 
     public ?bool $delivery = false;
 
+    public ?string $shortDescription = null;
+
+    public ?string $assignment = null;
+
     /** @var DeliveryNoteProductDto[] */
     #[Assert\Valid]
     public array $deliveryNoteProducts = [];

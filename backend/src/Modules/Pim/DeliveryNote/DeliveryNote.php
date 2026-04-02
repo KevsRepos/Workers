@@ -25,6 +25,12 @@ class DeliveryNote extends Entity
     #[ORM\Column(enumType: DeliveryNoteStatus::class)]
     public DeliveryNoteStatus $status;
 
+    #[ORM\Column(type: "text", nullable: true)]
+    public ?string $shortDescription = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?string $assignment = null;
+
     #[ORM\OneToMany(mappedBy: "deliveryNote", targetEntity: DeliveryNoteProduct::class, cascade: ["persist", "remove"])]
     public Collection $deliveryNoteProducts;
 }

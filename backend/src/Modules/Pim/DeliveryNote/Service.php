@@ -41,6 +41,8 @@ final class Service {
             $data->customerId,
             $data->deliveryDate,
             $data->delivery,
+            $data->shortDescription,
+            $data->assignment,
         );
 
         try {
@@ -83,6 +85,9 @@ final class Service {
         if ($data->status !== null) {
             $deliveryNote->status = $data->status;
         }
+
+        $deliveryNote->shortDescription = $data->shortDescription;
+        $deliveryNote->assignment = $data->assignment;
 
         if ($data->deliveryNoteProducts) {
             // $deliveryNote->deliveryNoteProducts = $data->deliveryNoteProducts;

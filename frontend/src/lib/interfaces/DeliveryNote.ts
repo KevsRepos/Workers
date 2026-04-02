@@ -6,6 +6,8 @@ export interface DeliveryNote {
     address: string;
     deliveryNoteProducts: DeliveryNoteProduct[];
     status: number,
+    shortDescription?: string | null;
+    assignment?: string | null;
 }
 
 export interface DeliveryNoteProduct {

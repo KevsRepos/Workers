@@ -25,6 +25,8 @@ let filter = $state(data.filter);
 const onFilterChange = () => {
     goto(`/delivery-note/list/${filter}`);
 }
+
+$inspect(data);
 </script>
 
 <TopNavigation>
@@ -51,14 +53,21 @@ const onFilterChange = () => {
     <div class="flex flex-col">
         {#each deliveryNotes as deliveryNote}
             <a href="/delivery-note/{deliveryNote.id}" class="flex flex-col gap-4 p-2 w-full not-last:border-b">
-                <div class="flex justify-between">
-                    <div class="flex gap-2 font-bold">
-                        <User />
-                        {deliveryNote.customer.firstName} {deliveryNote.customer.surname}
+                <div class="flex flex-col">
+                    <div class="mb-2">
+                        {#if deliveryNote.assignment}
+                            <span class="badge preset-filled-surface-500">{deliveryNote.assignment}</span>
+                        {/if}
                     </div>
-                    <div class="flex items-center gap-2 font-bold">
-                        <div>{formatDate(deliveryNote.deliveryDate)}</div>
-                        <Calendar1 />
+                    <div class="flex justify-between">
+                        <div class="flex gap-2 font-bold">
+                            <User />
+                            {deliveryNote.customer.firstName} {deliveryNote.customer.surname}
+                        </div>
+                        <div class="flex items-center gap-2 font-bold">
+                            <div>{formatDate(deliveryNote.deliveryDate)}</div>
+                            <Calendar1 />
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-between gap-2">

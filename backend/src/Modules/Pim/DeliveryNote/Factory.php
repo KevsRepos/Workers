@@ -18,6 +18,8 @@ class Factory {
         string $customerId,
         string $deliveryDate,
         bool $delivery,
+        ?string $shortDescription = null,
+        ?string $assignment = null,
     ): DeliveryNote {
         $deliveryNote = new DeliveryNote();
 
@@ -25,6 +27,8 @@ class Factory {
         $deliveryNote->deliveryDate = new DateTimeImmutable($deliveryDate);
         $deliveryNote->delivery = $delivery;
         $deliveryNote->status = DeliveryNoteStatus::OPEN;
+        $deliveryNote->shortDescription = $shortDescription;
+        $deliveryNote->assignment = $assignment;
 
         return $deliveryNote;
     }

@@ -17,13 +17,17 @@ export class DeliveryNoteForm {
     deliveryDate: string = $state('');
     delivery = $state<boolean|null>();
     products: DeliveryNoteProductDto[] = $state([]);
+    shortDescription: string = $state('');
+    assignment: string = $state('');
 
-    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = []) {
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', assignment: string = '') {
         this.id = id;
         this.customer = customer;
         this.deliveryDate = deliveryDate;
         this.delivery = delivery;
         this.products = products;
+        this.shortDescription = shortDescription;
+        this.assignment = assignment;
     }
 
     get customerId(): string | null {
@@ -78,6 +82,8 @@ export class DeliveryNoteForm {
             deliveryDate: this.deliveryDate,
             delivery: this.delivery,
             products: this.products.map(p => ({ productId: p.productId, quantity: p.quantity, name: p.name })),
+            shortDescription: this.shortDescription,
+            assignment: this.assignment,
         };
     }
 
@@ -96,7 +102,7 @@ export class DeliveryNoteForm {
             name: p.name,
         }));
 
-        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products);
+        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.assignment ?? '');
     }
 
     private static DRAFT_KEY = 'deliveryNoteDraft';

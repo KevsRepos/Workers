@@ -22,6 +22,8 @@ const restoreDraft = () => {
     deliveryNoteForm.deliveryDate = draft.deliveryDate;
     deliveryNoteForm.delivery = draft.delivery;
     deliveryNoteForm.products = draft.products;
+    deliveryNoteForm.shortDescription = draft.shortDescription;
+    deliveryNoteForm.assignment = draft.assignment;
     restoredFromDraft = true;
     autoSaveEnabled = true;
     formKey++;
@@ -54,11 +56,12 @@ onMount(async () => {
 
 $effect(() => {
     if (!autoSaveEnabled) return;
-    // Track all reactive properties for auto-save
     const _ = [
         deliveryNoteForm.customer,
         deliveryNoteForm.deliveryDate,
         deliveryNoteForm.delivery,
+        deliveryNoteForm.shortDescription,
+        deliveryNoteForm.assignment,
         JSON.stringify(deliveryNoteForm.products),
     ];
     if (deliveryNoteForm.customer) {
@@ -73,6 +76,8 @@ const saveDeliveryNote = async () => {
             deliveryDate: deliveryNoteForm.deliveryDate,
             deliveryNoteProducts: deliveryNoteForm.products.map(p => ({ productId: p.productId, quantity: p.quantity })),
             delivery: deliveryNoteForm.delivery,
+            shortDescription: deliveryNoteForm.shortDescription || null,
+            assignment: deliveryNoteForm.assignment || null,
         });
 
         if (autoSaveEnabled) {

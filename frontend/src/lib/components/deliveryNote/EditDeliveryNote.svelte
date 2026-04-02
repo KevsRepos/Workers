@@ -1,7 +1,7 @@
 <script lang="ts">
 import { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
 import ProductSearch from "./ProductSearch.svelte";
-import { ChevronRight, CircleX } from "@lucide/svelte";
+import { ChevronDown, ChevronRight, CircleX } from "@lucide/svelte";
 import CustomerSearch from "./CustomerSearch.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { goto } from "$app/navigation";
@@ -31,13 +31,33 @@ $effect(() => {
     }
 });
 
+let scrollAnchorCustomer = $state<HTMLSpanElement>();
+let scrollAnchorShortDesc = $state<HTMLSpanElement>();
 let scrollAnchor2 = $state<HTMLSpanElement>();
 let scrollAnchor3 = $state<HTMLSpanElement>();
 let scrollAnchor4 = $state<HTMLSpanElement>();
 
+let assignmentInput = $state<HTMLInputElement>();
+let shortDescTextarea = $state<HTMLTextAreaElement>();
 let deliveryDatePicker = $state<HTMLInputElement>();
 
 $inspect(deliveryNoteForm.deliveryDate);
+
+const focusCustomerSearch = () => {
+    scrollAnchorCustomer?.scrollIntoView({ behavior: 'smooth' });
+}
+
+const assignmentKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        focusCustomerSearch();
+    }
+}
+
+const focusShortDescription = () => {
+    scrollAnchorShortDesc?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => shortDescTextarea?.focus(), 100);
+}
 
 const focusProductSearch = () => {
     scrollAnchor4?.scrollIntoView({ behavior: 'smooth' });
@@ -71,7 +91,42 @@ const removeProduct = (index: number) => {
 <main class="lg:max-w-200 mx-auto">
     <div class="flex flex-col gap-2">
         <div class="pt-2 pb-9 border-b border-surface-200-800">
-            <CustomerSearch autoFocus={deliveryNoteForm.customer === null} bind:selectedCustomer={deliveryNoteForm.customer} jump={focusDeliverySelection} />
+            <label class="label px-4">
+                <span class="label-text">Zuordnung</span>
+                <input
+                    class="input"
+                    type="text"
+                    placeholder="z.B. Kühlwagen, Anhänger"
+                    bind:this={assignmentInput}
+                    bind:value={deliveryNoteForm.assignment}
+                    onkeydown={assignmentKeydown}
+                />
+            </label>
+        </div>
+
+        <span bind:this={scrollAnchorCustomer}></span>
+        <div class="pt-2 pb-9 border-b border-surface-200-800">
+            <CustomerSearch autoFocus={deliveryNoteForm.customer === null} bind:selectedCustomer={deliveryNoteForm.customer} jump={focusShortDescription} />
+        </div>
+
+        <span bind:this={scrollAnchorShortDesc}></span>
+        <div class="pb-9 border-b border-surface-200-800">
+            <label class="label px-4">
+                <span class="label-text">Kurzbeschreibung</span>
+                <textarea
+                    class="textarea"
+                    rows="3"
+                    placeholder="Optionale Kurzbeschreibung"
+                    bind:this={shortDescTextarea}
+                    bind:value={deliveryNoteForm.shortDescription}
+                ></textarea>
+            </label>
+            <div class="px-4 mt-2">
+                <button onclick={focusDeliverySelection} type="button" class="btn preset-tonal-primary btn-sm w-full">
+                    <span>Weiter</span>
+                    <ChevronDown size={16} />
+                </button>
+            </div>
         </div>
 
         <span bind:this={scrollAnchor2}></span>

@@ -15,6 +15,10 @@ class CreateDeliveryNoteRequestDto
     #[Assert\Type('bool')]
     public bool $delivery = false;
 
+    public ?string $shortDescription = null;
+
+    public ?string $assignment = null;
+
     /** @var DeliveryNoteProductDto[] */
     #[Assert\NotBlank]
     #[Assert\Valid]
