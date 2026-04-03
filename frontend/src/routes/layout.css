@@ -6,22 +6,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
-	font-family: 'Falcon-Poster-Bold';
-	src: url('/Falcon-Poster-Bold.ttf') format('truetype');
+    font-family: 'Falcon-Poster-Bold';
+    src: url('/Falcon-Poster-Bold.ttf') format('truetype');
 }
 
 .falcon-poster-bold {
-	font-family: 'Falcon-Poster-Bold', sans-serif;
+    font-family: 'Falcon-Poster-Bold', sans-serif;
 }
 
 @layer utilities {
+
     /* Chrome, Safari and Opera */
     .no-scrollbar::-webkit-scrollbar {
-      display: none;
+        display: none;
     }
 
     .no-scrollbar {
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
     }
+}
+
+input:focus-visible {
+    outline: none !important;
 }
