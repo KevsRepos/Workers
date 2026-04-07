@@ -41,6 +41,18 @@ class Repository extends ServiceEntityRepository
         return $this->find($id);
     }
 
+    public function findYearsByAccount(string $accountId): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('DISTINCT t.year')
+            ->from(MonthlyTimeSheet::class, 't')
+            ->where('t.account = :accountId')
+            ->setParameter('accountId', $accountId, 'uuid')
+            ->orderBy('t.year', 'DESC')
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+
     public function findByAccountAndYear(string $accountId, int $year): array
     {
         return $this->getEntityManager()->createQueryBuilder()

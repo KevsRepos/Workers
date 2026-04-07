@@ -11,6 +11,7 @@ use App\Modules\TimeTracking\Dto\CreateMonthlyTimeSheetEntryRequestDto;
 use App\Modules\TimeTracking\Dto\UpdateMonthlyTimeSheetEntryRequestDto;
 use App\Modules\TimeTracking\Dto\MonthlyTimeSheetResponseDto;
 use App\Modules\TimeTracking\Dto\MonthlyTimeSheetEntryResponseDto;
+use App\Modules\Account\Service as AccountService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 final class Service
@@ -18,7 +19,8 @@ final class Service
     public function __construct(
         private Repository $repo,
         private Factory $factory,
-        private JWTExtractor $jwtExtractor
+        private JWTExtractor $jwtExtractor,
+        private AccountService $accountService
     ) {}
 
     public function createTimeSheet(CreateMonthlyTimeSheetRequestDto $data): Error|Success
@@ -99,6 +101,38 @@ final class Service
     public function getTimeSheet(string $id): ?MonthlyTimeSheet
     {
         return $this->repo->findById($id);
+    }
+
+    public function getYears(): array
+    {
+        $accountId = $this->jwtExtractor->getUserId();
+
+        return $this->repo->findYearsByAccount($accountId);
+    }
+
+    public function getByYearMonth(int $year, int $month): ?MonthlyTimeSheetResponseDto
+    {
+        $accountId = $this->jwtExtractor->getUserId();
+
+        $timeSheet = $this->repo->findByAccountMonthYear($accountId, $month, $year);
+
+        if (!$timeSheet) {
+            return null;
+        }
+
+        $account = $this->accountService->getAccountByAuthId();
+        $dto = $this->normalizeMonthlyTimeSheetEntries($timeSheet);
+
+        return new MonthlyTimeSheetResponseDto(
+            $dto->id,
+            $dto->month,
+            $dto->year,
+            $dto->entries,
+            $dto->totalHours,
+            $account->firstName,
+            $account->surname,
+            $account->emailAddress,
+        );
     }
 
     public function listByYear(int $year): array

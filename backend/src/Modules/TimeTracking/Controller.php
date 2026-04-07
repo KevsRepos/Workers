@@ -24,6 +24,12 @@ class Controller extends AbstractController
         return new JsonResponse($result->getResponse(), 201);
     }
 
+    #[Route('/time-sheets/years', methods: ['GET'])]
+    public function getYears(Service $service): JsonResponse
+    {
+        return $this->json($service->getYears());
+    }
+
     #[Route('/time-sheets/current', methods: ['GET'])]
     public function getCurrentTimeSheet(Service $service): JsonResponse
     {
@@ -36,6 +42,12 @@ class Controller extends AbstractController
     public function listByYear(int $year, Service $service): JsonResponse
     {
         return $this->json($service->listByYear($year));
+    }
+
+    #[Route('/time-sheets/{year}/{month}', methods: ['GET'], requirements: ['year' => '\d+', 'month' => '\d+'])]
+    public function getByYearMonth(int $year, int $month, Service $service): JsonResponse
+    {
+        return $this->json($service->getByYearMonth($year, $month));
     }
 
     #[Route('/time-sheets/detail/{id}', methods: ['GET'])]

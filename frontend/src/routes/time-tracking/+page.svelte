@@ -64,7 +64,7 @@ const saveForDay = (dayIndex: number) => {
         <CalendarClock />
         <Navigation.TriggerText>Neu</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
-    <Navigation.TriggerAnchor href="/time-tracking/list">
+    <Navigation.TriggerAnchor href="/time-tracking/list/{(new Date().getFullYear())}">
         <LayoutList />
         <Navigation.TriggerText>Anzeigen</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
