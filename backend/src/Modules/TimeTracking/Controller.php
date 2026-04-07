@@ -12,7 +12,7 @@ use App\Modules\TimeTracking\Dto\UpdateMonthlyTimeSheetEntryRequestDto;
 
 class Controller extends AbstractController
 {
-    #[Route('/time-sheets', methods: ['POST'])]
+    #[Route('/time-sheets/current/create', methods: ['POST'])]
     public function createTimeSheet(
         #[MapRequestPayload] CreateMonthlyTimeSheetRequestDto $dto,
         Service $service

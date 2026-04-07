@@ -22,7 +22,7 @@ const ensureTimeSheet = async (): Promise<string | null> => {
 
     if (!timeSheetId) {
         const now = new Date();
-        const created = await fetchApi('time-sheets', 'POST', {
+        const created = await fetchApi('time-sheets/current/create', 'POST', {
             month: now.getMonth() + 1,
             year: now.getFullYear()
         });
