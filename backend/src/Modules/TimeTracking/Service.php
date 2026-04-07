@@ -50,18 +50,18 @@ final class Service
         $accountId = $this->jwtExtractor->getUserId();
         $now = new \DateTimeImmutable();
 
-        // $currentTimeSheet = $this->repo->findByAccountMonthYear($accountId, (int)$now->format('n'), (int)$now->format('Y'));
+        $currentTimeSheet = $this->repo->findByAccountMonthYear($accountId, (int)$now->format('n'), (int)$now->format('Y'));
 
-        // if (!$currentTimeSheet) {
+        if (!$currentTimeSheet) {
             return null;
-        // }
+        }
 
         return $this->normalizeMonthlyTimeSheetEntries($currentTimeSheet);
     }
 
     public function normalizeMonthlyTimeSheetEntries(MonthlyTimeSheet $timeSheet): MonthlyTimeSheetResponseDto
     {
-        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $timeSheet->month, $timeSheet->year);
+        $daysInMonth = (int)(new \DateTimeImmutable("{$timeSheet->year}-{$timeSheet->month}-01"))->format('t');
 
         $entriesByDay = [];
         $totalHours = 0.0;
