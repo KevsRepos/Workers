@@ -50,11 +50,11 @@ final class Service
         $accountId = $this->jwtExtractor->getUserId();
         $now = new \DateTimeImmutable();
 
-        $currentTimeSheet = $this->repo->findByAccountMonthYear($accountId, (int)$now->format('n'), (int)$now->format('Y'));
+        // $currentTimeSheet = $this->repo->findByAccountMonthYear($accountId, (int)$now->format('n'), (int)$now->format('Y'));
 
-        if (!$currentTimeSheet) {
+        // if (!$currentTimeSheet) {
             return null;
-        }
+        // }
 
         return $this->normalizeMonthlyTimeSheetEntries($currentTimeSheet);
     }
