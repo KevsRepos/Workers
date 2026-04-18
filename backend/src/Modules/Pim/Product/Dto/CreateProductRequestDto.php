@@ -14,11 +14,7 @@ class CreateProductRequestDto
     #[Assert\GreaterThanOrEqual(0)]
     public ?int $salesPrice;
 
-    #[Assert\NotBlank]
     public ?string $depositId;
-
-    // #[Assert\Type('bool')]
-    // public bool $bundable = false;
 
     #[Assert\Type('bool')]
     public bool $sellable = false;
