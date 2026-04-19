@@ -3,7 +3,7 @@ import { invalidateAll } from "$app/navigation";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import TopNavigation from "$lib/components/TopNavigation.svelte";
 import { fetchApi } from "$lib/fetchApi";
-import { CalendarClock, ChevronDown, ChevronRight, LayoutList, } from "@lucide/svelte";
+import { Bell, CalendarClock, ChevronDown, ChevronRight, LayoutList, } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
 const { data } = $props();
@@ -68,6 +68,10 @@ const saveForDay = (dayIndex: number) => {
         <LayoutList />
         <Navigation.TriggerText>Anzeigen</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
+    <Navigation.TriggerAnchor href="/time-tracking/notifications">
+        <Bell />
+        <Navigation.TriggerText>Benachrichtigungen</Navigation.TriggerText>
+    </Navigation.TriggerAnchor>
 </TopNavigation>
 
 <PageHeadline>Zeiterfassung</PageHeadline>
@@ -79,7 +83,7 @@ const saveForDay = (dayIndex: number) => {
 
             <label>
                 <span class="label-text">Beginn</span>
-                <input class="input" type="time" placeholder="Beginn (8:00)" bind:value={start} />
+                <input class="input" step="1800" type="time" placeholder="Beginn (8:00)" bind:value={start} />
             </label>
             <label>
                 <span class="label-text">Pause (Minuten)</span>
@@ -87,7 +91,7 @@ const saveForDay = (dayIndex: number) => {
             </label>
             <label>
                 <span class="label-text">Ende</span>
-                <input class="input" type="time" placeholder="Ende (17:00)" bind:value={end} />
+                <input class="input" step="1800" type="time" placeholder="Ende (17:00)" bind:value={end} />
             </label>
             <button onclick={saveToday} type="button" class="btn preset-filled">
                 Tag hinzufügen
@@ -103,7 +107,7 @@ const saveForDay = (dayIndex: number) => {
         <div class="flex flex-col mt-4 w-full">
             {#each data.timeSheet.entries as entry, index}
                 {#if entry}
-                    <div style="grid-template-columns: 5% auto;" class="grid gap-2 border-b px-2">
+                    <div style="grid-template-columns: 6% auto;" class="grid gap-2 border-b px-2">
                         <div class="border-r pr-2 font-bold">{entry.day}</div>
                         <div class="flex justify-between w-full">
                             <div>{entry.start} - {entry.end} (Pause: {entry.breakDuration} Min)</div>
@@ -111,13 +115,13 @@ const saveForDay = (dayIndex: number) => {
                         </div>
                     </div>
                 {:else if index < new Date().getDate() - 1}
-                    <div style="grid-template-columns: 5% auto;" class="grid gap-2 border-b w-full h- bg-surface-100-900 px-2">
+                    <div style="grid-template-columns: 6% auto;" class="grid gap-2 border-b w-full h- bg-surface-100-900 px-2">
                         <div class="border-r pr-2 font-bold">{index + 1}</div>
                         <div class="flex flex-col gap-2 py-2">
                             <div class="flex gap-2">
-                                <input placeholder="Beginn" type="time" style="display:inline-block; width:33.33%" oninput={(e) => { entryInputs[index + 1] = { ...entryInputs[index + 1] ?? { start: '', breakDuration: 0, end: '' }, start: e.currentTarget.value }; }} />
+                                <input placeholder="Beginn" step="1800" type="time" style="display:inline-block; width:33.33%" oninput={(e) => { entryInputs[index + 1] = { ...entryInputs[index + 1] ?? { start: '', breakDuration: 0, end: '' }, start: e.currentTarget.value }; }} />
                                 <input placeholder="Pause" type="number" style="display:inline-block; width:33.33%" oninput={(e) => { entryInputs[index + 1] = { ...entryInputs[index + 1] ?? { start: '', breakDuration: 0, end: '' }, breakDuration: Number(e.currentTarget.value) }; }} />
-                                <input placeholder="Ende" type="time" style="display:inline-block; width:33.33%" oninput={(e) => { entryInputs[index + 1] = { ...entryInputs[index + 1] ?? { start: '', breakDuration: 0, end: '' }, end: e.currentTarget.value }; }} />
+                                <input placeholder="Ende" step="1800" type="time" style="display:inline-block; width:33.33%" oninput={(e) => { entryInputs[index + 1] = { ...entryInputs[index + 1] ?? { start: '', breakDuration: 0, end: '' }, end: e.currentTarget.value }; }} />
                             </div>
                             <button class="btn btn-sm preset-filled mb-2" onclick={() => saveForDay(index + 1)}>
                                 Hinzufügen

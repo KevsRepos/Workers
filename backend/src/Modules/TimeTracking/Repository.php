@@ -103,4 +103,12 @@ class Repository extends ServiceEntityRepository
     {
         return $this->getEntityManager()->getRepository(MonthlyTimeSheetEntry::class)->find($id);
     }
+
+    /**
+     * @return TimeTrackingNotification[]
+     */
+    public function findAllNotifications(): array
+    {
+        return $this->getEntityManager()->getRepository(TimeTrackingNotification::class)->findAll();
+    }
 }

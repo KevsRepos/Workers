@@ -1,7 +1,7 @@
 <script lang="ts">
 import { invalidateAll } from "$app/navigation";
 import { auth } from "$lib/auth.svelte";
-import { BottleWine, ChevronRight, LogOut, NotebookPen, UserPen } from "@lucide/svelte";
+import { BottleWine, ChevronRight, Cog, LogOut, NotebookPen, Settings, UserPen } from "@lucide/svelte";
 
 let { open = $bindable<boolean>(), menuBtn } = $props();
 
@@ -32,7 +32,14 @@ const handleClick = (event: MouseEvent) => {
             <ChevronRight />
         </a>
     {/each}
-    <button onclick={async () => {await auth.logout(); invalidateAll(); open = false;}} class="px-2 py-4 flex gap-2 mt-8 border-t items-center">
+
+    <a href="/settings" onclick={() => open = false} class="px-2 py-4  flex justify-between items-center border-t mt-8">
+        <div class="flex gap-2 items-center">
+            <Settings />
+            Einstellungen
+        </div>
+    </a>
+    <button onclick={async () => {await auth.logout(); invalidateAll(); open = false;}} class="px-2 py-4 flex gap-2 items-center">
         <LogOut />
         Ausloggen
     </button>
