@@ -94,27 +94,27 @@ const saveDeliveryNote = async () => {
 <PageHeadline>Lieferschein erstellen</PageHeadline>
 
 {#key formKey}
-<EditDeliveryNote deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveDeliveryNote} />
+    <EditDeliveryNote deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveDeliveryNote} />
 {/key}
 
 <Toast.Group {toaster}>
     {#snippet children(toast)}
-    <Toast {toast} class="flex flex-col">
-        <Toast.Message>
-            <Toast.Title>{toast.title}</Toast.Title>
-            <Toast.Description>{toast.description}</Toast.Description>
-        </Toast.Message>
-        <div class="flex gap-2 justify-between w-full">
-            <div>
-                <Toast.ActionTrigger class="btn preset-filled-primary-500 btn-sm">
-                    {toast.action?.label}
-                </Toast.ActionTrigger>
-                <button onclick={discardDraft} type="button" class="btn preset-filled-surface-500 btn-sm">
-                    Verwerfen
-                </button>
+        <Toast {toast} class="flex flex-col">
+            <Toast.Message>
+                <Toast.Title>{toast.title}</Toast.Title>
+                <Toast.Description>{toast.description}</Toast.Description>
+            </Toast.Message>
+            <div class="flex gap-2 justify-between w-full">
+                <div>
+                    <Toast.ActionTrigger class="btn preset-filled-primary-500 btn-sm">
+                        {toast.action?.label}
+                    </Toast.ActionTrigger>
+                    <button onclick={discardDraft} type="button" class="btn preset-filled-surface-500 btn-sm">
+                        Verwerfen
+                    </button>
+                </div>
+                <Toast.CloseTrigger />
             </div>
-            <Toast.CloseTrigger />
-        </div>
-    </Toast>
+        </Toast>
     {/snippet}
 </Toast.Group>
