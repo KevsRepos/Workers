@@ -108,6 +108,10 @@ export class DeliveryNoteForm {
     private static DRAFT_KEY = 'deliveryNoteDraft';
 
     static saveDraft(form: DeliveryNoteForm) {
+        if (!form.customerId) {
+            return;
+        }
+
         localStorage.setItem(DeliveryNoteForm.DRAFT_KEY, JSON.stringify(form.toStorageObject()));
     }
 

@@ -80,7 +80,7 @@ const saveReturnNote = async () => {
                         type="number"
                         min="0"
                         max={union.quantity}
-                        placeholder="Zurück {i + 1}"
+                        placeholder="Zurück"
                         bind:value={unionReturnData[i].returnedFull}
                     />
                 </div>
@@ -92,7 +92,7 @@ const saveReturnNote = async () => {
                         type="number"
                         min="0"
                         max={union.quantity}
-                        placeholder="Zurück {i + 1}"
+                        placeholder="Zurück"
                         bind:value={unionReturnData[i].returnedFull}
                     />
                 </div>

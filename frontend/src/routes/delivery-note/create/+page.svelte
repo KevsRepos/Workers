@@ -64,7 +64,7 @@ $effect(() => {
         deliveryNoteForm.assignment,
         JSON.stringify(deliveryNoteForm.products),
     ];
-    if (deliveryNoteForm.customer) {
+    if (deliveryNoteForm.customerId) {
         DeliveryNoteForm.saveDraft(deliveryNoteForm);
     }
 });

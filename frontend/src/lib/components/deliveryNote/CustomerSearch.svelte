@@ -53,9 +53,7 @@ const addCustomer = async () => {
 
     const json = await fetchApi('customers', 'POST',  { firstName, surname });
 
-    console.log(json);
-
-    selectedCustomer = json.data;
+    selectedCustomer = json?.data?.customer ?? json?.data ?? null;
 
     open = false;
 }

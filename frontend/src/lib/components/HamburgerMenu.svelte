@@ -6,7 +6,7 @@ import { BottleWine, ChevronRight, Cog, LogOut, NotebookPen, Settings, UserPen }
 let { open = $bindable<boolean>(), menuBtn } = $props();
 
 const menuItems = [
-    { icon: NotebookPen, label: 'Lieferscheine', href: '/' },
+    { icon: NotebookPen, label: 'Lieferscheine', href: '/delivery-note/list/1' },
     { icon: BottleWine, label: 'Artikel', href: '/products/list/all/1' },
     { icon: UserPen, label: 'Kunden', href: '/customers' },
 ];
