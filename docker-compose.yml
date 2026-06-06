@@ -47,7 +47,7 @@ services:
       - 1.1.1.1
     # Holt das echte Let's-Encrypt-Cert via webroot (nginx läuft bereits).
     # Lädt nginx danach neu. Überspringt wenn Cert noch gültig ist.
-    entrypoint: /bin/sh -c "apk add --no-cache docker-cli --quiet && certbot certonly --webroot --webroot-path=/var/www/certbot -d ${DOMAIN} --email ${CERTBOT_EMAIL} --agree-tos --non-interactive --keep-until-expiring && docker exec nginx nginx -s reload"
+    entrypoint: /bin/sh -c "apk add --no-cache curl --quiet && certbot certonly --webroot --webroot-path=/var/www/certbot -d ${DOMAIN} --email ${CERTBOT_EMAIL} --agree-tos --non-interactive --force-renewal && curl -sf --unix-socket /var/run/docker.sock -X POST 'http://localhost/containers/nginx/kill?signal=HUP'"
     volumes:
       - ssl_certs:/etc/letsencrypt
       - certbot_webroot:/var/www/certbot
