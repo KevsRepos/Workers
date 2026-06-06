@@ -33,40 +33,23 @@ services:
 
   setup-ssl:
     image: certbot/certbot:latest
-    # Holt ein echtes Let's-Encrypt-Zertifikat beim ersten Start.
-    # Nginx muss dafür bereits laufen (Port 80 erreichbar).
+    # --standalone: certbot öffnet selbst Port 80, kein nginx nötig.
+    # Überspringt alles wenn das Zertifikat noch gültig ist.
     command: >-
-      certonly --webroot
-      --webroot-path=/var/www/certbot
+      certonly --standalone
       -d ${DOMAIN}
       --email ${CERTBOT_EMAIL}
       --agree-tos
       --non-interactive
       --keep-until-expiring
-    volumes:
-      - ssl_certs:/etc/letsencrypt
-      - certbot_webroot:/var/www/certbot
-    restart: "no"
-    depends_on:
-      nginx-bootstrap:
-        condition: service_healthy
-
-  nginx-bootstrap:
-    image: nginx:stable
     ports:
       - "80:80"
     volumes:
-      - certbot_webroot:/var/www/certbot
-    command: >
-      /bin/sh -c "printf 'server{listen 80;location /.well-known/acme-challenge/{root /var/www/certbot;}location/{return 444;}}' > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
-    healthcheck:
-      test: ["CMD", "sh", "-c", "test -f /var/run/nginx.pid"]
-      interval: 3s
-      timeout: 2s
-      retries: 5
+      - ssl_certs:/etc/letsencrypt
     restart: "no"
 
   nginx:
+    container_name: nginx
     image: nginx:stable
     ports:
       - "80:80"
@@ -87,15 +70,17 @@ services:
       interval: 5s
       timeout: 2s
       retries: 5
-    command: /bin/sh -c "envsubst '$$DOMAIN' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    command: /bin/sh -c "envsubst '$$DOMAIN' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
 
   renew-ssl:
     image: certbot/certbot:latest
-    # Läuft täglich; erneuert Zertifikat wenn < 30 Tage verbleiben.
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot --quiet; sleep 12h & wait $${!}; done'
+    # Webroot-Renewal: nginx bleibt oben, kein Port-Konflikt.
+    # Nach Erneuerung: nginx via Docker-Socket automatisch neu laden.
+    entrypoint: /bin/sh -c 'apk add --no-cache docker-cli --quiet; trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot --quiet --deploy-hook "docker exec nginx nginx -s reload"; sleep 12h & wait $${!}; done'
     volumes:
       - ssl_certs:/etc/letsencrypt
       - certbot_webroot:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - nginx
 
