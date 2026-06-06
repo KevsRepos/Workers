@@ -33,6 +33,9 @@ services:
 
   setup-ssl:
     image: certbot/certbot:latest
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     # --standalone: certbot öffnet selbst Port 80, kein nginx nötig.
     # Überspringt alles wenn das Zertifikat noch gültig ist.
     command: >-
@@ -74,6 +77,9 @@ services:
 
   renew-ssl:
     image: certbot/certbot:latest
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     # Webroot-Renewal: nginx bleibt oben, kein Port-Konflikt.
     # Nach Erneuerung: nginx via Docker-Socket automatisch neu laden.
     entrypoint: /bin/sh -c 'apk add --no-cache docker-cli --quiet; trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot --quiet --deploy-hook "docker exec nginx nginx -s reload"; sleep 12h & wait $${!}; done'
