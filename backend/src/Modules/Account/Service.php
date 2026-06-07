@@ -2,6 +2,7 @@
 
 namespace App\Modules\Account;
 use App\Modules\Account\DTO\UpdateAccountRequestDto;
+use App\Modules\Account\DTO\ChangePasswordRequestDto;
 use App\Modules\Account\DTO\CreateAccountRequestDto;
 use Error;
 use Exception;
@@ -103,5 +104,30 @@ final class Service {
         );
 
         return $account;
+    }
+
+    public function changePassword(ChangePasswordRequestDto $data): Error|Success
+    {
+        $account = $this->repo->findOneBy(
+            ['id' => $this->jwtExtractor->getUserId()]
+        );
+
+        if (!$this->hasher->isPasswordValid($account, $data->oldPassword)) {
+            return new Error("OldPasswordInvalid", 400);
+        }
+
+        if ($data->newPassword !== $data->confirmNewPassword) {
+            return new Error("PasswordsDoNotMatch", 400);
+        }
+
+        $account->password = $this->hasher->hashPassword($account, $data->newPassword);
+
+        try {
+            $this->repo->flush();
+        } catch(Exception) {
+            return new Error("Error", 500);
+        }
+
+        return new Success("PasswordChanged");
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Modules\Account;
 
 use App\Modules\Account\DTO\AccountDataResponseDto;
+use App\Modules\Account\DTO\ChangePasswordRequestDto;
 use App\Modules\Account\DTO\UpdateAccountRequestDto;
 use App\Modules\Account\DTO\CreateAccountRequestDto;
 use App\Modules\Account\Service;
@@ -46,6 +47,14 @@ class Controller extends AbstractController {
             return new JsonResponse("NoDataProvided", 400);
         }
         $response = $accountService->update($dto);
+        return new JsonResponse($response->getMessage(), $response->getCode());
+    }
+
+    #[Route(path: '/account/change-password', methods: [Request::METHOD_POST])]
+    public function changePassword(#[MapRequestPayload] ChangePasswordRequestDto $dto, Service $accountService): JsonResponse
+    {
+        $response = $accountService->changePassword($dto);
+        
         return new JsonResponse($response->getMessage(), $response->getCode());
     }
 
