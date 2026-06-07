@@ -33,7 +33,7 @@ const handleClick = (event: MouseEvent) => {
         </a>
     {/each}
 
-    <a href="/settings" onclick={() => open = false} class="px-2 py-4  flex justify-between items-center border-t mt-8">
+    <a href="/settings/account" onclick={() => open = false} class="px-2 py-4  flex justify-between items-center border-t mt-8">
         <div class="flex gap-2 items-center">
             <Settings />
             Einstellungen
