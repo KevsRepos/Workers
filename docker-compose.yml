@@ -54,6 +54,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/templates/default.conf.template:ro
       - ssl_certs:/etc/nginx/ssl:ro
+      - certbot_webroot:/var/www/certbot:ro
     environment:
       - DOMAIN=${DOMAIN}
     depends_on:
@@ -73,11 +74,10 @@ services:
     dns:
       - 8.8.8.8
       - 1.1.1.1
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --standalone --quiet; curl -sf --unix-socket /var/run/docker.sock -X POST "http://localhost/containers/nginx/kill?signal=HUP" || true; sleep 12h & wait $${!}; done'
-    ports:
-      - "80:80"
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot --quiet; curl -sf --unix-socket /var/run/docker.sock -X POST "http://localhost/containers/nginx/kill?signal=HUP" || true; sleep 12h & wait $${!}; done'
     volumes:
       - ssl_certs:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - nginx
@@ -120,6 +120,7 @@ volumes:
   db_data:
   migrate_state:
   ssl_certs:
+  certbot_webroot:
   
 
 networks:

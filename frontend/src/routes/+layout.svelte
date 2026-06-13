@@ -53,6 +53,7 @@ async function handleLogin(e: Event) {
 		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>
 	</AppBar.Toolbar>
 </AppBar>
+
 {#if !data.loggedIn}
 	<PageHeadline>Login</PageHeadline>
 
