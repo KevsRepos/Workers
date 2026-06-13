@@ -164,7 +164,8 @@ const printReturnNote = async () => {
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
         address: '',
-        status: data.deliveryNote.status
+        status: data.deliveryNote.status,
+        shortDescription: data.deliveryNote.shortDescription
     }} />
     <PrintedDeliveryNoteInternal deliveryNote={{
         id: data.deliveryNote.id,
@@ -173,7 +174,8 @@ const printReturnNote = async () => {
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
         address: '',
-        status: data.deliveryNote.status
+        status: data.deliveryNote.status,
+        shortDescription: data.deliveryNote.shortDescription
     }} />
 {:else if printingReturnNote}
     <PrintedReturnNote deliveryNote={{

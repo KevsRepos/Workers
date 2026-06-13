@@ -6,23 +6,20 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
 </script>
 
 <div class="page">
-    <div class="font-bold mb-2">{deliveryNote.customerName}</div>
-
-    <div>
-        {#if deliveryNote.delivery}
-            Zum liefern am {formatDate(deliveryNote.deliveryDate)}
-        {:else}
-            Zum abholen am {formatDate(deliveryNote.deliveryDate)}
-        {/if}
+    <div class="flex justify-between">
+        <div class="font-bold">{deliveryNote.customerName}</div>
+        <div>
+            {#if deliveryNote.delivery}
+                Lieferung - {formatDate(deliveryNote.deliveryDate)}
+            {:else}
+                Selbstabholung - {formatDate(deliveryNote.deliveryDate)}
+            {/if}
+        </div>
     </div>
 
+    <div style="white-space: pre-line;">{deliveryNote.shortDescription}</div>
+
     <table class="table">
-        <thead>
-            <tr class="font-bold">
-                <th class="font-bold">Artikel</th>
-                <th class="font-bold text-right!">Menge</th>
-            </tr>
-        </thead>
         <tbody>
             {#each deliveryNote.deliveryNoteProducts as product}
                 <tr class="border-gray-950">
@@ -61,6 +58,9 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
     }
     tr {
         border-bottom: 0.06cm rgb(48, 48, 48) solid;
+    }
+    tbody td {
+        padding-block: 0.1cm;
     }
 }
 </style>
