@@ -31,7 +31,7 @@ class Repository extends ServiceEntityRepository
      */
     public function findByStatus(DeliveryNoteStatus $status): array
     {
-        return $this->findBy(['status' => $status], ['deliveryDate' => 'ASC']);
+        return $this->findBy(['status' => $status], ['deliveryDate' => 'DESC']);
     }
 
     public function saveDeliveryNote(DeliveryNote $entity, bool $flush = false): string
