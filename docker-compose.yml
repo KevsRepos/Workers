@@ -33,14 +33,10 @@ services:
 
   setup-certbot:
     image: certbot/certbot:latest
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
+    network_mode: host
     # standalone: certbot öffnet selbst Port 80, kein nginx nötig.
     # Nginx startet danach direkt mit dem echten Cert.
     command: certonly --standalone -d ${DOMAIN} --email ${CERTBOT_EMAIL} --agree-tos --non-interactive --keep-until-expiring
-    ports:
-      - "80:80"
     volumes:
       - ssl_certs:/etc/letsencrypt
     restart: "no"
