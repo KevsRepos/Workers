@@ -66,3 +66,5 @@ async function handleLogin(e: Event) {
 {:else}
     {@render children()}
 {/if}
+
+<footer class="bottom-0 w-full bg-gray-200 text-center p-2"></footer>

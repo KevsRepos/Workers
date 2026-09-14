@@ -1,26 +1,20 @@
 <script lang="ts">
 import { fetchApi } from '$lib/fetchApi';
-import { Combobox, Portal, type ComboboxRootProps, useListCollection } from '@skeletonlabs/skeleton-svelte';
 
-let { selectedProducts = $bindable(), deliveryNoteForm, jump } = $props();
+let { selectedProducts = $bindable(), deliveryNoteForm } = $props();
 
-let products = $state([]);
+let products: { id: number; name: string; quantity: number }[] = $state([]);
 
 let currentProduct: { id: number; name: string; quantity: number } | null = $state(null);
 
 let quantityInput = $state<HTMLInputElement>();
-let comboboxWrapper = $state<HTMLDivElement>();
+
+let productSearchInput: HTMLInputElement;
 
 let searchTimeout: ReturnType<typeof setTimeout>;
 
-const collection = $derived(useListCollection({ 
-    items: products,
-    itemToString: (item) => item.name,
-    itemToValue: (item) => item
-}));
-
-const searchProduct: ComboboxRootProps['onInputValueChange'] = async (event) => {
-    const query = event.inputValue;
+const searchProduct = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
+    const query = event.currentTarget.value;
     
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
@@ -35,21 +29,29 @@ const searchProduct: ComboboxRootProps['onInputValueChange'] = async (event) => 
     }, 300);
 }
 
-const selectProduct: ComboboxRootProps['onSelect'] = (event) => {
-    currentProduct = event.itemValue;
-
-    deliveryNoteForm.addProduct(event.itemValue.id, 1, event.itemValue.name);
-
+const selectProduct = (product: { id: number; name: string; quantity: number }) => {
+    currentProduct = product;
+    deliveryNoteForm.addProduct(product.id, 1, product.name);
     quantityInput?.focus();
+
+    productSearchInput.value = product.name;
+
+    products = [];
 }
 
 const enterQuantity = () => {
-    const product = selectedProducts.find(p => p.productId === currentProduct.id);
-    if (product) {
+    if (currentProduct === null) return;
+
+    const currentProductId = currentProduct.id;
+    const product = selectedProducts.find((p: { productId: number; quantity: number }) => p.productId === currentProductId);
+
+    if (product && quantityInput) {
         product.quantity = parseInt(quantityInput.value) || 1;
     }
 
-    jump();
+    productSearchInput.value = '';
+    productSearchInput.focus();
+    currentProduct = null;
 
     if (quantityInput) {
         quantityInput.value = '';
@@ -57,30 +59,22 @@ const enterQuantity = () => {
 }
 </script>
 
-<div bind:this={comboboxWrapper}>
-<Combobox ids={{input: 'product-search-input'}} {collection} onSelect={selectProduct} onInputValueChange={searchProduct} placeholder="Artikel" multiple>
-    <Combobox.Label>Artikel</Combobox.Label>
-    <Combobox.Control>
-        <Combobox.Input />
-    </Combobox.Control>
-    <Portal>
-        <Combobox.Positioner>
-            {#if products.length}
-                <Combobox.Content>
-                    {#each products as item}
-                        <Combobox.Item item={item}>
-                            <Combobox.ItemText>{item.name}</Combobox.ItemText>
-                            <Combobox.ItemIndicator />
-                        </Combobox.Item>
-                    {/each}
-                </Combobox.Content>
-            {/if}
-        </Combobox.Positioner>
-    </Portal>
-</Combobox>
-</div>
+<div class="relative">
+    <label class="label">
+        <span class="label-text">Artikel</span>
+        <input class="input bg-surface-50-950" type="text" oninput={searchProduct} bind:this={productSearchInput} />
+    </label>
 
-<label class="label">
-    <span class="label-text">Menge</span>
-    <input onfocusout={enterQuantity} onkeydown={(e) => { if (e.key === 'Enter') { enterQuantity(); }}} class="input" type="number" min="1" bind:this={quantityInput} />
-</label>
+    {#if products.length}
+        <div class="absolute flex flex-col bg-surface-50-950 border w-full max-h-[50vh] overflow-y-auto border-gray-300 rounded-md shadow-lg z-50">
+            {#each products as product}
+                <button onclick={() => selectProduct(product)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{product.name}</button>
+            {/each}
+        </div>
+    {/if}
+
+    <label class="label">
+        <span class="label-text">Menge</span>
+        <input onfocusout={enterQuantity} onkeydown={(e) => { if (e.key === 'Enter') { enterQuantity(); }}} class="input bg-surface-50-950" type="number" min="1" bind:this={quantityInput} />
+    </label>
+</div>

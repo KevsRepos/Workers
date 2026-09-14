@@ -1,6 +1,6 @@
 <script>
 import { goto } from "$app/navigation";
-import EditDeliveryNote from "$lib/components/deliveryNote/EditDeliveryNote.svelte";
+import DeliveryNoteFormular from "$lib/components/deliveryNote/DeliveryNoteFormular.svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
@@ -11,7 +11,6 @@ const deliveryNoteForm = new DeliveryNoteForm();
 const toaster = createToaster();
 
 let autoSaveEnabled = $state(false);
-let restoredFromDraft = $state(false);
 let draftToastId = $state('');
 let formKey = $state(0);
 
@@ -24,7 +23,6 @@ const restoreDraft = () => {
     deliveryNoteForm.products = draft.products;
     deliveryNoteForm.shortDescription = draft.shortDescription;
     deliveryNoteForm.assignment = draft.assignment;
-    restoredFromDraft = true;
     autoSaveEnabled = true;
     formKey++;
 };
@@ -94,7 +92,7 @@ const saveDeliveryNote = async () => {
 <PageHeadline>Lieferschein erstellen</PageHeadline>
 
 {#key formKey}
-    <EditDeliveryNote deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveDeliveryNote} />
+    <DeliveryNoteFormular deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveDeliveryNote} />
 {/key}
 
 <Toast.Group {toaster}>

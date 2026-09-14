@@ -33,3 +33,18 @@
 input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
     outline: none !important;
 }
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    width: 100%;
+}
+
+footer {
+    margin-top: 1rem;
+}

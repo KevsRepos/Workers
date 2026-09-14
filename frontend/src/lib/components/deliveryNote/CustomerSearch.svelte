@@ -2,7 +2,7 @@
 import { fetchApi } from "$lib/fetchApi";
 import { useListCollection, type ComboboxRootProps, Combobox, Portal } from "@skeletonlabs/skeleton-svelte";
 
-let { selectedCustomer = $bindable(), autoFocus = false, jump } = $props();
+let { selectedCustomer = $bindable(), autoFocus = false } = $props();
 
 let searchTimeout: ReturnType<typeof setTimeout>;
 let customers: Array<any> = $state([]);
@@ -41,8 +41,6 @@ const selectCustomer: ComboboxRootProps['onSelect'] = (event) => {
     selectedCustomer = event.itemValue;
 
     open = false;
-
-    jump();
 }
 
 let open = $state(false);
@@ -59,10 +57,10 @@ const addCustomer = async () => {
 }
 </script>
 
-<Combobox defaultInputValue={selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.surname}` : ''} open={open} autoFocus={autoFocus} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full px-4">
+<Combobox defaultInputValue={selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.surname}` : ''} open={open} autoFocus={autoFocus} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full">
     <Combobox.Label>Kunde</Combobox.Label>
     <Combobox.Control>
-        <Combobox.Input oninput={searchCustomer} />
+        <Combobox.Input class="bg-surface-50-950" oninput={searchCustomer} />
     </Combobox.Control>
     <Portal>
         <Combobox.Positioner>

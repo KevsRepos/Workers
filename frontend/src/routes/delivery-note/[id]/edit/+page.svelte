@@ -1,6 +1,6 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
-import EditDeliveryNote from "$lib/components/deliveryNote/EditDeliveryNote.svelte";
+import DeliveryNoteFormular from "$lib/components/deliveryNote/DeliveryNoteFormular.svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { fetchApi } from "$lib/fetchApi.js";
 import { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
@@ -47,4 +47,4 @@ const saveEdits = async () => {
 
 <PageHeadline>Lieferschein bearbeiten</PageHeadline>
 
-<EditDeliveryNote deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveEdits} removedProductIds={removedProductIds} />
+<DeliveryNoteFormular deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveEdits} removedProductIds={removedProductIds} />
