@@ -37,7 +37,7 @@ const removeProduct = (index: number) => {
 
 <main class="px-4 flex flex-col h-full">
     <Steps {step} onStepChange={(details) => (step = details.step)} orientation="vertical" count={steps.length} class="h-full flex-1 flex gap-8" linear={false} defaultStep={2}>
-        <Steps.List class="hidden sm:flex h-fit px-4">
+        <Steps.List class="hidden sm:flex h-fit">
             {#each steps as step, index}
                 <Steps.Item index={index}>
                     <div class="flex items-center gap-2">
