@@ -1,9 +1,17 @@
+interface Address {
+    street: string;
+    houseNumber: string;
+    postalCode: string;
+    city: string;
+}
+
 export interface DeliveryNote {
     id: number;
     deliveryDate: string; // ISO date string
     delivery: boolean;
     displayName: string;
-    address: string;
+    shippingAddress?: Address;
+    billingAddress?: Address;
     deliveryNoteProducts: DeliveryNoteProduct[];
     status: number,
     shortDescription?: string | null;

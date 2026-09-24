@@ -17,6 +17,11 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
         </div>
     </div>
 
+    <address>
+            {deliveryNote.shippingAddress?.street} {deliveryNote.shippingAddress?.houseNumber}<br />
+            {deliveryNote.shippingAddress?.postalCode} {deliveryNote.shippingAddress?.city}
+    </address>
+
     <div style="white-space: pre-line;">{deliveryNote.shortDescription}</div>
 
     <table class="table">

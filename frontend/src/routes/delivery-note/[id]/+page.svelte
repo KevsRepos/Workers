@@ -6,7 +6,7 @@ import PageHeadline from '$lib/components/PageHeadline.svelte';
 import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
-import { NotebookText, Printer, Pen } from '@lucide/svelte';
+import { NotebookText, Printer, Pen, Navigation as  NavigationIcon } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
 
@@ -93,6 +93,16 @@ const printReturnNote = async () => {
             {/if}
         </div>
 
+        {#if data.deliveryNote.shippingAddress}
+            <div class="flex items-center gap-4 mt-2 px-2">
+                <address>
+                    {data.deliveryNote.shippingAddress.street} {data.deliveryNote.shippingAddress.houseNumber}<br />
+                    {data.deliveryNote.shippingAddress.postalCode} {data.deliveryNote.shippingAddress.city}
+                </address>
+                <a class="p-2 bg-surface-200-800 hover:bg-surface-300-700 rounded-md" href="https://www.google.com/maps/search/?api=1&query={data.deliveryNote.shippingAddress.street}+{data.deliveryNote.shippingAddress.houseNumber}+{data.deliveryNote.shippingAddress.postalCode}+{data.deliveryNote.shippingAddress.city}" target="_blank"><NavigationIcon /></a>
+            </div>
+        {/if}
+
         {#if data.deliveryNote.shortDescription}
             <div class="px-2 mt-2 text-surface-600-400" style="white-space: pre-line;">{data.deliveryNote.shortDescription}</div>
         {/if}
@@ -163,7 +173,7 @@ const printReturnNote = async () => {
         delivery: data.deliveryNote.delivery,
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
-        address: '',
+        shippingAddress: data.deliveryNote.shippingAddress,
         status: data.deliveryNote.status,
         shortDescription: data.deliveryNote.shortDescription
     }} />
@@ -173,7 +183,8 @@ const printReturnNote = async () => {
         delivery: data.deliveryNote.delivery,
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
-        address: '',
+        shippingAddress: data.deliveryNote.shippingAddress,
+        billingAddress: data.deliveryNote?.billingAddress,
         status: data.deliveryNote.status,
         shortDescription: data.deliveryNote.shortDescription
     }} />
@@ -184,7 +195,6 @@ const printReturnNote = async () => {
         delivery: data.deliveryNote.delivery,
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
-        address: '',
         status: data.deliveryNote.status
     }} returnUnions={data.returnUnions} />
 {/if}

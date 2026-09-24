@@ -18,20 +18,30 @@ $inspect(deliveryNote);
         <div class="left-side">
             <div class="text-sm border-b-2 w-fit" style="margin-bottom: 0.5cm;">{company.name} — {company.address} — {company.postalCode} {company.city}</div>
             <div class="font-bold">{deliveryNote.displayName}</div>
+            <address>
+                {deliveryNote.shippingAddress?.street} {deliveryNote.shippingAddress?.houseNumber}<br />
+                {deliveryNote.shippingAddress?.postalCode} {deliveryNote.shippingAddress?.city}
+            </address>
             <div style="white-space: pre-line;">{deliveryNote.shortDescription}</div>
         </div>
 
         <div class="right-side">        
-            <div class="text-sm text-right" style="margin-bottom: 0.5cm;">
-                {company.name}<br />
-                {company.address}<br />
-                {company.postalCode} {company.city}
+            <div class="text-sm text-right" style="margin-bottom: 0.5cm;">            
+                {company.name || ''}<br />
+                {company.address || ''}<br />
+                {company.postalCode || ''} {company.city || ''}
             </div>
 
             <div class="text-sm text-right">
-                Tel.: {company.telephone}<br />
-                Fax: {company.fax}<br />
-                E-Mail: {company.email}
+                {#if company.telephone}
+                    Tel.: {company.telephone}<br />
+                {/if}
+                {#if company.fax}
+                    Fax: {company.fax}<br />
+                {/if}
+                {#if company.email}
+                    E-Mail: {company.email}
+                {/if}
             </div>
         </div>
     </div>
