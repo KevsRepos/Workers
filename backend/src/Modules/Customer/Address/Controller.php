@@ -33,16 +33,18 @@ class Controller extends AbstractController
         return $this->json($address);
     }
 
-    #[Route('/customer-addresses', methods: ['POST'])]
+    #[Route('/customer-address/{customerId}', methods: ['POST'])]
     public function createAddress(
+        string $customerId,
         #[MapRequestPayload] CreateCustomerAddressRequestDto $dto,
         Service $service
     ): JsonResponse
     {
-        $result = $service->save($dto);
+        $result = $service->save($customerId, $dto);
+        
         if ($result instanceof \Error) {
             return new JsonResponse($result, $result->getCode());
         }
-        return new JsonResponse($result->getMessage(), 201);
+        return new JsonResponse($result->getResponse(), 201);
     }
 }

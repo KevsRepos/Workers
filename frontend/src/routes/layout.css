@@ -48,3 +48,8 @@ main {
 footer {
     margin-top: 1rem;
 }
+
+.faboulus {
+background: #2A5E3C;
+background: linear-gradient(52deg, rgba(42, 94, 60, 0.25) 4%, rgba(255, 255, 255, 1) 18%);
+}

@@ -20,8 +20,6 @@ class CreateCustomerAddressRequestDto
 
     public ?string $country = null;
 
-    public string $customerId;
-
     #[Assert\NotNull]
     public bool $standardShippingAddress = false;
 

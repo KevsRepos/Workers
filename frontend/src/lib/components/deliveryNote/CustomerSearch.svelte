@@ -4,6 +4,9 @@ import { useListCollection, Listbox } from "@skeletonlabs/skeleton-svelte";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";
 import CreateCustomerFormular from "./CreateCustomerFormular.svelte";
 import Checkbox from "../elements/Checkbox.svelte";
+import AddressFormular from "../customer/AddressFormular.svelte";
+import { Address } from "../customer/Address.svelte";
+import { MapPinHouse } from "@lucide/svelte";
 
 let { selectedCustomer = $bindable(), selectedShippingAddress = $bindable(), selectedBillingAddress = $bindable() } = $props();
 
@@ -18,6 +21,8 @@ let freezedInput = $state('');
 let addingCustomer = $state(false);
 
 let differentBillingAddress = $state(selectedBillingAddress !== null);
+
+let newAddress: Address | null = $state(null);
 
 $effect(() => {
     if(!differentBillingAddress) {
@@ -92,6 +97,31 @@ const onCustomerCreation = (customer: any) => {
     }
 }
 
+const saveAddress = async () => {
+    if(!selectedCustomer || !newAddress) {
+        return;
+    }
+
+    const json = await fetchApi(`customer-address/${encodeURIComponent(selectedCustomer.id)}`, 'POST', {
+        street: newAddress.street,
+        houseNumber: newAddress.houseNumber,
+        postalCode: newAddress.postalCode,
+        city: newAddress.city,
+        standardShippingAddress: newAddress.standardShippingAddress,
+        standardBillingAddress: newAddress.standardBillingAddress
+    }).catch((error) => {
+        console.error('Failed to save address:', error);
+    });
+
+    if(newAddress.standardShippingAddress) {
+        selectedShippingAddress = json.data[0];
+    }
+
+    selectedCustomer.addresses.push(json.data[0]);
+
+    newAddress = null;
+};
+
 let addressCollection = $derived(useListCollection({
     items: Object.values(selectedCustomer?.addresses ?? []).map((a: any) => ({ ...a, value: a.id }))
 }));
@@ -113,7 +143,7 @@ let addressCollection = $derived(useListCollection({
     </div>
 
     {#if selectedCustomer.addresses.length === 0}
-        <div>Keine Adressen vorhanden</div>
+        <div class="pb-4 text-gray-400">Keine Adressen vorhanden</div>
     {:else}
         <Listbox defaultValue={selectedShippingAddress ? [selectedShippingAddress] : []} onValueChange={(e) => selectedShippingAddress = e.value[0]} collection={addressCollection} deselectable={true} class="mb-2">
             <Listbox.Label>Adresse</Listbox.Label>
@@ -124,10 +154,10 @@ let addressCollection = $derived(useListCollection({
                             <div>{address.street} {address.houseNumber}, {address.postalCode} {address.city}</div>
                             <div class="text-sm text-surface-400-600 italic">
                                 {#if address.defaultShippingAddress}
-                                    <span>Standard Versandadresse</span>
+                                    <span class="align-middle">Standard Versandadresse</span>
                                 {/if}
                                 {#if address.defaultBillingAddress}
-                                    <span>Standard Rechnungsadresse</span>
+                                    <span class="align-middle">Standard Rechnungsadresse</span>
                                 {/if}
                             </div>
                         </div>
@@ -148,10 +178,10 @@ let addressCollection = $derived(useListCollection({
                                 <div>{address.street} {address.houseNumber}, {address.postalCode} {address.city}</div>
                                 <div class="text-sm text-surface-400-600 italic">
                                     {#if address.defaultShippingAddress}
-                                        <span>Standard Versandadresse</span>
+                                        <span class="align-middle">Standard Versandadresse</span>
                                     {/if}
                                     {#if address.defaultBillingAddress}
-                                        <span>Standard Rechnungsadresse</span>
+                                        <span class="align-middle">Standard Rechnungsadresse</span>
                                     {/if}
                                 </div>
                             </div>
@@ -160,6 +190,18 @@ let addressCollection = $derived(useListCollection({
                 </Listbox.Content>
             </Listbox>
         {/if}
+    {/if}
+
+    {#if !newAddress}
+        <button class="flex items-center justify-center gap-2 mt-8 shadow-sm h-48 w-full  bg-surface-50-950 hover:shadow-md transition rounded text-xl" onclick={() => newAddress = new Address("", "", "", "", false, false)}>
+            <MapPinHouse />
+            Neue Adresse hinzufügen
+        </button>
+    {/if}
+
+    {#if newAddress}
+        <AddressFormular address={newAddress} bind:validity={newAddress.validity} />
+        <button type="button" disabled={newAddress?.validity !== true} onclick={saveAddress} class="btn preset-filled-primary-50-950 mt-2 w-full">Addresse anlegen</button>
     {/if}
 {/if}
 

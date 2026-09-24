@@ -146,4 +146,24 @@ final class Service
 
         return $customerResponse;
     }
+
+    public function setDefaultShippingAddress(string $customerId, string $addressId): Error|Success
+    {
+        try {
+            $this->repo->saveDefaultShippingAddress($customerId, $addressId);
+        } catch (Exception $e) {
+            return new Error($e->getMessage(), 500);
+        }
+        return new Success("DefaultShippingAddressSet");
+    }
+
+    public function setDefaultBillingAddress(string $customerId, string $addressId): Error|Success
+    {
+        try {
+            $this->repo->saveDefaultBillingAddress($customerId, $addressId);
+        } catch (Exception $e) {
+            return new Error($e->getMessage(), 500);
+        }
+        return new Success("DefaultBillingAddressSet");
+    }
 }

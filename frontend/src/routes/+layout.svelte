@@ -42,7 +42,7 @@ async function handleLogin(e: Event) {
 
 <HamburgerMenu bind:open={menuOpen} {menuBtn} />
 
-<AppBar>
+<AppBar class="faboulus border-b border-surface-200-800">
 	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
 		{#if data.loggedIn}
 			<!-- <AppBar.Lead> -->

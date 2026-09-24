@@ -8,15 +8,17 @@ use App\Modules\Customer\Address\Dto\CreateCustomerAddressRequestDto;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Modules\Customer\Address\Dto\AddressResponseDto;
+use App\Modules\Customer\Service as CustomerService;
 
 final class Service
 {
     public function __construct(
         private Repository $repo,
-        private Factory $factory
+        private Factory $factory,
+        private CustomerService $customerService,
     ) {}
 
-    public function save(CreateCustomerAddressRequestDto $data): Error|Success
+    public function save(string $customerId, CreateCustomerAddressRequestDto $data): Error|Success
     {
         $address = $this->factory->create(
             $data->street,
@@ -24,18 +26,34 @@ final class Service
             $data->postalCode,
             $data->city,
             $data->country,
-            $data->customerId
+            $customerId
         );
 
         try {
             $this->repo->save($address, true);
+
+            if ($data->standardShippingAddress) {
+                $this->customerService->setDefaultShippingAddress($customerId, $address->id);
+            }
+            if ($data->standardBillingAddress) {
+                $this->customerService->setDefaultBillingAddress($customerId, $address->id);
+            }
         } catch (UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
         } catch (Exception $e) {
             return new Error($e->getMessage(), 500);
         }
 
-        return new Success("CustomerAddressCreated");
+        return new Success("CustomerAddressCreated", [new AddressResponseDto(
+            $address->id,
+            $address->street,
+            $address->houseNumber,
+            $address->postalCode,
+            $address->city,
+            $address->country,
+            $address->defaultShippingAddress,
+            $address->defaultBillingAddress
+        )]);
     }
 
     public function listAddresses(): array

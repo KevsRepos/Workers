@@ -20,6 +20,38 @@ class Repository
         return $customer;
     }
 
+    public function saveDefaultShippingAddress(string $customerId, string $addressId, bool $flush = false): void
+    {
+        $this->em->createQueryBuilder()
+            ->update(Customer::class, 'c')
+            ->set('c.defaultShippingAddress', ':addressId')
+            ->where('c.id = :customerId')
+            ->setParameter('addressId', $addressId, 'uuid')
+            ->setParameter('customerId', $customerId, 'uuid')
+            ->getQuery()
+            ->execute();
+
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
+    public function saveDefaultBillingAddress(string $customerId, string $addressId, bool $flush = false): void
+    {
+        $this->em->createQueryBuilder()
+            ->update(Customer::class, 'c')
+            ->set('c.defaultBillingAddress', ':addressId')
+            ->where('c.id = :customerId')
+            ->setParameter('addressId', $addressId, 'uuid')
+            ->setParameter('customerId', $customerId, 'uuid')
+            ->getQuery()
+            ->execute();
+
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
     // ... you can add find/findBy helpers if needed ...
 
     public function search(string $query): array
