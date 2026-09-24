@@ -23,4 +23,8 @@ class CreateDeliveryNoteRequestDto
     #[Assert\NotBlank]
     #[Assert\Valid]
     public array $deliveryNoteProducts = [];
+
+    public ?string $shippingAddressId = null;
+
+    public ?string $billingAddressId = null;
 }

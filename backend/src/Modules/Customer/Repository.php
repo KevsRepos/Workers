@@ -24,29 +24,42 @@ class Repository
 
     public function search(string $query): array
     {
-        // $customers = $this->em->getRepository(Customer::class)->findBy(
-        //     ['firstName' => $query, 'surname' => $query],
-        //     ['surname' => 'ASC', 'firstName' => 'ASC'],
-        //     20
-        // );
-
-        // return $customers;
-        return $this->em->createQueryBuilder()
-            ->select('c', 'a')
+        $customers = $this->em->createQueryBuilder()
+            ->select('c')
             ->from(Customer::class, 'c')
-            ->leftJoin('c.addresses', 'a', 'WITH', 'a.isPrimary = true')
-            ->where('LOWER(c.firstName) LIKE LOWER(:query)')
-            ->orWhere('LOWER(c.surname) LIKE LOWER(:query)')
+            ->where(
+                $this->em->createQueryBuilder()->expr()->orX(
+                    'LOWER(c.firstName) LIKE LOWER(:query)',
+                    'LOWER(c.surname) LIKE LOWER(:query)',
+                    'LOWER(c.companyName) LIKE LOWER(:query)',
+                )
+            )
             ->setParameter('query', '%' . $query . '%')
             ->orderBy('c.surname', 'ASC')
             ->addOrderBy('c.firstName', 'ASC')
             ->setMaxResults(20)
             ->getQuery()
             ->getArrayResult();
+
+        return array_map(fn($c) => [
+            ...$c,
+            'customerName' => $c['company']
+                ? $c['companyName']
+                : trim(($c['firstName'] ?? '') . ' ' . ($c['surname'] ?? '')),
+        ], $customers);
     }
 
     public function findById(string $id): ?Customer
     {
-        return $this->em->getRepository(Customer::class)->find($id);
+        return $this->em->getRepository(Customer::class)
+            ->createQueryBuilder('c')
+            ->select('c', 'a', 'sa', 'ba')
+            ->leftJoin('c.addresses', 'a')
+            ->leftJoin('c.defaultShippingAddress', 'sa')
+            ->leftJoin('c.defaultBillingAddress', 'ba')
+            ->where('c.id = :id')
+            ->setParameter('id', $id, 'uuid')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

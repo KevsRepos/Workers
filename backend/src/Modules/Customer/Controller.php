@@ -21,9 +21,22 @@ class Controller extends AbstractController
         return $this->json($customers);
     }
 
+    #[Route('/customer/{customerId}', methods: ['GET'])]
+    public function getCustomer(string $customerId, Service $service): JsonResponse {
+        $customer = $service->createCustomerResponse($service->findById($customerId));
+
+        if (!$customer) {
+            return $this->json([], 404);
+        }
+        return $this->json($customer);
+    }
+
     #[Route('/customers/search', methods: ['GET'])]
     public function searchCustomers(Request $request, Service $service): JsonResponse {
-        $query = $request->query->get('customerName', '');
+        $query = trim($request->query->get('customerQuery', ''));
+        if (strlen($query) < 2) {
+            return $this->json([]);
+        }
         $results = $service->search($query);
 
         return $this->json($results);

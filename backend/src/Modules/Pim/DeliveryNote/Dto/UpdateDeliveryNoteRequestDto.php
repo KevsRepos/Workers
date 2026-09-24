@@ -25,4 +25,8 @@ class UpdateDeliveryNoteRequestDto
     public array $removedProductIds = [];
 
     public ?DeliveryNoteStatus $status = null;
+
+    public ?string $shippingAddressId = null;
+
+    public ?string $billingAddressId = null;
 }

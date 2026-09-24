@@ -15,11 +15,11 @@ const deliveryNoteForm = new DeliveryNoteForm(
     data.deliveryNoteProducts.map((p: any) => ({ id: p.id, productId: p.product.id, quantity: p.quantity, name: p.product.name })),
     data.shortDescription ?? '',
     data.assignment ?? '',
+    data.shippingAddress?.id ?? null,
+    data.billingAddress?.id ?? null,
 );
 
 const removedProductIds: string[] = $state([]);
-
-$inspect(removedProductIds);
 
 const saveEdits = async () => {
     console.log(deliveryNoteForm);
@@ -33,10 +33,9 @@ const saveEdits = async () => {
             removedProductIds: removedProductIds,
             shortDescription: deliveryNoteForm.shortDescription || null,
             assignment: deliveryNoteForm.assignment || null,
+            shippingAddressId: deliveryNoteForm.shippingAddressId,
+            billingAddressId: deliveryNoteForm.billingAddressId,
         });
-
-        console.log(json);
-        
 
         goto(`/delivery-note/${json.data.id}`);
     } catch (e) {

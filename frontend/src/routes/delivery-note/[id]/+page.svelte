@@ -77,7 +77,7 @@ const printReturnNote = async () => {
             <div class="badge preset-filled-success-500 mx-2 mb-2">Zurückgeschrieben</div>
         {/if}
 
-        <div class="customer-name font-bold px-2">{data.deliveryNote.customer.firstName} {data.deliveryNote.customer.surname}</div>
+        <div class="customer-name font-bold px-2">{data.deliveryNote.customer.displayName}</div>
 
         {#if data.deliveryNote.assignment}
             <div class="px-2 mt-1">

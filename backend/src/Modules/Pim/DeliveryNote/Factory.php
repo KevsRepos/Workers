@@ -4,6 +4,7 @@ namespace App\Modules\Pim\DeliveryNote;
 
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Modules\Customer\Address\CustomerAddress;
 use App\Modules\Customer\Customer;
 use App\Modules\Pim\Product\Product;
 use App\Modules\Pim\DeliveryNote\Dto\DeliveryNoteProductDto;
@@ -20,6 +21,8 @@ class Factory {
         bool $delivery,
         ?string $shortDescription = null,
         ?string $assignment = null,
+        ?string $shippingAddressId = null,
+        ?string $billingAddressId = null,
     ): DeliveryNote {
         $deliveryNote = new DeliveryNote();
 
@@ -29,6 +32,14 @@ class Factory {
         $deliveryNote->status = DeliveryNoteStatus::OPEN;
         $deliveryNote->shortDescription = $shortDescription;
         $deliveryNote->assignment = $assignment;
+
+        if ($shippingAddressId !== null) {
+            $deliveryNote->shippingAddress = $this->em->getRepository(CustomerAddress::class)->find($shippingAddressId);
+        }
+
+        if ($billingAddressId !== null) {
+            $deliveryNote->billingAddress = $this->em->getRepository(CustomerAddress::class)->find($billingAddressId);
+        }
 
         return $deliveryNote;
     }

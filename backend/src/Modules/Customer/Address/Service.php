@@ -7,6 +7,7 @@ use Exception;
 use App\Modules\Customer\Address\Dto\CreateCustomerAddressRequestDto;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use App\Modules\Customer\Address\Dto\AddressResponseDto;
 
 final class Service
 {
@@ -23,7 +24,6 @@ final class Service
             $data->postalCode,
             $data->city,
             $data->country,
-            $data->isPrimary ?? false,
             $data->customerId
         );
 
@@ -41,6 +41,27 @@ final class Service
     public function listAddresses(): array
     {
         return $this->repo->findAll();
+    }
+
+    public function listAddressesByCustomerId(string $customerId): array
+    {
+        $addresses = $this->repo->findByCustomerId($customerId);
+
+        $responseAddresses = array_map(
+                fn($address) => new AddressResponseDto(
+                    $address->id,
+                    $address->street,
+                    $address->houseNumber,
+                    $address->city,
+                    $address->postalCode,
+                    $address->country,
+                    $address->isDefaultShipping,
+                    $address->isDefaultBilling
+                ),
+                $addresses
+            );
+
+        return $responseAddresses;
     }
 
     public function getAddress(string $id): ?CustomerAddress

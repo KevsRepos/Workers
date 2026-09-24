@@ -11,6 +11,7 @@ use App\Modules\Pim\DeliveryNote\Repository;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Modules\Customer\Service as CustomerService;
+use App\Modules\Customer\Address\Service as CustomerAddressService;
 use App\Modules\Pim\ProductUnion\ProductUnionProduct;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -19,6 +20,7 @@ final class Service {
         private Repository $repo,
         private Factory $factory,
         private CustomerService $customerService,
+        private CustomerAddressService $customerAddressService,
         private EntityManagerInterface $em,
     ) {}
 
@@ -43,6 +45,8 @@ final class Service {
             $data->delivery,
             $data->shortDescription,
             $data->assignment,
+            $data->shippingAddressId,
+            $data->billingAddressId,
         );
 
         try {
@@ -88,6 +92,18 @@ final class Service {
 
         $deliveryNote->shortDescription = $data->shortDescription;
         $deliveryNote->assignment = $data->assignment;
+
+        if ($data->shippingAddressId) {
+            $deliveryNote->shippingAddress = $this->customerAddressService->getAddress($data->shippingAddressId);
+        } elseif($data->shippingAddressId === null) {
+            $deliveryNote->shippingAddress = null;
+        }
+
+        if ($data->billingAddressId) {
+            $deliveryNote->billingAddress = $this->customerAddressService->getAddress($data->billingAddressId);
+        } elseif($data->billingAddressId === null) {
+            $deliveryNote->billingAddress = null;
+        }
 
         if ($data->deliveryNoteProducts) {
             // $deliveryNote->deliveryNoteProducts = $data->deliveryNoteProducts;

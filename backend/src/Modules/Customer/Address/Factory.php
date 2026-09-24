@@ -17,7 +17,6 @@ class Factory
         string $postalCode,
         string $city,
         ?string $country,
-        bool $isPrimary,
         string $customerId
     ): CustomerAddress {
         $address = new CustomerAddress();
@@ -26,7 +25,6 @@ class Factory
         $address->postalCode = $postalCode;
         $address->city = $city;
         $address->country = $country;
-        $address->isPrimary = $isPrimary;
 
         // Find Customer entity by raw ID
         $address->customer = $customerId

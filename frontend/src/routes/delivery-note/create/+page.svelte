@@ -23,6 +23,8 @@ const restoreDraft = () => {
     deliveryNoteForm.products = draft.products;
     deliveryNoteForm.shortDescription = draft.shortDescription;
     deliveryNoteForm.assignment = draft.assignment;
+    deliveryNoteForm.shippingAddressId = draft.shippingAddressId;
+    deliveryNoteForm.billingAddressId = draft.billingAddressId;
     autoSaveEnabled = true;
     formKey++;
 };
@@ -69,6 +71,8 @@ $effect(() => {
 
 const saveDeliveryNote = async () => {    
     try {
+        console.log(deliveryNoteForm.shippingAddressId);
+        console.log(deliveryNoteForm.billingAddressId);
         const json = await fetchApi('delivery-notes', 'POST', {
             customerId: deliveryNoteForm.customer?.id,
             deliveryDate: deliveryNoteForm.deliveryDate,
@@ -76,6 +80,8 @@ const saveDeliveryNote = async () => {
             delivery: deliveryNoteForm.delivery,
             shortDescription: deliveryNoteForm.shortDescription || null,
             assignment: deliveryNoteForm.assignment || null,
+            shippingAddressId: deliveryNoteForm.shippingAddressId || null,
+            billingAddressId: deliveryNoteForm.billingAddressId || null,
         });
 
         if (autoSaveEnabled) {

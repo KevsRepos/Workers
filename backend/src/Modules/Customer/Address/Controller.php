@@ -4,7 +4,7 @@ namespace App\Modules\Customer\Address;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use App\Modules\Customer\Address\Service;
 use App\Modules\Customer\Address\Dto\CreateCustomerAddressRequestDto;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -16,6 +16,13 @@ class Controller extends AbstractController
     public function show(Service $service): JsonResponse
     {
         $addresses = $service->listAddresses();
+        return $this->json($addresses);
+    }
+
+    #[Route('/customers/{customerId}/addresses', methods: ['GET'])]
+    public function listCustomerAddresses(Service $service, string $customerId): JsonResponse
+    {
+        $addresses = $service->listAddressesByCustomerId($customerId);
         return $this->json($addresses);
     }
 

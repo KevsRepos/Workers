@@ -5,6 +5,7 @@ namespace App\Modules\Pim\DeliveryNote;
 use App\Lib\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Modules\Customer\Customer;
+use App\Modules\Customer\Address\CustomerAddress;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 
@@ -33,4 +34,12 @@ class DeliveryNote extends Entity
 
     #[ORM\OneToMany(mappedBy: "deliveryNote", targetEntity: DeliveryNoteProduct::class, cascade: ["persist", "remove"])]
     public Collection $deliveryNoteProducts;
+
+    #[ORM\ManyToOne(targetEntity: CustomerAddress::class)]
+    #[ORM\JoinColumn(name: "shipping_address_id", referencedColumnName: "id", nullable: true)]
+    public ?CustomerAddress $shippingAddress = null;
+
+    #[ORM\ManyToOne(targetEntity: CustomerAddress::class)]
+    #[ORM\JoinColumn(name: "billing_address_id", referencedColumnName: "id", nullable: true)]
+    public ?CustomerAddress $billingAddress = null;
 }

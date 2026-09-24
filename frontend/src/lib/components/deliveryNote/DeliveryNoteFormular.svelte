@@ -58,7 +58,7 @@ const removeProduct = (index: number) => {
         
         <div class="flex flex-col justify-between gap-4 w-full bottom-0 bg-surface-100-900 p-2 rounded-md">
             <Steps.Content index={0}>
-                <CustomerSearch autoFocus={deliveryNoteForm.customer === null} bind:selectedCustomer={deliveryNoteForm.customer} />
+                <CustomerSearch bind:selectedCustomer={deliveryNoteForm.customer} bind:selectedShippingAddress={deliveryNoteForm.shippingAddressId} bind:selectedBillingAddress={deliveryNoteForm.billingAddressId} />
             </Steps.Content>
 
             <Steps.Content index={1}>

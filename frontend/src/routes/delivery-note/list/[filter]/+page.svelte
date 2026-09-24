@@ -62,7 +62,7 @@ $inspect(data);
                     <div class="flex justify-between">
                         <div class="flex gap-2 font-bold">
                             <User />
-                            {deliveryNote.customer.firstName} {deliveryNote.customer.surname}
+                            {deliveryNote.customer.displayName}
                         </div>
                         <div class="flex items-center gap-2 font-bold">
                             <div>{formatDate(deliveryNote.deliveryDate)}</div>

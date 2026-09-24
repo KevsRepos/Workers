@@ -2,13 +2,25 @@
 
 namespace App\Modules\Customer\Dto;
 
+use App\Modules\Customer\Constraint\PersonOrCompany;
+use App\Modules\Customer\Address\Dto\CreateCustomerAddressRequestDto;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[PersonOrCompany]
 class CreateCustomerRequestDto
 {
-    #[Assert\NotBlank]
-    public string $firstName;
+    public ?string $firstName = null;
 
-    #[Assert\NotBlank]
-    public string $surname;
+    public ?string $surname = null;
+
+    public ?string $companyName = null;
+
+    #[Assert\Email]
+    public ?string $email = null;
+
+    public ?string $phone = null;
+
+    /** @var CreateCustomerAddressRequestDto[] */
+    #[Assert\Valid]
+    public array $addresses = [];
 }

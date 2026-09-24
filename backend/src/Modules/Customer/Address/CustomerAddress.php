@@ -14,23 +14,28 @@ class CustomerAddress extends Entity
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: "addresses")]
     #[ORM\JoinColumn(name: "customer_id", referencedColumnName: "id", nullable: false)]
     #[Ignore]
-    public ?Customer $customer = null;
+    public Customer $customer;
 
     #[ORM\Column(length: 255)]
-    public string $street;
+    public ?string $street;
 
     #[ORM\Column(length: 50)]
-    public string $houseNumber;
+    public ?string $houseNumber;
 
     #[ORM\Column(length: 20)]
-    public string $postalCode;
+    public ?string $postalCode;
 
     #[ORM\Column(length: 100)]
-    public string $city;
+    public ?string $city;
 
     #[ORM\Column(length: 100, nullable: true)]
     public ?string $country = null;
 
-    #[ORM\Column]
-    public bool $isPrimary = false;
+    public bool $defaultShippingAddress {
+        get => $this->customer?->defaultShippingAddress?->id === $this->id;
+    }
+
+    public bool $defaultBillingAddress {
+        get => $this->customer?->defaultBillingAddress?->id === $this->id;
+    }
 }

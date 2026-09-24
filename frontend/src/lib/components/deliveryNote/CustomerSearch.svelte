@@ -1,21 +1,32 @@
 <script lang="ts">
 import { fetchApi } from "$lib/fetchApi";
-import { useListCollection, type ComboboxRootProps, Combobox, Portal } from "@skeletonlabs/skeleton-svelte";
+import { useListCollection, Listbox } from "@skeletonlabs/skeleton-svelte";
+import SearchSelectionBox from "../SearchSelectionBox.svelte";
+import CreateCustomerFormular from "./CreateCustomerFormular.svelte";
+import Checkbox from "../elements/Checkbox.svelte";
 
-let { selectedCustomer = $bindable(), autoFocus = false } = $props();
+let { selectedCustomer = $bindable(), selectedShippingAddress = $bindable(), selectedBillingAddress = $bindable() } = $props();
 
 let searchTimeout: ReturnType<typeof setTimeout>;
-let customers: Array<any> = $state([]);
+
+let searchItems = $state([]);
 
 let customerInput: string = $state('');
 
-const collection = $derived(useListCollection({ 
-    items: customers,
-    itemToString: (item) => item.firstName + ' ' + item.surname,
-    itemToValue: (item) => item
-}));
+let freezedInput = $state('');
+
+let addingCustomer = $state(false);
+
+let differentBillingAddress = $state(selectedBillingAddress !== null);
+
+$effect(() => {
+    if(!differentBillingAddress) {
+        selectedBillingAddress = null;
+    }
+});
 
 const searchCustomer = async (event: Event) => {
+
     const query = (event.target as HTMLInputElement).value;
 
     customerInput = query;
@@ -23,60 +34,139 @@ const searchCustomer = async (event: Event) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
         if (query.length < 2) {
-            customers = [];
+            searchItems = [];
 
-            open = false;
             return;
         }
+        
+        const json = await fetchApi(`customers/search?customerQuery=${encodeURIComponent(query)}`, 'GET');
 
-        open = true;
-        
-        const json = await fetchApi(`customers/search?customerName=${encodeURIComponent(query)}`, 'GET');
-        
-        customers = json;
+        searchItems = json.map((item: any) => {
+            return {id: item.id, name: item.customerName};
+        });
     }, 300);
 }
 
-const selectCustomer: ComboboxRootProps['onSelect'] = (event) => {    
-    selectedCustomer = event.itemValue;
-
-    open = false;
+const getCustomer = async (customerId: string) => {
+    const json = await fetchApi(`customer/${encodeURIComponent(customerId)}`, 'GET');
+    
+    return json;
 }
 
-let open = $state(false);
+const selectCustomer = async (item: { id: string; name: string }) => {
+    const customer = await getCustomer(item.id);
+
+    if(customer.defaultShippingAddress) {
+        selectedShippingAddress = customer.defaultShippingAddress.id;
+    }
+
+    if(customer.defaultBillingAddress) {
+        selectedBillingAddress = customer.defaultBillingAddress.id;
+    }
+
+    selectedCustomer = customer;
+    
+    customerInput = '';
+}
 
 const addCustomer = async () => {
-    const [firstName, ...surnameParts] = customerInput.trim().split(/\s+/);
-    const surname = surnameParts.join(' ');
+    freezedInput = customerInput;
+    customerInput = '';
 
-    const json = await fetchApi('customers', 'POST',  { firstName, surname });
+    addingCustomer = true;
 
-    selectedCustomer = json?.data?.customer ?? json?.data ?? null;
-
-    open = false;
+    selectedCustomer = null;
 }
+
+const onCustomerCreation = (customer: any) => {
+    addingCustomer = false;
+    selectedCustomer = customer;
+    freezedInput = '';
+
+    if(customer.defaultShippingAddress) {
+        selectedShippingAddress = customer.defaultShippingAddress.id;
+    }
+
+    if(customer.defaultBillingAddress) {
+        selectedBillingAddress = customer.defaultBillingAddress.id;
+    }
+}
+
+let addressCollection = $derived(useListCollection({
+    items: Object.values(selectedCustomer?.addresses ?? []).map((a: any) => ({ ...a, value: a.id }))
+}));
 </script>
 
-<Combobox defaultInputValue={selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.surname}` : ''} open={open} autoFocus={autoFocus} collection={collection} onSelect={selectCustomer} placeholder="Kunde auswählen" class="w-full">
-    <Combobox.Label>Kunde</Combobox.Label>
-    <Combobox.Control>
-        <Combobox.Input class="bg-surface-50-950" oninput={searchCustomer} />
-    </Combobox.Control>
-    <Portal>
-        <Combobox.Positioner>
-            <Combobox.Content>
-                {#if customers.length === 0 && customerInput.trim().split(/\s+/).length >= 2}
-                    <button onclick={addCustomer} class="btn preset-filled">Kunden {customerInput} anlegen</button>
-                {:else if customers.length > 0}
-                    {#each customers as item (item.id)}
-                        {item.value}
-                        <Combobox.Item item={item}>
-                            <Combobox.ItemText>{item.firstName} {item.surname}</Combobox.ItemText>
-                            <Combobox.ItemIndicator />
-                        </Combobox.Item>
+<SearchSelectionBox bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde">
+    {#snippet aboveContent()}
+        <button onclick={addCustomer} class="btn preset-filled m-1">Kunden {customerInput} anlegen</button>
+    {/snippet}
+
+    {#snippet content(item, onSelect)}
+        <button onclick={() => onSelect(item)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{item.name}</button>
+    {/snippet}
+</SearchSelectionBox>
+
+{#if selectedCustomer}
+    <div class="py-2 text-3xl">
+        {#if selectedCustomer.company}
+            {selectedCustomer.companyName}
+        {:else}
+            {selectedCustomer.firstName} {selectedCustomer.surname}
+        {/if}
+    </div>
+
+    {#if selectedCustomer.addresses.length === 0}
+        <div>Keine Adressen vorhanden</div>
+    {:else}
+        <Listbox defaultValue={selectedShippingAddress ? [selectedShippingAddress] : []} onValueChange={(e) => selectedShippingAddress = e.value[0]} collection={addressCollection} deselectable={true} class="mb-2">
+            <Listbox.Label>Adresse</Listbox.Label>
+            <Listbox.Content>
+                {#each addressCollection.items as address (address.id)}
+                    <Listbox.Item item={address}>
+                        <div class="flex justify-between w-full">
+                            <div>{address.street} {address.houseNumber}, {address.postalCode} {address.city}</div>
+                            <div class="text-sm text-surface-400-600 italic">
+                                {#if address.defaultShippingAddress}
+                                    <span>Standard Versandadresse</span>
+                                {/if}
+                                {#if address.defaultBillingAddress}
+                                    <span>Standard Rechnungsadresse</span>
+                                {/if}
+                            </div>
+                        </div>
+                    </Listbox.Item>
+                {/each}
+            </Listbox.Content>
+        </Listbox>
+
+        <Checkbox label="Abweichende Rechnungsadresse" bind:checked={differentBillingAddress} />
+
+        {#if differentBillingAddress}
+            <Listbox defaultValue={selectedBillingAddress ? [selectedBillingAddress] : []} onValueChange={(e) => {console.log(e.value); selectedBillingAddress = e.value[0]}} collection={addressCollection} deselectable={true} class="mt-2">
+                <Listbox.Label>Rechnungsadresse</Listbox.Label>
+                <Listbox.Content>
+                    {#each addressCollection.items as address (address.id)}
+                        <Listbox.Item item={address}>
+                            <div class="flex justify-between w-full">
+                                <div>{address.street} {address.houseNumber}, {address.postalCode} {address.city}</div>
+                                <div class="text-sm text-surface-400-600 italic">
+                                    {#if address.defaultShippingAddress}
+                                        <span>Standard Versandadresse</span>
+                                    {/if}
+                                    {#if address.defaultBillingAddress}
+                                        <span>Standard Rechnungsadresse</span>
+                                    {/if}
+                                </div>
+                            </div>
+                        </Listbox.Item>
                     {/each}
-                {/if}
-            </Combobox.Content>
-        </Combobox.Positioner>
-    </Portal>
-</Combobox>
+                </Listbox.Content>
+            </Listbox>
+        {/if}
+    {/if}
+{/if}
+
+{#if addingCustomer}
+    <CreateCustomerFormular input={freezedInput} oncreate={onCustomerCreation} />
+{/if}

@@ -19,8 +19,10 @@ export class DeliveryNoteForm {
     products: DeliveryNoteProductDto[] = $state([]);
     shortDescription: string = $state('');
     assignment: string = $state('');
+    shippingAddressId: string|null = $state(null);
+    billingAddressId: string|null = $state(null);
 
-    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', assignment: string = '') {
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null) {
         this.id = id;
         this.customer = customer;
         this.deliveryDate = deliveryDate;
@@ -28,6 +30,8 @@ export class DeliveryNoteForm {
         this.products = products;
         this.shortDescription = shortDescription;
         this.assignment = assignment;
+        this.shippingAddressId = shippingAddressId;
+        this.billingAddressId = billingAddressId;
     }
 
     get customerId(): string | null {
@@ -63,7 +67,9 @@ export class DeliveryNoteForm {
             customerId: this.customerId,
             deliveryDate: this.deliveryDate,
             delivery: this.delivery,
-            products: this.products
+            products: this.products,
+            shippingAddressId: this.shippingAddressId,
+            billingAddressId: this.billingAddressId
         });
     }
 
@@ -84,6 +90,8 @@ export class DeliveryNoteForm {
             products: this.products.map(p => ({ productId: p.productId, quantity: p.quantity, name: p.name })),
             shortDescription: this.shortDescription,
             assignment: this.assignment,
+            shippingAddressId: this.shippingAddressId,
+            billingAddressId: this.billingAddressId,
         };
     }
 
@@ -102,7 +110,7 @@ export class DeliveryNoteForm {
             name: p.name,
         }));
 
-        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.assignment ?? '');
+        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null);
     }
 
     private static DRAFT_KEY = 'deliveryNoteDraft';
