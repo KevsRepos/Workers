@@ -17,7 +17,7 @@ $inspect(deliveryNote);
     <div class="flex justify-between items-start" style="margin-bottom: 0.8cm;">
         <div class="left-side">
             <div class="text-sm border-b-2 w-fit" style="margin-bottom: 0.5cm;">{company.name} — {company.address} — {company.postalCode} {company.city}</div>
-            <div class="font-bold">{deliveryNote.customerName}</div>
+            <div class="font-bold">{deliveryNote.displayName}</div>
             <div style="white-space: pre-line;">{deliveryNote.shortDescription}</div>
         </div>
 

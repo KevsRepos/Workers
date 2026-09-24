@@ -8,7 +8,7 @@ import { X } from "@lucide/svelte";
 
 let { input, oncreate }: { input: string; oncreate?: (customer: any) => void } = $props();
 
-const addressForms: Address[] = $state([new Address("", "", "", "", false, false)]);
+let addressForms: Address[] = $state([new Address("", "", "", "", false, false)]);
 
 let isCompany = $state(false);
 let withoutAddress = $state(false);
@@ -44,6 +44,26 @@ const createCustomer = async () => {
 
     oncreate?.(json?.data?.customer);
 };
+
+const removeAddressForms = (evt: Event) => {
+    if((evt.target as HTMLInputElement).checked)  {
+        addressForms = [];
+    } else {
+        addressForms.push(new Address("", "", "", "", false, false));
+    }
+};
+
+const verifycustomerCreation = () => {
+    if(
+        (!withoutAddress && addressForms.some((form) => !form.validity)) || 
+        (!isCompany && (!firstName || !surname)) || 
+        (isCompany && !companyName)
+    ) {
+        return false;
+    }
+
+    return true;
+}
 </script>
 
 <div class="flex flex-col gap-4 mt-4">
@@ -68,7 +88,7 @@ const createCustomer = async () => {
         <TextInput label="Telefon" placeholder="Telefon" bind:value={phone} />
     </fieldset>
 
-    <Checkbox label="Ohne Adresse anlegen" bind:checked={withoutAddress} />
+    <Checkbox label="Ohne Adresse anlegen" bind:checked={withoutAddress} oninput={(evt: Event) => removeAddressForms(evt)} />
 
     {#if !withoutAddress}
         {#each addressForms as form, index}
@@ -87,5 +107,5 @@ const createCustomer = async () => {
         <button type="button" onclick={addAddressFormular} disabled={addressForms.some((form) => !form.validity)}>Weitere Adresse hinzufügen</button>
     {/if}
 
-    <button type="button" onclick={createCustomer} class="btn preset-filled-primary-50-950" disabled={addressForms.some((form) => !form.validity)}>Kunden anlegen</button>
+    <button type="button" onclick={createCustomer} class="btn preset-filled-primary-50-950" disabled={!verifycustomerCreation()}>Kunden anlegen</button>
 </div>

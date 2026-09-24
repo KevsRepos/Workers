@@ -109,11 +109,7 @@ let addressCollection = $derived(useListCollection({
 
 {#if selectedCustomer}
     <div class="py-2 text-3xl">
-        {#if selectedCustomer.company}
-            {selectedCustomer.companyName}
-        {:else}
-            {selectedCustomer.firstName} {selectedCustomer.surname}
-        {/if}
+        {selectedCustomer.displayName}
     </div>
 
     {#if selectedCustomer.addresses.length === 0}

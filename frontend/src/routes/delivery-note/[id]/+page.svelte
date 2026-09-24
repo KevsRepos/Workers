@@ -159,7 +159,7 @@ const printReturnNote = async () => {
 {:else if printing}
     <PrintedDeliveryNoteCustomer deliveryNote={{
         id: data.deliveryNote.id,
-        customerName: `${data.deliveryNote.customer.firstName} ${data.deliveryNote.customer.surname}`,
+        displayName: `${data.deliveryNote.customer.displayName}`,
         delivery: data.deliveryNote.delivery,
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
@@ -169,7 +169,7 @@ const printReturnNote = async () => {
     }} />
     <PrintedDeliveryNoteInternal deliveryNote={{
         id: data.deliveryNote.id,
-        customerName: `${data.deliveryNote.customer.firstName} ${data.deliveryNote.customer.surname}`,
+        displayName: `${data.deliveryNote.customer.displayName}`,
         delivery: data.deliveryNote.delivery,
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,
@@ -180,7 +180,7 @@ const printReturnNote = async () => {
 {:else if printingReturnNote}
     <PrintedReturnNote deliveryNote={{
         id: data.deliveryNote.id,
-        customerName: `${data.deliveryNote.customer.firstName} ${data.deliveryNote.customer.surname}`,
+        displayName: `${data.deliveryNote.customer.displayName}`,
         delivery: data.deliveryNote.delivery,
         deliveryDate: data.deliveryNote.deliveryDate,
         deliveryNoteProducts: data.deliveryNote.deliveryNoteProducts,

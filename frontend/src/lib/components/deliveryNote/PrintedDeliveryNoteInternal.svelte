@@ -7,7 +7,7 @@ const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
 
 <div class="page">
     <div class="flex justify-between">
-        <div class="font-bold">{deliveryNote.customerName}</div>
+        <div class="font-bold">{deliveryNote.displayName}</div>
         <div>
             {#if deliveryNote.delivery}
                 Lieferung - {formatDate(deliveryNote.deliveryDate)}

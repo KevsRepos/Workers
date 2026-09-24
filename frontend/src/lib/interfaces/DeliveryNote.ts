@@ -2,7 +2,7 @@ export interface DeliveryNote {
     id: number;
     deliveryDate: string; // ISO date string
     delivery: boolean;
-    customerName: string;
+    displayName: string;
     address: string;
     deliveryNoteProducts: DeliveryNoteProduct[];
     status: number,

@@ -6,7 +6,7 @@ const { deliveryNote, returnUnions }: { deliveryNote: DeliveryNote, returnUnions
 </script>
 
 <div class="page">
-    <div class="font-bold mb-2">{deliveryNote.customerName}</div>
+    <div class="font-bold mb-2">{deliveryNote.displayName}</div>
 
     <div>
         {#if deliveryNote.delivery}
