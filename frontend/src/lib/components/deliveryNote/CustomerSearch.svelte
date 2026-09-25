@@ -127,7 +127,7 @@ let addressCollection = $derived(useListCollection({
 }));
 </script>
 
-<SearchSelectionBox bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde" placeholder="Kundename, Firma, Verein...">
+<SearchSelectionBox inputElement={null} bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde" placeholder="Kundename, Firma, Verein...">
     {#snippet aboveContent()}
         <button onclick={addCustomer} class="btn preset-filled m-1">Kunden {customerInput} anlegen</button>
     {/snippet}

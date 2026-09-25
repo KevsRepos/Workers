@@ -1,80 +1,70 @@
 <script lang="ts">
-import { fetchApi } from '$lib/fetchApi';
+import { fetchApi } from "$lib/fetchApi";
+import SearchSelectionBox from "../SearchSelectionBox.svelte";
 
 let { selectedProducts = $bindable(), deliveryNoteForm } = $props();
 
-let products: { id: number; name: string; quantity: number }[] = $state([]);
+let inputElement: HTMLInputElement | null = $state(null);
 
-let currentProduct: { id: number; name: string; quantity: number } | null = $state(null);
+let productInput = $state('');
 
-let quantityInput = $state<HTMLInputElement>();
+let quantityInput: HTMLInputElement | null = $state(null);
 
-let productSearchInput: HTMLInputElement;
+let quantity = $state();
 
 let searchTimeout: ReturnType<typeof setTimeout>;
 
-const searchProduct = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
-    const query = event.currentTarget.value;
-    
+let searchItems = $state([]);
+
+let currentProduct: { id: string; name: string } | null = $state(null);
+
+const searchProduct = async (event: Event) => {
     clearTimeout(searchTimeout);
+
     searchTimeout = setTimeout(async () => {
+        const query = (event.target as HTMLInputElement).value;
+
         if (query.length < 2) {
-            products = [];
+            searchItems = [];
             return;
         }
         
         const json = await fetchApi(`products/search?productName=${encodeURIComponent(query)}`, 'GET');
         
-        products = json;
+        searchItems = json;
     }, 300);
 }
 
-const selectProduct = (product: { id: number; name: string; quantity: number }) => {
-    currentProduct = product;
+const selectProduct = (product: { id: string; name: string }) => {
     deliveryNoteForm.addProduct(product.id, 1, product.name);
+    currentProduct = product;
     quantityInput?.focus();
 
-    productSearchInput.value = product.name;
+    productInput = product.name;
 
-    products = [];
+    searchItems = [];
 }
 
-const enterQuantity = () => {
-    if (currentProduct === null) return;
+const setQuantity = (event: KeyboardEvent) => {
+    if(event.key !== 'Enter') return;
 
-    const currentProductId = currentProduct.id;
-    const product = selectedProducts.find((p: { productId: number; quantity: number }) => p.productId === currentProductId);
+    deliveryNoteForm.updateQuantity(currentProduct?.id, quantity);
 
-    if (product && quantityInput) {
-        product.quantity = parseInt(quantityInput.value) || 1;
-    }
+    productInput = '';
+    
+    inputElement?.focus();
 
-    productSearchInput.value = '';
-    productSearchInput.focus();
-    currentProduct = null;
-
-    if (quantityInput) {
-        quantityInput.value = '';
-    }
+    quantity = '';
 }
 </script>
 
-<div class="relative">
-    <label class="label">
-        <span class="label-text">Artikel</span>
-        <input class="input bg-surface-50-950" type="text" oninput={searchProduct} bind:this={productSearchInput} />
-    </label>
+<SearchSelectionBox bind:inputElement={inputElement} bind:input={productInput} bind:items={searchItems} searchItem={searchProduct} onSelect={selectProduct} label="Artikel" placeholder="Krombacher, Coca Cola...">
+    {#snippet content(item, onSelect)}
+        <button onclick={() => onSelect(item)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{item.name}</button>
+    {/snippet}
+</SearchSelectionBox>
 
-    {#if products.length}
-        <div class="absolute flex flex-col bg-surface-50-950 border w-full max-h-[50vh] overflow-y-auto border-gray-300 rounded-md shadow-lg z-50">
-            {#each products as product}
-                <button onclick={() => selectProduct(product)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{product.name}</button>
-            {/each}
-        </div>
-    {/if}
-
-    <label class="label">
-        <span class="label-text">Menge</span>
-        <input onfocusout={enterQuantity} onkeydown={(e) => { if (e.key === 'Enter') { enterQuantity(); }}} class="input bg-surface-50-950" type="number" min="1" bind:this={quantityInput} />
-    </label>
-</div>
+<label class="label mt-2">
+    <span class="label-text">Menge</span>
+    <input type="number" class="input bg-surface-50-950" bind:this={quantityInput} bind:value={quantity} onkeydown={setQuantity} />
+</label>
