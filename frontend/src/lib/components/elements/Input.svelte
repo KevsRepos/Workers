@@ -2,7 +2,7 @@
 let { label, placeholder = "", value = $bindable(""), type, ...restProps }: {
     label: string;
     placeholder?: string;
-    value?: string|number;
+    value: string|number|null;
     type?: 'text'|'number'
     [key: string]: any;
     

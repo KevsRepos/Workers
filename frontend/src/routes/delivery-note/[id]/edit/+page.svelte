@@ -18,8 +18,8 @@ const deliveryNoteForm = new DeliveryNoteForm(
     data.assignment ?? '',
     data.shippingAddress?.id ?? null,
     data.billingAddress?.id ?? null,
-    data.adultGuests ?? 0,
-    data.childGuests ?? 0
+    data.adultGuests,
+    data.childGuests
 );
 
 const removedProductIds: string[] = $state([]);

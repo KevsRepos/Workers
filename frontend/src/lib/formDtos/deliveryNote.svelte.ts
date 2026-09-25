@@ -36,10 +36,10 @@ export class DeliveryNoteForm {
     assignment: string = $state('');
     shippingAddressId: string|null = $state(null);
     billingAddressId: string|null = $state(null);
-    adultGuests: number = $state(0);
-    childGuests: number = $state(0);
+    adultGuests: number|null = $state(null);
+    childGuests: number|null = $state(null);
 
-    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number = 0, childGuests: number = 0) {
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number|null = null, childGuests: number|null = null) {
         this.id = id;
         this.customer = customer;
         this.deliveryDate = deliveryDate;
@@ -91,8 +91,8 @@ export class DeliveryNoteForm {
             shippingAddressId: this.shippingAddressId,
             billingAddressId: this.billingAddressId,
             privateDescription: this.privateDescription,
-            adultGuests: this.adultGuests,
-            childGuests: this.childGuests
+            adultGuests: this.adultGuests ?? 0,
+            childGuests: this.childGuests ?? 0
         });
     }
 
