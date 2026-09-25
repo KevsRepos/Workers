@@ -6,9 +6,14 @@ interface DeliveryNoteProductDto {
 }
 
 interface Customer {
+    displayName?: string;
     id: string;
     firstName: string;
     surname: string;
+    company: boolean;
+    companyName?: string;
+    defaultShippingAddress?: Address;
+    defaultBillingAddress?: Address;
     addresses: Address[];
 }
 
@@ -93,7 +98,7 @@ export class DeliveryNoteForm {
             customerId: this.customer?.id ?? null,
             customerFirstName: this.customer?.firstName ?? '',
             customerSurname: this.customer?.surname ?? '',
-            customerName: this.customer ? `${this.customer.firstName} ${this.customer.surname}` : '',
+            displayName: this.customer ? `${this.customer.firstName} ${this.customer.surname}` : '',
             deliveryDate: this.deliveryDate,
             delivery: this.delivery,
             products: this.products.map(p => ({ productId: p.productId, quantity: p.quantity, name: p.name })),
@@ -104,6 +109,14 @@ export class DeliveryNoteForm {
         };
     }
 
+    get displayName(): string {
+        if(!this.customer) {
+            return '';
+        }
+        
+        return this.customer.companyName ? this.customer.companyName : `${this.customer.firstName} ${this.customer.surname}`;
+    }
+
     static fromStorageObject(obj: any): DeliveryNoteForm | null {
         if (!obj || obj.customerId == null) return null;
 
@@ -111,7 +124,12 @@ export class DeliveryNoteForm {
             id: obj.customerId,
             firstName: obj.customerFirstName ?? '',
             surname: obj.customerSurname ?? '',
+            displayName: obj.displayName ?? '',
             addresses: obj.customerAddresses ?? [],
+            companyName: obj.customerCompanyName ?? '',
+            company: obj.customerCompany ?? false,
+            defaultShippingAddress: obj.customerDefaultShippingAddress ?? undefined,
+            defaultBillingAddress: obj.customerDefaultBillingAddress ?? undefined,
         };
 
         const products: DeliveryNoteProductDto[] = (obj.products ?? []).map((p: any) => ({
@@ -152,7 +170,7 @@ export class DeliveryNoteForm {
         if (!raw) return null;
         try {
             const obj = JSON.parse(raw);
-            return obj.customerName || null;
+            return obj.displayName || null;
         } catch {
             return null;
         }
