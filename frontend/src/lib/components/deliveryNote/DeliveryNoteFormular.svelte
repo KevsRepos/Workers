@@ -6,6 +6,7 @@ import ProductSearch from "./ProductSearch.svelte";
 import { CircleX } from "@lucide/svelte";
 import { onMount } from "svelte";
 import { formatDate } from "$lib/functions/formatDate";
+import OrderDescriptions from "./OrderDescriptions.svelte";
 
 let { deliveryNoteForm, saveDeliveryNote, removedProductIds = [] } = $props();
 
@@ -62,15 +63,7 @@ const removeProduct = (index: number) => {
             </Steps.Content>
 
             <Steps.Content index={1}>
-                <label class="">
-                    <span class="label-text">Kurzbeschreibung</span>
-                    <textarea
-                        class="textarea bg-surface-50-950"
-                        rows="5"
-                        placeholder="Optionale Kurzbeschreibung"
-                        bind:value={deliveryNoteForm.shortDescription}
-                    ></textarea>
-                </label>
+                <OrderDescriptions {deliveryNoteForm} />
             </Steps.Content>
 
             <Steps.Content index={2}>

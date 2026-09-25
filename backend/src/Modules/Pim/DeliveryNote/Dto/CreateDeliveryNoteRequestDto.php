@@ -17,6 +17,8 @@ class CreateDeliveryNoteRequestDto
 
     public ?string $shortDescription = null;
 
+    public ?string $privateDescription = null;
+
     public ?string $assignment = null;
 
     /** @var DeliveryNoteProductDto[] */
@@ -27,4 +29,8 @@ class CreateDeliveryNoteRequestDto
     public ?string $shippingAddressId = null;
 
     public ?string $billingAddressId = null;
+
+    public ?int $adultGuests = null;
+
+    public ?int $childGuests = null;
 }

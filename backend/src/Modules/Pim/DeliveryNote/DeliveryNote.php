@@ -30,6 +30,9 @@ class DeliveryNote extends Entity
     public ?string $shortDescription = null;
 
     #[ORM\Column(nullable: true)]
+    public ?string $privateDescription = null;
+
+    #[ORM\Column(nullable: true)]
     public ?string $assignment = null;
 
     #[ORM\OneToMany(mappedBy: "deliveryNote", targetEntity: DeliveryNoteProduct::class, cascade: ["persist", "remove"])]
@@ -42,4 +45,10 @@ class DeliveryNote extends Entity
     #[ORM\ManyToOne(targetEntity: CustomerAddress::class)]
     #[ORM\JoinColumn(name: "billing_address_id", referencedColumnName: "id", nullable: true)]
     public ?CustomerAddress $billingAddress = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?int $adultGuests = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?int $childGuests = null;
 }

@@ -20,9 +20,12 @@ class Factory {
         string $deliveryDate,
         bool $delivery,
         ?string $shortDescription = null,
+        ?string $privateDescription = null,
         ?string $assignment = null,
         ?string $shippingAddressId = null,
         ?string $billingAddressId = null,
+        ?int $adultGuests = null,
+        ?int $childGuests = null,
     ): DeliveryNote {
         $deliveryNote = new DeliveryNote();
 
@@ -31,6 +34,7 @@ class Factory {
         $deliveryNote->delivery = $delivery;
         $deliveryNote->status = DeliveryNoteStatus::OPEN;
         $deliveryNote->shortDescription = $shortDescription;
+        $deliveryNote->privateDescription = $privateDescription;
         $deliveryNote->assignment = $assignment;
 
         if ($shippingAddressId !== null) {
@@ -40,6 +44,9 @@ class Factory {
         if ($billingAddressId !== null) {
             $deliveryNote->billingAddress = $this->em->getRepository(CustomerAddress::class)->find($billingAddressId);
         }
+
+        $deliveryNote->adultGuests = $adultGuests;
+        $deliveryNote->childGuests = $childGuests;
 
         return $deliveryNote;
     }

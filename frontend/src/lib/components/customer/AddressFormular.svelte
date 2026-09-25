@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Listbox, useListCollection } from "@skeletonlabs/skeleton-svelte";
-import TextInput from "../elements/TextInput.svelte";
+import Input from "../elements/Input.svelte";
 import type { Address } from "./Address.svelte.ts";
 
 let { address, validity = $bindable(false)}: { address: Address; validity: boolean } = $props();
@@ -17,13 +17,13 @@ let form = $state<HTMLFormElement>();
 
 <form class="flex flex-col gap-4 mt-4" bind:this={form} oninput={() => validity = form?.checkValidity() ?? false}>
     <fieldset class="flex flex-col sm:flex-row justify-between gap-2">
-        <TextInput label="Straße" placeholder="Straße" bind:value={address.street} required />
-        <TextInput label="Hausnummer" placeholder="Hausnummer" bind:value={address.houseNumber} required />
+        <Input label="Straße" placeholder="Straße" bind:value={address.street} required />
+        <Input label="Hausnummer" placeholder="Hausnummer" bind:value={address.houseNumber} required />
     </fieldset>
 
     <fieldset class="flex justify-between gap-2">
-        <TextInput label="PLZ" placeholder="PLZ" bind:value={address.postalCode} required />
-        <TextInput label="Ort" placeholder="Ort" bind:value={address.city} required />
+        <Input label="PLZ" placeholder="PLZ" bind:value={address.postalCode} required />
+        <Input label="Ort" placeholder="Ort" bind:value={address.city} required />
     </fieldset>
 
     <Listbox {collection} selectionMode="multiple" onValueChange={(e) => {

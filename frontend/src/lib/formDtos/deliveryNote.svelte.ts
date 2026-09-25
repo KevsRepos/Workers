@@ -32,20 +32,26 @@ export class DeliveryNoteForm {
     delivery = $state<boolean|null>();
     products: DeliveryNoteProductDto[] = $state([]);
     shortDescription: string = $state('');
+    privateDescription: string = $state('');
     assignment: string = $state('');
     shippingAddressId: string|null = $state(null);
     billingAddressId: string|null = $state(null);
+    adultGuests: number = $state(0);
+    childGuests: number = $state(0);
 
-    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null) {
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number = 0, childGuests: number = 0) {
         this.id = id;
         this.customer = customer;
         this.deliveryDate = deliveryDate;
         this.delivery = delivery;
         this.products = products;
         this.shortDescription = shortDescription;
+        this.privateDescription = privateDescription;
         this.assignment = assignment;
         this.shippingAddressId = shippingAddressId;
         this.billingAddressId = billingAddressId;
+        this.adultGuests = adultGuests;
+        this.childGuests = childGuests;
     }
 
     get customerId(): string | null {
@@ -83,7 +89,10 @@ export class DeliveryNoteForm {
             delivery: this.delivery,
             products: this.products,
             shippingAddressId: this.shippingAddressId,
-            billingAddressId: this.billingAddressId
+            billingAddressId: this.billingAddressId,
+            privateDescription: this.privateDescription,
+            adultGuests: this.adultGuests,
+            childGuests: this.childGuests
         });
     }
 
@@ -103,9 +112,12 @@ export class DeliveryNoteForm {
             delivery: this.delivery,
             products: this.products.map(p => ({ productId: p.productId, quantity: p.quantity, name: p.name })),
             shortDescription: this.shortDescription,
+            privateDescription: this.privateDescription,
             assignment: this.assignment,
             shippingAddressId: this.shippingAddressId,
             billingAddressId: this.billingAddressId,
+            adultGuests: this.adultGuests,
+            childGuests: this.childGuests,
         };
     }
 
@@ -138,7 +150,7 @@ export class DeliveryNoteForm {
             name: p.name,
         }));
 
-        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null);
+        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.privateDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null, obj.adultGuests ?? 0, obj.childGuests ?? 0);
     }
 
     private static DRAFT_KEY = 'deliveryNoteDraft';

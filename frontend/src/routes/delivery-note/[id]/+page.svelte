@@ -6,7 +6,7 @@ import PageHeadline from '$lib/components/PageHeadline.svelte';
 import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
-import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays } from '@lucide/svelte';
+import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
 
@@ -120,6 +120,18 @@ const printReturnNote = async () => {
                         Selbstabholer
                     {/if}
                 </div>
+
+                {#if data.deliveryNote.adultGuests > 0 || data.deliveryNote.childGuests > 0}
+                    <div class="delivery-info flex items-center gap-2">
+                        <UserGroup size="20"/>
+                        {#if data.deliveryNote.adultGuests > 0}
+                            <span>{data.deliveryNote.adultGuests} Erwachsene</span>
+                        {/if}
+                        {#if data.deliveryNote.childGuests > 0}
+                            -<span>{data.deliveryNote.childGuests} Kinder</span>
+                        {/if}
+                    </div>
+                {/if}
             </div>
 
             {#if data.deliveryNote.shippingAddress}
@@ -137,6 +149,10 @@ const printReturnNote = async () => {
 
         {#if data.deliveryNote.shortDescription}
             <div class="px-2 mt-2 text-surface-800-200" style="white-space: pre-line;">{data.deliveryNote.shortDescription}</div>
+        {/if}
+
+        {#if data.deliveryNote.privateDescription}
+            <div class="px-2 mt-2 text-surface-800-200" style="white-space: pre-line;">{data.deliveryNote.privateDescription}</div>
         {/if}
 
         <table class="mt-4 table text-lg">

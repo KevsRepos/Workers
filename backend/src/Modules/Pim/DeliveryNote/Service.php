@@ -44,9 +44,12 @@ final class Service {
             $data->deliveryDate,
             $data->delivery,
             $data->shortDescription,
+            $data->privateDescription,
             $data->assignment,
             $data->shippingAddressId,
             $data->billingAddressId,
+            $data->adultGuests,
+            $data->childGuests,
         );
 
         try {
@@ -91,7 +94,10 @@ final class Service {
         }
 
         $deliveryNote->shortDescription = $data->shortDescription;
+        $deliveryNote->privateDescription = $data->privateDescription;
         $deliveryNote->assignment = $data->assignment;
+        $deliveryNote->adultGuests = $data->adultGuests;
+        $deliveryNote->childGuests = $data->childGuests;
 
         if ($data->shippingAddressId) {
             $deliveryNote->shippingAddress = $this->customerAddressService->getAddress($data->shippingAddressId);

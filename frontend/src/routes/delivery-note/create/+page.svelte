@@ -83,17 +83,18 @@ $effect(() => {
 
 const saveDeliveryNote = async () => {    
     try {
-        console.log(deliveryNoteForm.shippingAddressId);
-        console.log(deliveryNoteForm.billingAddressId);
         const json = await fetchApi('delivery-notes', 'POST', {
             customerId: deliveryNoteForm.customer?.id,
             deliveryDate: deliveryNoteForm.deliveryDate,
             deliveryNoteProducts: deliveryNoteForm.products.map(p => ({ productId: p.productId, quantity: p.quantity })),
             delivery: deliveryNoteForm.delivery,
             shortDescription: deliveryNoteForm.shortDescription || null,
+            privateDescription: deliveryNoteForm.privateDescription || null,
             assignment: deliveryNoteForm.assignment || null,
             shippingAddressId: deliveryNoteForm.shippingAddressId || null,
             billingAddressId: deliveryNoteForm.billingAddressId || null,
+            adultGuests: deliveryNoteForm.adultGuests,
+            childGuests: deliveryNoteForm.childGuests
         });
 
         if (autoSaveEnabled) {

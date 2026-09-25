@@ -1,5 +1,5 @@
 <script lang="ts">
-import TextInput from "../elements/TextInput.svelte";
+import Input from "../elements/Input.svelte";
 import AddressFormular from "../customer/AddressFormular.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { Address } from "../customer/Address.svelte.ts";
@@ -74,18 +74,18 @@ const verifycustomerCreation = () => {
 
     {#if !isCompany}
         <fieldset class="flex flex-col sm:flex-row justify-between gap-2">
-            <TextInput label="Vorname" placeholder="Vorname" bind:value={firstName} />
-            <TextInput label="Nachname" placeholder="Nachname" bind:value={surname} />
+            <Input label="Vorname" placeholder="Vorname" bind:value={firstName} />
+            <Input label="Nachname" placeholder="Nachname" bind:value={surname} />
         </fieldset>
     {:else}
         <fieldset class="flex justify-between gap-2">
-            <TextInput label="Firma/Verein" placeholder="Firma/Verein" bind:value={companyName} />
+            <Input label="Firma/Verein" placeholder="Firma/Verein" bind:value={companyName} />
         </fieldset>
     {/if}
 
     <fieldset class="flex flex-col sm:flex-row justify-between gap-2">
-        <TextInput label="E-Mail" placeholder="E-Mail" bind:value={email} />
-        <TextInput label="Telefon" placeholder="Telefon" bind:value={phone} />
+        <Input label="E-Mail" placeholder="E-Mail" bind:value={email} />
+        <Input label="Telefon" placeholder="Telefon" bind:value={phone} />
     </fieldset>
 
     <Checkbox label="Ohne Adresse anlegen" bind:checked={withoutAddress} oninput={(evt: Event) => removeAddressForms(evt)} />

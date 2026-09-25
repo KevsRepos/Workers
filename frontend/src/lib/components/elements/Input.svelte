@@ -1,9 +1,11 @@
 <script lang="ts">
-let { label, placeholder = "", value = $bindable(""), ...restProps }: {
+let { label, placeholder = "", value = $bindable(""), type, ...restProps }: {
     label: string;
     placeholder?: string;
-    value?: string;
+    value?: string|number;
+    type?: 'text'|'number'
     [key: string]: any;
+    
 } = $props();
 </script>
 
@@ -11,7 +13,7 @@ let { label, placeholder = "", value = $bindable(""), ...restProps }: {
     <span class="label-text">{label}</span>
     <input
         class="input bg-surface-50-950"
-        type="text"
+        type={type || 'text'}
         placeholder={placeholder}
         bind:value={value}
         {...restProps}
