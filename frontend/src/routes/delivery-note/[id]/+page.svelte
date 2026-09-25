@@ -6,7 +6,7 @@ import PageHeadline from '$lib/components/PageHeadline.svelte';
 import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
-import { NotebookText, Printer, Pen, Navigation as  NavigationIcon } from '@lucide/svelte';
+import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
 
@@ -72,42 +72,74 @@ const printReturnNote = async () => {
 
     <PageHeadline>Lieferschein</PageHeadline>
 
-    <main class="lg:max-w-200 mx-auto">
+    <div class="customer-name bg-primary-50-950 w-full py-8 text-3xl font-bold mb-2">
+        <div class="lg:max-w-[70vw] px-2 lg:px-0 mx-auto flex justify-between">
+            <div class="flex items-center gap-2">
+                {data.deliveryNote.customer.displayName}
+            </div>
+
+            <div class="flex items-center gap-2">
+                {formatDate(data.deliveryNote.deliveryDate)}
+                <CalendarDays size="32"/>
+            </div>
+        </div>
+    </div>
+
+    <main class="mx-auto lg:max-w-[70vw]">
         {#if data.deliveryNote.status >= 4}
             <div class="badge preset-filled-success-500 mx-2 mb-2">Zurückgeschrieben</div>
         {/if}
 
-        <div class="customer-name font-bold px-2">{data.deliveryNote.customer.displayName}</div>
+        <div class="flex justify-between">
+            <div class="flex flex-col gap-1 border-s border-surface-400-600 ps-2">
+                {#if data.deliveryNote.customer.email}
+                    <div class="flex items-center gap-2">
+                        <Mail size="20"/>
+                        <a class="underline" href="mailto:{data.deliveryNote.customer.email}">{data.deliveryNote.customer.email}</a>
+                    </div>
+                {/if}
 
-        {#if data.deliveryNote.assignment}
-            <div class="px-2 mt-1">
-                <span class="badge preset-filled-surface-500">{data.deliveryNote.assignment}</span>
+                {#if data.deliveryNote.customer.phone}
+                    <div class="flex items-center gap-2">
+                        <Phone size="20"/>
+                        <a class="underline" href="tel:{data.deliveryNote.customer.phone}">{data.deliveryNote.customer.phone}</a>
+                    </div>
+                {/if}
+
+                {#if data.deliveryNote.assignment}
+                    <div class="mt-1">
+                        <span class="badge preset-filled-surface-500">{data.deliveryNote.assignment}</span>
+                    </div>
+                {/if}
+
+                <div class="delivery-info flex items-center gap-2">
+                    <Truck size="20"/>
+                    {#if data.deliveryNote.delivery}
+                        Lieferung
+                    {:else}
+                        Selbstabholer
+                    {/if}
+                </div>
             </div>
-        {/if}
 
-        <div class="delivery-info px-2">
-            {#if data.deliveryNote.delivery}
-                Zum liefern am {formatDate(data.deliveryNote.deliveryDate)}
-            {:else}
-                Zum abholen am {formatDate(data.deliveryNote.deliveryDate)}
+            {#if data.deliveryNote.shippingAddress}
+                <div class="flex items-center gap-4 px-2 border-e border-surface-400-600">
+                    <address>
+                        {data.deliveryNote.shippingAddress.street} {data.deliveryNote.shippingAddress.houseNumber}<br />
+                        {data.deliveryNote.shippingAddress.postalCode} {data.deliveryNote.shippingAddress.city}
+                    </address>
+                    <a class="p-2 hover:bg-surface-200-800 flex items-center rounded" href="https://www.google.com/maps/search/?api=1&query={data.deliveryNote.shippingAddress.street}+{data.deliveryNote.shippingAddress.houseNumber}+{data.deliveryNote.shippingAddress.postalCode}+{data.deliveryNote.shippingAddress.city}" target="_blank">
+                        <NavigationIcon/>
+                    </a>
+                </div>
             {/if}
         </div>
 
-        {#if data.deliveryNote.shippingAddress}
-            <div class="flex items-center gap-4 mt-2 px-2">
-                <address>
-                    {data.deliveryNote.shippingAddress.street} {data.deliveryNote.shippingAddress.houseNumber}<br />
-                    {data.deliveryNote.shippingAddress.postalCode} {data.deliveryNote.shippingAddress.city}
-                </address>
-                <a class="p-2 bg-surface-200-800 hover:bg-surface-300-700 rounded-md" href="https://www.google.com/maps/search/?api=1&query={data.deliveryNote.shippingAddress.street}+{data.deliveryNote.shippingAddress.houseNumber}+{data.deliveryNote.shippingAddress.postalCode}+{data.deliveryNote.shippingAddress.city}" target="_blank"><NavigationIcon /></a>
-            </div>
-        {/if}
-
         {#if data.deliveryNote.shortDescription}
-            <div class="px-2 mt-2 text-surface-600-400" style="white-space: pre-line;">{data.deliveryNote.shortDescription}</div>
+            <div class="px-2 mt-2 text-surface-800-200" style="white-space: pre-line;">{data.deliveryNote.shortDescription}</div>
         {/if}
 
-        <table class="mt-4 table">
+        <table class="mt-4 table text-lg">
             <thead>
                 <tr>
                     <th>Artikel</th>

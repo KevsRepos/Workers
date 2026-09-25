@@ -6,7 +6,7 @@ import CreateCustomerFormular from "./CreateCustomerFormular.svelte";
 import Checkbox from "../elements/Checkbox.svelte";
 import AddressFormular from "../customer/AddressFormular.svelte";
 import { Address } from "../customer/Address.svelte";
-import { MapPinHouse } from "@lucide/svelte";
+import { Mail, MapPinHouse, Phone } from "@lucide/svelte";
 
 let { selectedCustomer = $bindable(), selectedShippingAddress = $bindable(), selectedBillingAddress = $bindable() } = $props();
 
@@ -138,8 +138,24 @@ let addressCollection = $derived(useListCollection({
 </SearchSelectionBox>
 
 {#if selectedCustomer}
-    <div class="py-2 text-3xl">
-        {selectedCustomer.displayName}
+    <div class="border-y border-surface-400-600 my-3 py-2 flex flex-col gap-1">
+        <div class="flex items-center gap-2 text-2xl font-bold">
+            <div>{selectedCustomer.displayName}</div>
+        </div>
+
+        {#if selectedCustomer.phone}
+            <div class="flex items-center gap-2">
+                <Phone size="18" />
+                <div>{selectedCustomer.phone}</div>
+            </div>
+        {/if}
+
+        {#if selectedCustomer.email}
+            <div class="flex items-center gap-2">
+                <Mail size="18" />
+                <div>{selectedCustomer.email}</div>
+            </div>
+        {/if}
     </div>
 
     {#if selectedCustomer.addresses.length === 0}
