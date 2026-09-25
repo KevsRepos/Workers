@@ -35,11 +35,6 @@ class Repository
     {
         return $this->em->getRepository(CustomerAddress::class)
             ->createQueryBuilder('a')
-            ->select(
-                'a',
-                'CASE WHEN c.defaultShippingAddress = a.id THEN true ELSE false END AS defaultShippingAddress',
-                'CASE WHEN c.defaultBillingAddress = a.id THEN true ELSE false END AS defaultBillingAddress'
-            )
             ->join('a.customer', 'c')
             ->where('c.id = :customerId')
             ->setParameter('customerId', $customerId, 'uuid')

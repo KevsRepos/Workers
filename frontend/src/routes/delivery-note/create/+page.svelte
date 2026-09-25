@@ -8,7 +8,10 @@ import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
 import { onMount, tick } from "svelte";
 
 const deliveryNoteForm = new DeliveryNoteForm();
-const toaster = createToaster();
+
+const toaster = createToaster({
+    placement: 'top-end'
+});
 
 let autoSaveEnabled = $state(false);
 let draftToastId = $state('');
@@ -25,6 +28,14 @@ const restoreDraft = () => {
     deliveryNoteForm.assignment = draft.assignment;
     deliveryNoteForm.shippingAddressId = draft.shippingAddressId;
     deliveryNoteForm.billingAddressId = draft.billingAddressId;
+
+    if(deliveryNoteForm.customer !== null) {
+        fetchApi(`customers/${encodeURIComponent(deliveryNoteForm.customer.id)}/addresses`, 'GET')
+        .then((json) => {
+            deliveryNoteForm.customer.addresses = json;
+        });
+    }
+
     autoSaveEnabled = true;
     formKey++;
 };
@@ -40,6 +51,7 @@ onMount(async () => {
     if (customerName) {
         await tick();
         draftToastId = toaster.create({
+            
             title: 'Entwurf vorhanden',
             description: `Lieferschein für ${customerName} weiter bearbeiten?`,
             type: 'info',
@@ -104,7 +116,7 @@ const saveDeliveryNote = async () => {
 <Toast.Group {toaster}>
     {#snippet children(toast)}
         <Toast {toast} class="flex flex-col">
-            <Toast.Message>
+            <Toast.Message class="w-full">
                 <Toast.Title>{toast.title}</Toast.Title>
                 <Toast.Description>{toast.description}</Toast.Description>
             </Toast.Message>

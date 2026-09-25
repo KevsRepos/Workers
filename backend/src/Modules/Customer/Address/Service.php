@@ -66,18 +66,18 @@ final class Service
         $addresses = $this->repo->findByCustomerId($customerId);
 
         $responseAddresses = array_map(
-                fn($address) => new AddressResponseDto(
-                    $address->id,
-                    $address->street,
-                    $address->houseNumber,
-                    $address->city,
-                    $address->postalCode,
-                    $address->country,
-                    $address->isDefaultShipping,
-                    $address->isDefaultBilling
-                ),
-                $addresses
-            );
+            fn($address) => new AddressResponseDto(
+                $address->id,
+                $address->street,
+                $address->houseNumber,
+                $address->city,
+                $address->postalCode,
+                $address->country,
+                $address->defaultShippingAddress,
+                $address->defaultBillingAddress
+            ),
+            $addresses
+        );
 
         return $responseAddresses;
     }

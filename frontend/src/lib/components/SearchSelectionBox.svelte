@@ -11,6 +11,7 @@ let {
     label,
     content,
     aboveContent = null,
+    placeholder = "",
 }: {
     input: string,
     items: Array<SelectableItem>,
@@ -19,13 +20,14 @@ let {
     label: string,
     content: Snippet<[SelectableItem, (item: SelectableItem) => void]>,
     aboveContent?: Snippet<[]> | null,
+    placeholder?: string,
 } = $props();
 </script>
 
 <div class="relative">
     <label class="label">
         <span class="label-text">{label}</span>
-        <input class="input bg-surface-50-950" type="text" oninput={searchItem} bind:value={input} />
+        <input class="input bg-surface-50-950" type="text" oninput={searchItem} bind:value={input} placeholder={placeholder}/>
     </label>
 
     {#if input.length > 0}

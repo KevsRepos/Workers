@@ -9,6 +9,15 @@ interface Customer {
     id: string;
     firstName: string;
     surname: string;
+    addresses: Address[];
+}
+
+interface Address {
+    id: string;
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
 }
 
 export class DeliveryNoteForm {
@@ -102,6 +111,7 @@ export class DeliveryNoteForm {
             id: obj.customerId,
             firstName: obj.customerFirstName ?? '',
             surname: obj.customerSurname ?? '',
+            addresses: obj.customerAddresses ?? [],
         };
 
         const products: DeliveryNoteProductDto[] = (obj.products ?? []).map((p: any) => ({
