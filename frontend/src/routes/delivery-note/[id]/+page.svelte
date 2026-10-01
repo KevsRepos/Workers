@@ -6,7 +6,7 @@ import PageHeadline from '$lib/components/PageHeadline.svelte';
 import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
-import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup } from '@lucide/svelte';
+import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup, PhoneOutgoing } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
 
@@ -130,6 +130,13 @@ const printReturnNote = async () => {
                         {#if data.deliveryNote.childGuests > 0}
                             -<span>{data.deliveryNote.childGuests} Kinder</span>
                         {/if}
+                    </div>
+                {/if}
+
+                {#if data.deliveryNote.callBefore}
+                    <div class="delivery-info flex items-center gap-2">
+                        <PhoneOutgoing size="20"/>
+                        <span>Vorher anrufen</span>
                     </div>
                 {/if}
             </div>

@@ -51,4 +51,7 @@ class DeliveryNote extends Entity
 
     #[ORM\Column(nullable: true)]
     public ?int $childGuests = null;
+
+    #[ORM\Column]
+    public bool $callBefore = false;
 }

@@ -33,4 +33,7 @@ class CreateDeliveryNoteRequestDto
     public ?int $adultGuests = null;
 
     public ?int $childGuests = null;
+
+    #[Assert\Type('bool')]
+    public bool $callBefore;
 }

@@ -26,6 +26,7 @@ class Factory {
         ?string $billingAddressId = null,
         ?int $adultGuests = null,
         ?int $childGuests = null,
+        bool $callBefore = false,
     ): DeliveryNote {
         $deliveryNote = new DeliveryNote();
 
@@ -47,6 +48,7 @@ class Factory {
 
         $deliveryNote->adultGuests = $adultGuests;
         $deliveryNote->childGuests = $childGuests;
+        $deliveryNote->callBefore = $callBefore;
 
         return $deliveryNote;
     }
@@ -56,6 +58,7 @@ class Factory {
         ?string $customerId,
         ?string $deliveryDate,
         ?bool $delivery,
+        ?bool $callBefore,
         ?DeliveryNoteStatus $status,
     ): DeliveryNote {
         $deliveryNote = new DeliveryNote();

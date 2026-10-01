@@ -1,11 +1,14 @@
 <script lang="ts">
 import Input from "../elements/Input.svelte";
 import type { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
+import Checkbox from "../elements/Checkbox.svelte";
 
 let { deliveryNoteForm }: { deliveryNoteForm: DeliveryNoteForm } = $props();
 </script>
 
 <div class="flex flex-col gap-4">
+    <Checkbox label="Vorher anrufen" bind:checked={deliveryNoteForm.callBefore} />
+
     <h2 class="font-bold border-b">Freitextinformationen</h2>
     <label>
         <span class="label-text">Informationen für den Kunden (Sichtbar auf Lieferschein)</span>

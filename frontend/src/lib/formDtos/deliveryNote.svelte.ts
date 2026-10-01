@@ -38,8 +38,9 @@ export class DeliveryNoteForm {
     billingAddressId: string|null = $state(null);
     adultGuests: number|null = $state(null);
     childGuests: number|null = $state(null);
+    callBefore: boolean = $state(false);
 
-    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number|null = null, childGuests: number|null = null) {
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number|null = null, childGuests: number|null = null, callBefore: boolean = false) {
         this.id = id;
         this.customer = customer;
         this.deliveryDate = deliveryDate;
@@ -52,6 +53,7 @@ export class DeliveryNoteForm {
         this.billingAddressId = billingAddressId;
         this.adultGuests = adultGuests;
         this.childGuests = childGuests;
+        this.callBefore = callBefore;
     }
 
     get customerId(): string | null {
@@ -92,7 +94,8 @@ export class DeliveryNoteForm {
             billingAddressId: this.billingAddressId,
             privateDescription: this.privateDescription,
             adultGuests: this.adultGuests ?? 0,
-            childGuests: this.childGuests ?? 0
+            childGuests: this.childGuests ?? 0,
+            callBefore: this.callBefore
         });
     }
 
@@ -118,6 +121,7 @@ export class DeliveryNoteForm {
             billingAddressId: this.billingAddressId,
             adultGuests: this.adultGuests,
             childGuests: this.childGuests,
+            callBefore: this.callBefore,
         };
     }
 
@@ -150,7 +154,7 @@ export class DeliveryNoteForm {
             name: p.name,
         }));
 
-        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.privateDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null, obj.adultGuests ?? 0, obj.childGuests ?? 0);
+        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.privateDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null, obj.adultGuests ?? 0, obj.childGuests ?? 0, obj.callBefore);
     }
 
     private static DRAFT_KEY = 'deliveryNoteDraft';

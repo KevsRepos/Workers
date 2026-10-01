@@ -35,4 +35,7 @@ class UpdateDeliveryNoteRequestDto
     public ?int $adultGuests = null;
 
     public ?int $childGuests = null;
+
+    #[Assert\Type('bool')]
+    public ?bool $callBefore;
 }

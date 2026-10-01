@@ -28,6 +28,10 @@ const restoreDraft = () => {
     deliveryNoteForm.assignment = draft.assignment;
     deliveryNoteForm.shippingAddressId = draft.shippingAddressId;
     deliveryNoteForm.billingAddressId = draft.billingAddressId;
+    deliveryNoteForm.adultGuests = draft.adultGuests;
+    deliveryNoteForm.childGuests = draft.childGuests;
+    deliveryNoteForm.privateDescription = draft.privateDescription;
+    deliveryNoteForm.callBefore = draft.callBefore;
 
     if(deliveryNoteForm.customer !== null) {
         fetchApi(`customers/${encodeURIComponent(deliveryNoteForm.customer.id)}/addresses`, 'GET')
@@ -94,7 +98,8 @@ const saveDeliveryNote = async () => {
             shippingAddressId: deliveryNoteForm.shippingAddressId || null,
             billingAddressId: deliveryNoteForm.billingAddressId || null,
             adultGuests: deliveryNoteForm.adultGuests,
-            childGuests: deliveryNoteForm.childGuests
+            childGuests: deliveryNoteForm.childGuests,
+            callBefore: deliveryNoteForm.callBefore
         });
 
         if (autoSaveEnabled) {

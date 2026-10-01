@@ -19,7 +19,8 @@ const deliveryNoteForm = new DeliveryNoteForm(
     data.shippingAddress?.id ?? null,
     data.billingAddress?.id ?? null,
     data.adultGuests,
-    data.childGuests
+    data.childGuests,
+    data.callBefore
 );
 
 const removedProductIds: string[] = $state([]);
