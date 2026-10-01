@@ -1,5 +1,6 @@
 <script lang="ts">
 import { fetchApi } from "$lib/fetchApi";
+import { volumeHighlighter } from "$lib/volumeHighlighter";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";
 
 let { selectedProducts = $bindable(), deliveryNoteForm } = $props();
@@ -60,7 +61,7 @@ const setQuantity = (event: KeyboardEvent) => {
 
 <SearchSelectionBox bind:inputElement={inputElement} bind:input={productInput} bind:items={searchItems} searchItem={searchProduct} onSelect={selectProduct} label="Artikel" placeholder="Krombacher, Coca Cola...">
     {#snippet content(item, onSelect)}
-        <button onclick={() => onSelect(item)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{item.name}</button>
+        <button onclick={() => onSelect(item)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{@html volumeHighlighter(item.name)}</button>
     {/snippet}
 </SearchSelectionBox>
 

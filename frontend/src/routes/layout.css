@@ -53,3 +53,65 @@ footer {
 background: #2A5E3C;
 background: linear-gradient(52deg, rgba(42, 94, 60, 0.25) 4%, rgba(255, 255, 255, 1) 18%);
 }
+
+.volume-highlight {
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.highlight-24033l {
+    background: #dbeafe; /* blau */
+}
+
+.highlight-20033l {
+    background: #e0e7ff; /* indigo */
+}
+
+.highlight-2005l {
+    background: #dcfce7; /* grün */
+}
+
+.highlight-2405l {
+    background: #d1fae5; /* emerald */
+}
+
+.highlight-1105l {
+    background: #cffafe; /* cyan */
+}
+
+.highlight-121l {
+    background: #fef3c7; /* gelb */
+}
+
+.highlight-61l {
+    background: #fed7aa; /* orange */
+}
+
+.highlight-28025l {
+    background: #fce7f3; /* pink */
+}
+
+.highlight-24025l {
+    background: #fecdd3; /* rosa */
+}
+
+.highlight-1207l {
+    background: #e9d5ff; /* violett */
+}
+
+.highlight-5l {
+    background: #f3e8ff; /* hellviolett */
+}
+
+.highlight-30l {
+    background: #d9f99d; /* limette */
+}
+
+.highlight-50l {
+    background: #fde68a; /* goldgelb */
+}
+
+.highlight-30033l {
+    background: #e0f7fa; /* hellblau */
+}
