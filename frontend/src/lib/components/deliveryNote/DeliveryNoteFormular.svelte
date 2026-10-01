@@ -103,7 +103,7 @@ const setDeliveryNoteDate = (date: string) => {
             <Steps.Content index={3}>
                 <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} />
 
-                <div class="flex flex-col gap-2 mt-2 divider-y max-h-64 overflow-y-auto">
+                <div class="flex flex-col gap-2 mt-2 divider-y overflow-y-auto">
                     {#each deliveryNoteForm.products as product, index}
                         <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
                             <div class="flex gap-2 items-center">
@@ -113,7 +113,7 @@ const setDeliveryNoteDate = (date: string) => {
                                 <div>{product.name}</div>
                             </div>
 
-                            <input class="input bg-surface-300-700 w-24" type="number" min="1" bind:value={deliveryNoteForm.products[index].quantity} />
+                            <input placeholder="Menge" class="input bg-surface-300-700 w-32" type="number" min="1" bind:value={deliveryNoteForm.products[index].quantity} />
                         </div>
                     {/each}
                 </div>
@@ -161,7 +161,11 @@ const setDeliveryNoteDate = (date: string) => {
                     {#if deliveryNoteForm.products.length > 0}
                         <ul>
                             {#each deliveryNoteForm.products as product}
-                                <li>{product.name} - {product.quantity} Stk.</li>
+                                {#if product.quantity}
+                                    <li>{product.name} - {product.quantity} Stk.</li>
+                                {:else}
+                                    <li>{product.name} - <span class="badge preset-tonal-surface">Keine Menge</span></li>
+                                {/if}
                             {/each}
                         </ul>
                     {:else}
@@ -170,7 +174,6 @@ const setDeliveryNoteDate = (date: string) => {
                 </div>
 
                 <button class="btn preset-filled-surface-950-50 w-full mt-4" disabled={!deliveryNoteIsValid} onclick={() => {saveDeliveryNote()}}>Speichern</button>
-                
             </Steps.Content>
 
             <div class="flex justify-between gap-2 w-full">

@@ -1,8 +1,8 @@
 <script lang="ts">
-let { label, checked = $bindable(), ...restProps } = $props();
+let { label, checked = $bindable(), inputClasses = '', ...restProps } = $props();
 </script>
 
-<label class="flex items-center gap-2">
+<label class="flex items-center gap-2 {restProps.class}">
     <span>{label}</span>
-    <input class="checkbox" type="checkbox" bind:checked={checked} {...restProps} />
+    <input {...restProps} class="checkbox" type="checkbox" bind:checked={checked} />
 </label>

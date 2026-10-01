@@ -1,7 +1,7 @@
 interface DeliveryNoteProductDto {
     id?: string;
     productId: string;
-    quantity: number;
+    quantity: number | null;
     name: string;
 }
 
@@ -66,13 +66,13 @@ export class DeliveryNoteForm {
         this.customer = customer;
     }
 
-    addProduct(productId: string, quantity: number = 1, name: string) {
+    addProduct(productId: string, quantity: number|null = null, name: string) {
         const existing = this.products.find(p => p.productId === productId);
-        if (existing) {
-            existing.quantity += quantity;
-        } else {
-            this.products.push({ productId, quantity, name });
+        if(existing) {
+            return;
         }
+
+        this.products.push({ productId, quantity, name });
     }
 
     removeProduct(productId: string) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+import type { DeliveryNoteProductDto } from '$lib/formDtos/deliveryNote.svelte';
 import PrintedDeliveryNoteCustomer from '$lib/components/deliveryNote/PrintedDeliveryNoteCustomer.svelte';
 import PrintedDeliveryNoteInternal from '$lib/components/deliveryNote/PrintedDeliveryNoteInternal.svelte';
 import PrintedReturnNote from '$lib/components/deliveryNote/PrintedReturnNote.svelte';
@@ -6,9 +7,11 @@ import PageHeadline from '$lib/components/PageHeadline.svelte';
 import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
-import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup, PhoneOutgoing } from '@lucide/svelte';
+import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup, PhoneOutgoing, Plus, PlusCircle, CirclePlus, Info, CircleAlert } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
+import ProductTable from './ProductTable.svelte';
+import InfoCard from '$lib/components/InfoCard.svelte';
 
 let { data } = $props();
 
@@ -44,7 +47,10 @@ const printReturnNote = async () => {
 }
 </script>
 
-<svelte:window onbeforeprint={() => {if(desiredPrint === 'deliveryNote') {printing = true;} else if(desiredPrint === 'returnNote') {printingReturnNote = true;} }} onafterprint={async () => {printing = false; printingReturnNote = false}} />
+<svelte:window 
+    onbeforeprint={() => {if(desiredPrint === 'deliveryNote') {printing = true;} else if(desiredPrint === 'returnNote') {printingReturnNote = true;} }} 
+    onafterprint={async () => {printing = false; printingReturnNote = false}}
+/>
 
 {#if !printing && !printingReturnNote}
     <TopNavigation>
@@ -71,6 +77,10 @@ const printReturnNote = async () => {
     </TopNavigation>
 
     <PageHeadline>Lieferschein</PageHeadline>
+
+    {#if data.deliveryNote.deliveryNoteProducts.find((product: DeliveryNoteProductDto) => !product.quantity)}
+        <InfoCard title="Mengenangaben unvollständig" message="Bitte überprüfe die Mengenangaben der Artikel." type="warning" />
+    {/if}
 
     <div class="customer-name bg-primary-50-950 w-full py-8 text-3xl font-bold mb-2">
         <div class="lg:max-w-[70vw] px-2 lg:px-0 mx-auto flex justify-between">
@@ -169,64 +179,7 @@ const printReturnNote = async () => {
             <div class="px-2 mt-2 text-surface-800-200" style="white-space: pre-line;">{data.deliveryNote.privateDescription}</div>
         {/if}
 
-        <table class="mt-4 table text-lg">
-            <thead>
-                <tr>
-                    <th>Artikel</th>
-                    <th class={{'text-right!': data.deliveryNote.status < 4, 'text-center!': data.deliveryNote.status >= 4}}>Menge</th>
-                    {#if data.deliveryNote.status >= 4}
-                        <th class="text-center!">Zurück</th>
-                        <th class="text-center!">Gesamt</th>
-                    {/if}
-                </tr>
-            </thead>
-            <tbody class="[&>tr>td]:border-l [&>tr>td]:border-r [&>tr>td]:border-surface-200-800 border-b border-surface-200-800">
-                {#if data.deliveryNote.status >= 4}
-                    {#each data.returnUnions as union}
-                        <tr>
-                            <td>
-                                {union.name}
-                                {#if union.isUnion}
-                                    <span class="text-surface-500 text-sm">(Zusammengefasste Einheit)</span>
-                                {/if}
-                            </td>
-                            <td class="text-center!">{union.quantity} Stk.</td>
-                            <td class="text-center!">
-                                {#if union.returnNoteEntry?.returnedFull}
-                                    {union.returnNoteEntry.returnedFull} Stk.
-                                {/if}
-                                {#if union.returnNoteEntry?.returnedFullBottles}
-                                    <br />{union.returnNoteEntry.returnedFullBottles} Fl.
-                                {/if}
-                            </td>
-                            <td class="text-right!">
-                                {#if union.returnNoteEntry?.returnedTotal}
-                                    {#if union.deposit}
-                                        {union.returnNoteEntry.returnedTotal} * {(((union.deposit.crateAmount || 0) + (union.deposit.singleAmount * (union.quantityInCrate || 0))) / 100).toFixed(2)}€
-                                    {:else}
-                                        {union.returnNoteEntry.returnedTotal} Stk.
-                                    {/if}
-                                {/if}
-                                {#if union.returnNoteEntry?.returnedTotalBottles}
-                                    {#if union.deposit}
-                                        <br />{union.returnNoteEntry.returnedTotalBottles} * {(union.deposit.singleAmount / 100).toFixed(2)}€
-                                    {:else}
-                                        <br />{union.returnNoteEntry.returnedTotalBottles} Fl.
-                                    {/if}
-                                {/if}
-                            </td>
-                        </tr>
-                    {/each}
-                {:else}
-                    {#each data.deliveryNote.deliveryNoteProducts as item}
-                        <tr>
-                            <td>{item.product.name}</td>
-                            <td class="text-right!">{item.quantity} Stk.</td>
-                        </tr>
-                    {/each}
-                {/if}
-            </tbody>
-        </table>
+        <ProductTable deliveryNote={data.deliveryNote} returnUnions={data.returnUnions} />
     </main>
 {:else if printing}
     <PrintedDeliveryNoteCustomer deliveryNote={{

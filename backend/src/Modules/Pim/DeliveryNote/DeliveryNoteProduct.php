@@ -24,6 +24,6 @@ class DeliveryNoteProduct extends Entity
     #[ORM\JoinColumn(name: "return_note_entry_id", referencedColumnName: "id", nullable: true)]
     public ?ReturnNoteEntry $returnNoteEntry = null;
 
-    #[ORM\Column]
-    public int $quantity;
+    #[ORM\Column(nullable: true)]
+    public ?int $quantity = null;
 }

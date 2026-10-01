@@ -5,11 +5,11 @@ namespace App\Modules\Pim\DeliveryNote;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Request;
 use App\Modules\Pim\DeliveryNote\Service;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\CreateReturnNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\UpdateDeliveryNoteRequestDto;
+use App\Modules\Pim\DeliveryNote\Dto\DeliveryNoteProductsQuantitiesDto;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 class Controller extends AbstractController
@@ -62,6 +62,17 @@ class Controller extends AbstractController
     public function updateDeliveryNote(#[MapRequestPayload] UpdateDeliveryNoteRequestDto $dto, string $id, Service $service): JsonResponse
     {
         $result = $service->update($id, $dto);
+        if ($result instanceof \Error) {
+            return new JsonResponse($result, $result->getCode());
+        }
+
+        return new JsonResponse($result->getResponse());
+    }
+
+    #[Route('/delivery-notes/{id}/products/quantities', methods: ['PUT'])]
+    public function updateDeliveryNoteProducts(#[MapRequestPayload] DeliveryNoteProductsQuantitiesDto $dto, string $id, Service $service): JsonResponse
+    {
+        $result = $service->updateProductQuantities($id, $dto);
         if ($result instanceof \Error) {
             return new JsonResponse($result, $result->getCode());
         }

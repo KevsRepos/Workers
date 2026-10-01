@@ -11,7 +11,6 @@ class DeliveryNoteProductDto
     #[Assert\NotBlank]
     public string $productId;
 
-    #[Assert\NotBlank]
     #[Assert\Positive]
-    public int $quantity;
+    public ?int $quantity = null;
 }

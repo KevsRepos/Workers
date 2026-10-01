@@ -7,6 +7,7 @@ use Exception;
 use App\Modules\Pim\DeliveryNote\Dto\CreateReturnNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\CreateDeliveryNoteRequestDto;
 use App\Modules\Pim\DeliveryNote\Dto\UpdateDeliveryNoteRequestDto;
+use App\Modules\Pim\DeliveryNote\Dto\DeliveryNoteProductsQuantitiesDto;
 use App\Modules\Pim\DeliveryNote\Repository;
 use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -247,5 +248,26 @@ final class Service {
             'deliveryNote' => $deliveryNote,
             'returnUnions' => array_merge(array_values($unionEntries), $standalone),
         ];
+    }
+
+    function updateProductQuantities(string $deliveryNoteId, DeliveryNoteProductsQuantitiesDto $dto): Error|Success
+    {
+        $deliveryNote = $this->repo->findById($deliveryNoteId);
+
+        if (!$deliveryNote) {
+            return new Error("DeliveryNote not found", 404);
+        }
+
+        foreach ($dto->products as $dnp) {
+            $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->find($dnp->id);
+            if ($deliveryNoteProduct) {
+                $deliveryNoteProduct->quantity = $dnp->quantity;
+                $this->em->persist($deliveryNoteProduct);
+            }
+        }
+
+        $this->em->flush();
+
+        return new Success("ProductQuantitiesUpdated", ['id' => $deliveryNoteId]);
     }
 }
