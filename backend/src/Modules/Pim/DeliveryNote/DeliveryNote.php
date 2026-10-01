@@ -20,6 +20,9 @@ class DeliveryNote extends Entity
     #[ORM\Column(type: "datetime_immutable")]
     public DateTimeImmutable $deliveryDate;
 
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    public ?DateTimeImmutable $pickupDate = null;
+
     #[ORM\Column]
     public bool $delivery;
 

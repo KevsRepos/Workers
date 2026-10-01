@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Steps } from "@skeletonlabs/skeleton-svelte";
+import { parseDate, Steps } from "@skeletonlabs/skeleton-svelte";
 import CustomerSearch from "./CustomerSearch.svelte";
 import DatePicker from "../DatePicker.svelte";
 import ProductSearch from "./ProductSearch.svelte";
@@ -32,6 +32,14 @@ const removeProduct = (index: number) => {
 
     if (removed[0].id) {
         removedProductIds.push(removed[0].id);
+    }
+}
+
+const setDeliveryNoteDate = (date: string) => {
+    deliveryNoteForm.deliveryDate = date;
+
+    if(deliveryNoteForm.pickupDate && new Date(deliveryNoteForm.pickupDate) < new Date(deliveryNoteForm.deliveryDate)) {
+        deliveryNoteForm.pickupDate = deliveryNoteForm.deliveryDate;
     }
 }
 </script>
@@ -79,7 +87,19 @@ const removeProduct = (index: number) => {
                     </label>
                 </div>
 
-                <DatePicker class="mt-4" label="Lieferdatum" bind:value={deliveryNoteForm.deliveryDate}></DatePicker>
+                {deliveryNoteForm.deliveryDate}
+                <DatePicker class="mt-4" label="Lieferdatum" bind:value={
+                    () => deliveryNoteForm.deliveryDate.slice(0, 10),
+                    (v) => setDeliveryNoteDate(v)
+                }></DatePicker>
+
+                {deliveryNoteForm.pickupDate}
+                {#if deliveryNoteForm.deliveryDate}
+                    <DatePicker class="mt-4" label="Abholdatum" bind:value={
+                    () => deliveryNoteForm.pickupDate && deliveryNoteForm.pickupDate.slice(0, 10),
+                    (v) => deliveryNoteForm.pickupDate = v
+                } min={parseDate(deliveryNoteForm.deliveryDate.slice(0, 10))}></DatePicker>
+                {/if}
             </Steps.Content>
 
             <Steps.Content index={3}>

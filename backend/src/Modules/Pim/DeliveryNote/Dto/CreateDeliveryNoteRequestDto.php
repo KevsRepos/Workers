@@ -12,6 +12,8 @@ class CreateDeliveryNoteRequestDto
     #[Assert\NotBlank]
     public string $deliveryDate;
 
+    public ?string $pickupDate = null;
+
     #[Assert\Type('bool')]
     public bool $delivery = false;
 

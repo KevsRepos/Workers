@@ -11,6 +11,8 @@ class UpdateDeliveryNoteRequestDto
 
     public string $deliveryDate = '';
 
+    public ?string $pickupDate = null;
+
     public ?bool $delivery = false;
 
     public ?string $shortDescription = null;

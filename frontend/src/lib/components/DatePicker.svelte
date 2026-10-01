@@ -2,7 +2,7 @@
 import { DatePicker } from '@skeletonlabs/skeleton-svelte';
 import { parseDate } from '@internationalized/date';
 
-let { label, class: className = "", value = $bindable<string>() } = $props();
+let { label, class: className = "", value = $bindable<string>(), ...restProps } = $props();
 
 const toCalendarDate = (iso: string) => {
     try { return iso ? [parseDate(iso)] : undefined; } catch { return undefined; }
@@ -12,6 +12,7 @@ const toCalendarDate = (iso: string) => {
 <DatePicker inline={true} locale="de-DE" class={className}
     value={toCalendarDate(value)}
     onValueChange={(details) => { value = details.value[0]?.toString() ?? ''; }}
+	{...restProps}
 >
 	<DatePicker.Label>{label}</DatePicker.Label>
 	<DatePicker.Content>

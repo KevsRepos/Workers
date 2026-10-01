@@ -30,6 +30,7 @@ export class DeliveryNoteForm {
     customer: Customer | null = $state(null);
     deliveryDate: string = $state('');
     delivery = $state<boolean|null>();
+    pickupDate: string | null = $state(null);
     products: DeliveryNoteProductDto[] = $state([]);
     shortDescription: string = $state('');
     privateDescription: string = $state('');
@@ -40,10 +41,11 @@ export class DeliveryNoteForm {
     childGuests: number|null = $state(null);
     callBefore: boolean = $state(false);
 
-    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number|null = null, childGuests: number|null = null, callBefore: boolean = false) {
+    constructor(id: string|null = null, customer: Customer | null = null, deliveryDate: string = '', pickupDate: string | null = null, delivery: boolean = true, products: DeliveryNoteProductDto[] = [], shortDescription: string = '', privateDescription: string = '', assignment: string = '', shippingAddressId: string|null = null, billingAddressId: string|null = null, adultGuests: number|null = null, childGuests: number|null = null, callBefore: boolean = false) {
         this.id = id;
         this.customer = customer;
         this.deliveryDate = deliveryDate;
+        this.pickupDate = pickupDate;
         this.delivery = delivery;
         this.products = products;
         this.shortDescription = shortDescription;
@@ -88,6 +90,7 @@ export class DeliveryNoteForm {
         return JSON.stringify({
             customerId: this.customerId,
             deliveryDate: this.deliveryDate,
+            pickupDate: this.pickupDate,
             delivery: this.delivery,
             products: this.products,
             shippingAddressId: this.shippingAddressId,
@@ -112,6 +115,7 @@ export class DeliveryNoteForm {
             customerSurname: this.customer?.surname ?? '',
             displayName: this.customer ? `${this.customer.firstName} ${this.customer.surname}` : '',
             deliveryDate: this.deliveryDate,
+            pickupDate: this.pickupDate,
             delivery: this.delivery,
             products: this.products.map(p => ({ productId: p.productId, quantity: p.quantity, name: p.name })),
             shortDescription: this.shortDescription,
@@ -154,7 +158,7 @@ export class DeliveryNoteForm {
             name: p.name,
         }));
 
-        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.delivery ?? true, products, obj.shortDescription ?? '', obj.privateDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null, obj.adultGuests ?? 0, obj.childGuests ?? 0, obj.callBefore);
+        return new DeliveryNoteForm(null, customer, obj.deliveryDate ?? '', obj.pickupDate, obj.delivery ?? true, products, obj.shortDescription ?? '', obj.privateDescription ?? '', obj.assignment ?? '', obj.shippingAddressId ?? null, obj.billingAddressId ?? null, obj.adultGuests ?? 0, obj.childGuests ?? 0, obj.callBefore);
     }
 
     private static DRAFT_KEY = 'deliveryNoteDraft';

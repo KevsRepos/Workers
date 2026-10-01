@@ -42,6 +42,7 @@ final class Service {
         $deliveryNote = $this->factory->createNewDeliveryNote(
             $data->customerId,
             $data->deliveryDate,
+            $data->pickupDate,
             $data->delivery,
             $data->shortDescription,
             $data->privateDescription,
@@ -84,6 +85,10 @@ final class Service {
 
         if ($data->deliveryDate) {
             $deliveryNote->deliveryDate = new \DateTimeImmutable($data->deliveryDate);
+        }
+
+        if ($data->pickupDate) {
+            $deliveryNote->pickupDate = new \DateTimeImmutable($data->pickupDate);
         }
 
         if ($data->delivery !== null) {

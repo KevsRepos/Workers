@@ -139,6 +139,13 @@ const printReturnNote = async () => {
                         <span>Vorher anrufen</span>
                     </div>
                 {/if}
+
+                {#if data.deliveryNote.pickupDate}
+                    <div class="delivery-info flex items-center gap-2">
+                        <CalendarDays size="20"/>
+                        <span>Zurück am: {formatDate(data.deliveryNote.pickupDate)}</span>
+                    </div>
+                {/if}
             </div>
 
             {#if data.deliveryNote.shippingAddress}

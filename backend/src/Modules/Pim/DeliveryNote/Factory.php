@@ -18,6 +18,7 @@ class Factory {
     public function createNewDeliveryNote(
         string $customerId,
         string $deliveryDate,
+        ?string $pickupDate,
         bool $delivery,
         ?string $shortDescription = null,
         ?string $privateDescription = null,
@@ -32,6 +33,7 @@ class Factory {
 
         $deliveryNote->customer = $this->em->getRepository(Customer::class)->find($customerId);
         $deliveryNote->deliveryDate = new DateTimeImmutable($deliveryDate);
+        $deliveryNote->pickupDate = $pickupDate !== null ? new DateTimeImmutable($pickupDate) : null;
         $deliveryNote->delivery = $delivery;
         $deliveryNote->status = DeliveryNoteStatus::OPEN;
         $deliveryNote->shortDescription = $shortDescription;
@@ -57,6 +59,7 @@ class Factory {
         string $id,
         ?string $customerId,
         ?string $deliveryDate,
+        ?string $pickupDate,
         ?bool $delivery,
         ?bool $callBefore,
         ?DeliveryNoteStatus $status,

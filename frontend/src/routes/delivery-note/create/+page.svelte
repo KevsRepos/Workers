@@ -22,6 +22,7 @@ const restoreDraft = () => {
     if (!draft) return;
     deliveryNoteForm.customer = draft.customer;
     deliveryNoteForm.deliveryDate = draft.deliveryDate;
+    deliveryNoteForm.pickupDate = draft.pickupDate;
     deliveryNoteForm.delivery = draft.delivery;
     deliveryNoteForm.products = draft.products;
     deliveryNoteForm.shortDescription = draft.shortDescription;
@@ -75,6 +76,7 @@ $effect(() => {
     const _ = [
         deliveryNoteForm.customer,
         deliveryNoteForm.deliveryDate,
+        deliveryNoteForm.pickupDate,
         deliveryNoteForm.delivery,
         deliveryNoteForm.shortDescription,
         deliveryNoteForm.assignment,
@@ -90,6 +92,7 @@ const saveDeliveryNote = async () => {
         const json = await fetchApi('delivery-notes', 'POST', {
             customerId: deliveryNoteForm.customer?.id,
             deliveryDate: deliveryNoteForm.deliveryDate,
+            pickupDate: deliveryNoteForm.pickupDate,
             deliveryNoteProducts: deliveryNoteForm.products.map(p => ({ productId: p.productId, quantity: p.quantity })),
             delivery: deliveryNoteForm.delivery,
             shortDescription: deliveryNoteForm.shortDescription || null,
