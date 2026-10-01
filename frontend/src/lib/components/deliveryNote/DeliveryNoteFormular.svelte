@@ -87,13 +87,11 @@ const setDeliveryNoteDate = (date: string) => {
                     </label>
                 </div>
 
-                {deliveryNoteForm.deliveryDate}
                 <DatePicker class="mt-4" label="Lieferdatum" bind:value={
                     () => deliveryNoteForm.deliveryDate.slice(0, 10),
                     (v) => setDeliveryNoteDate(v)
                 }></DatePicker>
 
-                {deliveryNoteForm.pickupDate}
                 {#if deliveryNoteForm.deliveryDate}
                     <DatePicker class="mt-4" label="Abholdatum" bind:value={
                     () => deliveryNoteForm.pickupDate && deliveryNoteForm.pickupDate.slice(0, 10),
