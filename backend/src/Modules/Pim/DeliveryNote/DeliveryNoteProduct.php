@@ -25,5 +25,5 @@ class DeliveryNoteProduct extends Entity
     public ?ReturnNoteEntry $returnNoteEntry = null;
 
     #[ORM\Column(nullable: true)]
-    public ?int $quantity = null;
+    public ?float $quantity = null;
 }

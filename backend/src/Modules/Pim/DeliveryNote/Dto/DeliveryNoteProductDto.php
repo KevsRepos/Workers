@@ -12,5 +12,5 @@ class DeliveryNoteProductDto
     public string $productId;
 
     #[Assert\Positive]
-    public ?int $quantity = null;
+    public ?float $quantity = null;
 }
