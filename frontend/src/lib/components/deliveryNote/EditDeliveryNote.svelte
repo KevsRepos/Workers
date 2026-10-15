@@ -18,9 +18,11 @@ const formatDateForInput = (dateStr: string): string => {
     return d.toISOString().slice(0, 10);
 }
 
-let deliveryDate = $state(formatDateForInput(deliveryNoteForm.deliveryDate));
+let deliveryDate = $state('');
 
 onMount(() => {
+    deliveryDate = formatDateForInput(deliveryNoteForm.deliveryDate);
+
     if(deliveryNoteForm.customer === null || deliveryNoteForm.delivery === undefined) {
         deliveryNoteForm.delivery = null;
     }

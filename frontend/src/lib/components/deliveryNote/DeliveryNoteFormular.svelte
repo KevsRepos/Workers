@@ -5,6 +5,7 @@ import DatePicker from "../DatePicker.svelte";
 import ProductSearch from "./ProductSearch.svelte";
 import { CircleX } from "@lucide/svelte";
 import { onMount } from "svelte";
+import { isDeliveryNoteSubmittable, normalizePickupDate } from "$lib/deliveryNote/validation";
 import { formatDate } from "$lib/functions/formatDate";
 import OrderDescriptions from "./OrderDescriptions.svelte";
 
@@ -12,7 +13,12 @@ let { deliveryNoteForm, saveDeliveryNote, removedProductIds = [] } = $props();
 
 let step = $state(0);
 
-let deliveryNoteIsValid = $derived(!!deliveryNoteForm.customer && deliveryNoteForm.deliveryDate !== null && deliveryNoteForm.delivery !== null && deliveryNoteForm.products.length > 0);
+let deliveryNoteIsValid = $derived(isDeliveryNoteSubmittable({
+    customer: deliveryNoteForm.customer,
+    deliveryDate: deliveryNoteForm.deliveryDate,
+    delivery: deliveryNoteForm.delivery,
+    products: deliveryNoteForm.products,
+}));
 
 onMount(() => {
     if(deliveryNoteForm.customer === null || deliveryNoteForm.delivery === undefined) {
@@ -37,10 +43,7 @@ const removeProduct = (index: number) => {
 
 const setDeliveryNoteDate = (date: string) => {
     deliveryNoteForm.deliveryDate = date;
-
-    if(deliveryNoteForm.pickupDate && new Date(deliveryNoteForm.pickupDate) < new Date(deliveryNoteForm.deliveryDate)) {
-        deliveryNoteForm.pickupDate = deliveryNoteForm.deliveryDate;
-    }
+    deliveryNoteForm.pickupDate = normalizePickupDate(deliveryNoteForm.deliveryDate, deliveryNoteForm.pickupDate);
 }
 </script>
 

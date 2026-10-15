@@ -1,11 +1,15 @@
 <script lang="ts">
 import { browser } from "$app/env";
+import { addProductToDeliveryNote, updateDeliveryNoteProductQuantity } from "$lib/deliveryNote/actions";
 import { fetchApi } from "$lib/fetchApi";
 import { volumeHighlighter } from "$lib/volumeHighlighter";
 import Checkbox from "../elements/Checkbox.svelte";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";
 
-let { selectedProducts = $bindable(), deliveryNoteForm } = $props();
+let { selectedProducts = $bindable(), deliveryNoteForm } = $props<{
+    selectedProducts: any;
+    deliveryNoteForm: any;
+}>();
 
 const getQuantityInputStorage = (): boolean => {
     if(!browser) return false;
@@ -53,7 +57,7 @@ const searchProduct = async (event: Event) => {
 }
 
 const selectProduct = (product: { id: string; name: string }) => {
-    deliveryNoteForm.addProduct(product.id, null, product.name);
+    addProductToDeliveryNote(deliveryNoteForm, product.id, null, product.name);
     currentProduct = product;
     quantityInput?.focus();
 
@@ -68,7 +72,11 @@ const selectProduct = (product: { id: string; name: string }) => {
 }
 
 const setQuantity = () => {
-    deliveryNoteForm.updateQuantity(currentProduct?.id, quantity);
+    if (!currentProduct?.id || typeof quantity !== 'number') {
+        return;
+    }
+
+    updateDeliveryNoteProductQuantity(deliveryNoteForm, currentProduct.id, quantity);
 
     productInput = '';
     

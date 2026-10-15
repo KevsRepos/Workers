@@ -3,6 +3,11 @@ import { fetchApi } from "$lib/fetchApi";
 import { Combobox, Portal, type ComboboxRootProps, useListCollection } from "@skeletonlabs/skeleton-svelte";
 import { CircleX } from "@lucide/svelte";
 
+interface SearchProduct {
+    id: string;
+    name: string;
+}
+
 let { name = $bindable(), selectedProducts = $bindable(), onSave, saving = false, error = '', success = '' } = $props<{
     name: string;
     selectedProducts: { id: string; name: string }[];
@@ -12,13 +17,13 @@ let { name = $bindable(), selectedProducts = $bindable(), onSave, saving = false
     success?: string;
 }>();
 
-let searchResults = $state<any[]>([]);
+let searchResults = $state<SearchProduct[]>([]);
 let searchTimeout: ReturnType<typeof setTimeout>;
 
 const collection = $derived(useListCollection({
     items: searchResults,
     itemToString: (item) => item.name,
-    itemToValue: (item) => item
+    itemToValue: (item) => item.id
 }));
 
 const onSearch: ComboboxRootProps['onInputValueChange'] = async (event) => {
@@ -31,13 +36,22 @@ const onSearch: ComboboxRootProps['onInputValueChange'] = async (event) => {
             return;
         }
 
-        searchResults = await fetchApi(`products/search?productName=${encodeURIComponent(query)}`, 'GET');
+        searchResults = await fetchApi(`products/search?productName=${encodeURIComponent(query)}`, 'GET') as SearchProduct[];
     }, 300);
 };
 
 const onSelect: ComboboxRootProps['onSelect'] = (event) => {
-    const product = event.itemValue;
-    if (!selectedProducts.some(p => p.id === product.id)) {
+    const value = event.itemValue;
+    if (typeof value !== 'string') {
+        return;
+    }
+
+    const product = searchResults.find((item) => item.id === value);
+    if (!product) {
+        return;
+    }
+
+    if (!selectedProducts.some((p: { id: string }) => p.id === product.id)) {
         selectedProducts.push({ id: product.id, name: product.name });
     }
 };

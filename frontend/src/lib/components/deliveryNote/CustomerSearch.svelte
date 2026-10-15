@@ -7,12 +7,33 @@ import Checkbox from "../elements/Checkbox.svelte";
 import AddressFormular from "../customer/AddressFormular.svelte";
 import { Address } from "../customer/Address.svelte";
 import { Mail, MapPinHouse, Phone } from "@lucide/svelte";
+import { onMount } from "svelte";
 
-let { selectedCustomer = $bindable(), selectedShippingAddress = $bindable(), selectedBillingAddress = $bindable() } = $props();
+let {
+    selectedCustomer = $bindable(),
+    selectedShippingAddress = $bindable(),
+    selectedBillingAddress = $bindable(),
+    autoFocus = false,
+    jump,
+} = $props<{
+    selectedCustomer: any;
+    selectedShippingAddress?: string | null;
+    selectedBillingAddress?: string | null;
+    autoFocus?: boolean;
+    jump?: () => void;
+}>();
 
 let searchTimeout: ReturnType<typeof setTimeout>;
 
 let searchItems = $state([]);
+
+let inputElement: HTMLInputElement | null = $state(null);
+
+onMount(() => {
+    if (autoFocus) {
+        inputElement?.focus();
+    }
+});
 
 let customerInput: string = $state('');
 
@@ -72,6 +93,7 @@ const selectCustomer = async (item: { id: string; name: string }) => {
     selectedCustomer = customer;
     
     customerInput = '';
+    jump?.();
 }
 
 const addCustomer = async () => {
@@ -127,7 +149,7 @@ let addressCollection = $derived(useListCollection({
 }));
 </script>
 
-<SearchSelectionBox inputElement={null} bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde" placeholder="Kundename, Firma, Verein...">
+<SearchSelectionBox bind:inputElement={inputElement} bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde" placeholder="Kundename, Firma, Verein...">
     {#snippet aboveContent()}
         <button onclick={addCustomer} class="btn preset-filled m-1">Kunden {customerInput} anlegen</button>
     {/snippet}

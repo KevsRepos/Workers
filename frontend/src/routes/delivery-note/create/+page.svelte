@@ -2,6 +2,8 @@
 import { goto } from "$app/navigation";
 import DeliveryNoteFormular from "$lib/components/deliveryNote/DeliveryNoteFormular.svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
+import { applyStateToDeliveryNoteForm, createAutosaveSnapshot, deliveryNoteFormToState, stateToCreatePayload } from "$lib/deliveryNote/formMapper";
+import { clearDeliveryNoteDraft, getDeliveryNoteDraftCustomerName, loadDeliveryNoteDraft, saveDeliveryNoteDraft } from "$lib/deliveryNote/draftStore";
 import { fetchApi } from "$lib/fetchApi";
 import { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
 import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
@@ -18,26 +20,15 @@ let draftToastId = $state('');
 let formKey = $state(0);
 
 const restoreDraft = () => {
-    const draft = DeliveryNoteForm.loadDraft();
+    const draft = loadDeliveryNoteDraft();
     if (!draft) return;
-    deliveryNoteForm.customer = draft.customer;
-    deliveryNoteForm.deliveryDate = draft.deliveryDate;
-    deliveryNoteForm.pickupDate = draft.pickupDate;
-    deliveryNoteForm.delivery = draft.delivery;
-    deliveryNoteForm.products = draft.products;
-    deliveryNoteForm.shortDescription = draft.shortDescription;
-    deliveryNoteForm.assignment = draft.assignment;
-    deliveryNoteForm.shippingAddressId = draft.shippingAddressId;
-    deliveryNoteForm.billingAddressId = draft.billingAddressId;
-    deliveryNoteForm.adultGuests = draft.adultGuests;
-    deliveryNoteForm.childGuests = draft.childGuests;
-    deliveryNoteForm.privateDescription = draft.privateDescription;
-    deliveryNoteForm.callBefore = draft.callBefore;
+    applyStateToDeliveryNoteForm(deliveryNoteForm, draft);
 
     if(deliveryNoteForm.customer !== null) {
+        const customer = deliveryNoteForm.customer;
         fetchApi(`customers/${encodeURIComponent(deliveryNoteForm.customer.id)}/addresses`, 'GET')
         .then((json) => {
-            deliveryNoteForm.customer.addresses = json;
+            customer.addresses = json;
         });
     }
 
@@ -46,13 +37,13 @@ const restoreDraft = () => {
 };
 
 const discardDraft = () => {
-    DeliveryNoteForm.clearDraft();
+    clearDeliveryNoteDraft();
     autoSaveEnabled = true;
     if (draftToastId) toaster.dismiss(draftToastId);
 };
 
 onMount(async () => {
-    const customerName = DeliveryNoteForm.getDraftCustomerName();
+    const customerName = getDeliveryNoteDraftCustomerName();
     if (customerName) {
         await tick();
         draftToastId = toaster.create({
@@ -73,40 +64,19 @@ onMount(async () => {
 
 $effect(() => {
     if (!autoSaveEnabled) return;
-    const _ = [
-        deliveryNoteForm.customer,
-        deliveryNoteForm.deliveryDate,
-        deliveryNoteForm.pickupDate,
-        deliveryNoteForm.delivery,
-        deliveryNoteForm.shortDescription,
-        deliveryNoteForm.assignment,
-        JSON.stringify(deliveryNoteForm.products),
-    ];
-    if (deliveryNoteForm.customerId) {
-        DeliveryNoteForm.saveDraft(deliveryNoteForm);
+    const _ = createAutosaveSnapshot(deliveryNoteFormToState(deliveryNoteForm));
+    if (deliveryNoteForm.customer?.id) {
+        saveDeliveryNoteDraft(deliveryNoteFormToState(deliveryNoteForm));
     }
 });
 
 const saveDeliveryNote = async () => {    
     try {
-        const json = await fetchApi('delivery-notes', 'POST', {
-            customerId: deliveryNoteForm.customer?.id,
-            deliveryDate: deliveryNoteForm.deliveryDate,
-            pickupDate: deliveryNoteForm.pickupDate,
-            deliveryNoteProducts: deliveryNoteForm.products.map(p => ({ productId: p.productId, quantity: p.quantity })),
-            delivery: deliveryNoteForm.delivery,
-            shortDescription: deliveryNoteForm.shortDescription || null,
-            privateDescription: deliveryNoteForm.privateDescription || null,
-            assignment: deliveryNoteForm.assignment || null,
-            shippingAddressId: deliveryNoteForm.shippingAddressId || null,
-            billingAddressId: deliveryNoteForm.billingAddressId || null,
-            adultGuests: deliveryNoteForm.adultGuests,
-            childGuests: deliveryNoteForm.childGuests,
-            callBefore: deliveryNoteForm.callBefore
-        });
+        const state = deliveryNoteFormToState(deliveryNoteForm);
+        const json = await fetchApi('delivery-notes', 'POST', stateToCreatePayload(state));
 
         if (autoSaveEnabled) {
-            DeliveryNoteForm.clearDraft();
+            clearDeliveryNoteDraft();
         }
 
         goto(`/delivery-note/${json.data.id}`);

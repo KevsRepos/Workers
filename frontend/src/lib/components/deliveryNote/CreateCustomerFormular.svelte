@@ -5,6 +5,7 @@ import { fetchApi } from "$lib/fetchApi";
 import { Address } from "../customer/Address.svelte.ts";
 import Checkbox from "../elements/Checkbox.svelte";
 import { X } from "@lucide/svelte";
+import { onMount } from "svelte";
 
 let { input, oncreate }: { input: string; oncreate?: (customer: any) => void } = $props();
 
@@ -13,9 +14,19 @@ let addressForms: Address[] = $state([new Address("", "", "", "", false, false)]
 let isCompany = $state(false);
 let withoutAddress = $state(false);
 
-let firstName = $state(input.split(" ")[0] ?? "");
-let surname = $state(input.split(" ").slice(1).join(" ") ?? "");
-let companyName = $state(input);
+let firstName = $state("");
+let surname = $state("");
+let companyName = $state("");
+
+const initializeFromInput = (value: string): void => {
+    firstName = value.split(" ")[0] ?? "";
+    surname = value.split(" ").slice(1).join(" ") ?? "";
+    companyName = value;
+};
+
+onMount(() => {
+    initializeFromInput(input);
+});
 
 let email = $state("");
 let phone = $state("");

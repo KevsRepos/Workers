@@ -4,15 +4,39 @@ import { fetchApi } from "$lib/fetchApi";
 import { Pen } from "@lucide/svelte";
 import { tick } from "svelte";
 
-let { deliveryNote, returnUnions } = $props();
+interface DeliveryNoteProductRow {
+    id: string;
+    quantity: number | null;
+    product: {
+        id: string;
+        name: string;
+    };
+}
 
-let productQuantities = $state(deliveryNote.deliveryNoteProducts.map((dnp) => {
-    return {
+let { deliveryNote, returnUnions } = $props<{
+    deliveryNote: {
+        id: string;
+        status: number;
+        deliveryNoteProducts: DeliveryNoteProductRow[];
+    };
+    returnUnions: any[];
+}>();
+
+let productQuantities = $state<Array<{ id: string; quantity: number; productId: string }>>([]);
+let productQuantitiesInitialized = $state(false);
+
+$effect(() => {
+    if (productQuantitiesInitialized) {
+        return;
+    }
+
+    productQuantities = deliveryNote.deliveryNoteProducts.map((dnp: DeliveryNoteProductRow) => ({
         id: dnp.id,
         quantity: dnp.quantity ?? 0,
-        productId: dnp.product.id
-    }
-}));
+        productId: dnp.product.id,
+    }));
+    productQuantitiesInitialized = true;
+});
 
 let quantityInputs = $state<Array<HTMLInputElement>>([]);
 

@@ -8,22 +8,36 @@ import type { ReturnUnion } from "$lib/interfaces/DeliveryNote";
 
 const { data } = $props();
 
-let deliveryNote = $state(data.deliveryNote);
-let returnUnions: ReturnUnion[] = $state(data.returnUnions);
+const deliveryNote = $derived(data.deliveryNote);
+const returnUnions: ReturnUnion[] = $derived(data.returnUnions);
 
-let unionReturnData = $state(
-    returnUnions.map(() => ({
-        returnedTotal: null as number | null,
-        returnedTotalBottles: null as number | null,
-        returnedFull: null as number | null,
-        returnedFullBottles: null as number | null,
-    }))
-);
+let unionReturnData = $state<Array<{
+    returnedTotal: number | null;
+    returnedTotalBottles: number | null;
+    returnedFull: number | null;
+    returnedFullBottles: number | null;
+}>>([]);
+let unionReturnDataInitialized = $state(false);
+
+$effect(() => {
+    if (unionReturnDataInitialized) {
+        return;
+    }
+
+    unionReturnData = returnUnions.map(() => ({
+        returnedTotal: null,
+        returnedTotalBottles: null,
+        returnedFull: null,
+        returnedFullBottles: null,
+    }));
+
+    unionReturnDataInitialized = true;
+});
 
 let toaster = createToaster();
 
 const saveReturnNote = async () => {
-    if([...document.querySelectorAll('input[required]')].some((input: HTMLInputElement) => input.value === '')) {
+    if ([...document.querySelectorAll<HTMLInputElement>('input[required]')].some((input) => input.value === '')) {
         toaster.warning({
             title: 'Fehler',
             description: 'Bitte fülle alle Felder aus.'
@@ -47,10 +61,10 @@ const saveReturnNote = async () => {
         await fetchApi(`delivery-notes/${deliveryNote.id}/return-note`, 'POST', payload);
 
         goto(`/delivery-note/${deliveryNote.id}`);
-    } catch(error) {
+    } catch(error: unknown) {
         toaster.error({
             title: 'Fehler',
-            description: error.message
+            description: error instanceof Error ? error.message : 'Unbekannter Fehler'
         });
     }
 }
