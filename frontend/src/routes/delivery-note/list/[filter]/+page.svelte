@@ -35,10 +35,6 @@ $inspect(data);
         <Navigation.TriggerText>Erstellen</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
     <Navigation.TriggerAnchor>
-        <Printer />
-        <Navigation.TriggerText>Alle drucken</Navigation.TriggerText>
-    </Navigation.TriggerAnchor>
-    <Navigation.TriggerAnchor>
         <select bind:value={filter} onchange={onFilterChange}>
             {#each filterOptions as opt}
                 <option value={opt.value}>{opt.label}</option>

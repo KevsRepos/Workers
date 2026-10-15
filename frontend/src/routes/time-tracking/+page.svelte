@@ -133,17 +133,9 @@ const addNew = () => {
 </script>
 
 <TopNavigation>
-    <Navigation.TriggerAnchor href="/delivery-note/create">
-        <CalendarClock />
-        <Navigation.TriggerText>Neu</Navigation.TriggerText>
-    </Navigation.TriggerAnchor>
     <Navigation.TriggerAnchor href="/time-tracking/list/{(new Date().getFullYear())}">
         <LayoutList />
-        <Navigation.TriggerText>Anzeigen</Navigation.TriggerText>
-    </Navigation.TriggerAnchor>
-    <Navigation.TriggerAnchor href="/time-tracking/notifications">
-        <Bell />
-        <Navigation.TriggerText>Benachrichtigungen</Navigation.TriggerText>
+        <Navigation.TriggerText>Alle Einträge</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
 </TopNavigation>
 

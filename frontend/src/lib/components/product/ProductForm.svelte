@@ -34,10 +34,10 @@ const setType = (type: 'sellable' | 'rentable') => {
         <input class="input" type="text" bind:value={name} />
     </label>
 
-    <label class="label">
+    <!-- <label class="label">
         <span class="label-text">Verkaufspreis (Cent)</span>
         <input class="input" type="number" bind:value={salesPrice} />
-    </label>
+    </label> -->
 
     <div class="flex flex-col gap-2">
         <label class="flex items-center gap-2">

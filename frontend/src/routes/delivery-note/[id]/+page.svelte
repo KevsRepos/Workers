@@ -82,7 +82,7 @@ const printReturnNote = async () => {
         <InfoCard title="Mengenangaben unvollständig" message="Bitte überprüfe die Mengenangaben der Artikel." type="warning" />
     {/if}
 
-    <div class="customer-name bg-primary-50-950 w-full py-8 text-3xl font-bold mb-2">
+    <div class="customer-name bg-primary-50-950 w-full py-8 text-xl md:text-3xl font-bold mb-2">
         <div class="lg:max-w-[70vw] px-2 lg:px-0 mx-auto flex justify-between">
             <div class="flex items-center gap-2">
                 {data.deliveryNote.customer.displayName}
