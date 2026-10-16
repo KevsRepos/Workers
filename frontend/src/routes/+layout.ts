@@ -1,3 +1,5 @@
+export const ssr = false;
+
 const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator) {
     try {
