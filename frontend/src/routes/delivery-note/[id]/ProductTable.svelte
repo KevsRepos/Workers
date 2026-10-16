@@ -74,12 +74,7 @@ const saveQuantities = async () => {
 
     quantityEditMode = false;
 
-    console.log('Saving quantities for delivery note:', deliveryNote.id);
-
-    invalidate((url) => {
-        console.log(url, deliveryNote.id);
-        return url.pathname === `/delivery-notes/${deliveryNote.id}/return-unions`
-    });
+    invalidate('delivery-note:return-unions');
 };
 
 const keypressHandler = (evt: KeyboardEvent) => {

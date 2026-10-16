@@ -1,8 +1,6 @@
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
-import { fetchApi } from '$lib/fetchApi.js';
-import { error } from '@sveltejs/kit';
 
-export const load = async ({ parent, params, fetch }) => {
+export const load = async ({ parent, params, fetch, depends }) => {
     const { token } = await parent();
 
     const res = await fetch(`${PUBLIC_BACKEND_URL}/delivery-notes/${params.id}/return-unions`, {
@@ -15,6 +13,8 @@ export const load = async ({ parent, params, fetch }) => {
     });
 
     const data = await res.json();
+
+    depends('delivery-note:return-unions');
 
     return { deliveryNote: data.deliveryNote, returnUnions: data.returnUnions };
 }
