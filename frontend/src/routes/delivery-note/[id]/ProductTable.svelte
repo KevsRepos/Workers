@@ -35,6 +35,7 @@ $effect(() => {
         quantity: dnp.quantity ?? 0,
         productId: dnp.product.id,
     }));
+
     productQuantitiesInitialized = true;
 });
 
@@ -73,7 +74,12 @@ const saveQuantities = async () => {
 
     quantityEditMode = false;
 
-    invalidate((url) => url.pathname === `/delivery-notes/${deliveryNote.id}/return-unions`);
+    console.log('Saving quantities for delivery note:', deliveryNote.id);
+
+    invalidate((url) => {
+        console.log(url, deliveryNote.id);
+        return url.pathname === `/delivery-notes/${deliveryNote.id}/return-unions`
+    });
 };
 
 const keypressHandler = (evt: KeyboardEvent) => {
