@@ -1,6 +1,5 @@
 <script lang="ts">
 import { fetchApi } from "$lib/fetchApi";
-import { useListCollection, Listbox } from "@skeletonlabs/skeleton-svelte";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";
 import CreateCustomerFormular from "./CreateCustomerFormular.svelte";
 import Checkbox from "../elements/Checkbox.svelte";
@@ -144,9 +143,9 @@ const saveAddress = async () => {
     newAddress = null;
 };
 
-let addressCollection = $derived(useListCollection({
-    items: Object.values(selectedCustomer?.addresses ?? []).map((a: any) => ({ ...a, value: a.id }))
-}));
+// let addressCollection = $derived(useListCollection({
+//     items: Object.values(selectedCustomer?.addresses ?? []).map((a: any) => ({ ...a, value: a.id }))
+// }));
 </script>
 
 <SearchSelectionBox bind:inputElement={inputElement} bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde" placeholder="Kundename, Firma, Verein...">
@@ -183,7 +182,7 @@ let addressCollection = $derived(useListCollection({
     {#if selectedCustomer.addresses.length === 0}
         <div class="pb-4 text-gray-400">Keine Adressen vorhanden</div>
     {:else}
-        <Listbox defaultValue={selectedShippingAddress ? [selectedShippingAddress] : []} onValueChange={(e) => selectedShippingAddress = e.value[0]} collection={addressCollection} deselectable={true} class="mb-2">
+        <!-- <Listbox defaultValue={selectedShippingAddress ? [selectedShippingAddress] : []} onValueChange={(e) => selectedShippingAddress = e.value[0]} collection={addressCollection} deselectable={true} class="mb-2">
             <Listbox.Label>Adresse</Listbox.Label>
             <Listbox.Content>
                 {#each addressCollection.items as address (address.id)}
@@ -202,12 +201,12 @@ let addressCollection = $derived(useListCollection({
                     </Listbox.Item>
                 {/each}
             </Listbox.Content>
-        </Listbox>
+        </Listbox> -->
 
         <Checkbox label="Abweichende Rechnungsadresse" bind:checked={differentBillingAddress} />
 
         {#if differentBillingAddress}
-            <Listbox defaultValue={selectedBillingAddress ? [selectedBillingAddress] : []} onValueChange={(e) => {console.log(e.value); selectedBillingAddress = e.value[0]}} collection={addressCollection} deselectable={true} class="mt-2">
+            <!-- <Listbox defaultValue={selectedBillingAddress ? [selectedBillingAddress] : []} onValueChange={(e) => {console.log(e.value); selectedBillingAddress = e.value[0]}} collection={addressCollection} deselectable={true} class="mt-2">
                 <Listbox.Label>Rechnungsadresse</Listbox.Label>
                 <Listbox.Content>
                     {#each addressCollection.items as address (address.id)}
@@ -226,7 +225,7 @@ let addressCollection = $derived(useListCollection({
                         </Listbox.Item>
                     {/each}
                 </Listbox.Content>
-            </Listbox>
+            </Listbox> -->
         {/if}
     {/if}
 

@@ -2,7 +2,7 @@
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import Pagination from "$lib/components/Pagination.svelte";
 import { Boxes, CirclePlus, Pen } from "@lucide/svelte";
-import { Navigation } from "@skeletonlabs/skeleton-svelte";
+// import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import { centToEuro } from "$lib/functions/helpers";
 import { goto } from "$app/navigation";
 import TopNavigation from "$lib/components/TopNavigation.svelte";
@@ -24,7 +24,7 @@ const onFilterChange = () => {
 }
 </script>
 
-<TopNavigation>
+<!-- <TopNavigation>
     <Navigation.TriggerAnchor href="/products/create">
         <CirclePlus />
         <Navigation.TriggerText>Anlegen</Navigation.TriggerText>
@@ -40,7 +40,7 @@ const onFilterChange = () => {
             {/each}
         </select>
     </Navigation.TriggerAnchor>
-</TopNavigation>
+</TopNavigation> -->
 
 <PageHeadline>Artikel</PageHeadline>
 

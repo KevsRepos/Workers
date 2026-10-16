@@ -5,7 +5,7 @@ import Drawer from "$lib/components/Drawer.svelte";
 import TopNavigation from "$lib/components/TopNavigation.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { Bell, CalendarClock, ChevronDown, ChevronRight, Hospital, LayoutList, PartyPopper, Pen, TreePalm } from "@lucide/svelte";
-import { Navigation } from "@skeletonlabs/skeleton-svelte";
+// import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
 const { data } = $props();
 
@@ -132,12 +132,12 @@ const addNew = () => {
 }
 </script>
 
-<TopNavigation>
+<!-- <TopNavigation>
     <Navigation.TriggerAnchor href="/time-tracking/list/{(new Date().getFullYear())}">
         <LayoutList />
         <Navigation.TriggerText>Alle Einträge</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
-</TopNavigation>
+</TopNavigation> -->
 
 <PageHeadline>Zeiterfassung</PageHeadline>
 

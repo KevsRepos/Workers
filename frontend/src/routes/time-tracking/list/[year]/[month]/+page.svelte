@@ -6,7 +6,6 @@ import PrintedTimeSheet from '$lib/components/timeSheet/PrintedTimeSheet.svelte'
 import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi';
 import { ChevronDown, ChevronRight, Hospital, Pen, PartyPopper, Printer, TreePalm } from '@lucide/svelte';
-import { Navigation } from '@skeletonlabs/skeleton-svelte';
 
 const { data } = $props();
 
@@ -69,12 +68,12 @@ const editEntry = (entryId: string) => {
 </script>
 
 <div class="screen-only">
-    <TopNavigation>
+    <!-- <TopNavigation>
         <Navigation.TriggerAnchor onclick={() => window.print()}>
             <Printer />
             <Navigation.TriggerText>Drucken</Navigation.TriggerText>
         </Navigation.TriggerAnchor>
-    </TopNavigation>
+    </TopNavigation> -->
 
     <PageHeadline>Zeiterfassung {data.month.toString().padStart(2, '0')}/{data.year}</PageHeadline>
 

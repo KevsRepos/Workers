@@ -3,7 +3,6 @@ import { goto } from "$app/navigation";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { fetchApi } from "$lib/fetchApi";
 import { ChevronRight } from "@lucide/svelte";
-import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
 import type { ReturnUnion } from "$lib/interfaces/DeliveryNote";
 
 const { data } = $props();
@@ -34,14 +33,14 @@ $effect(() => {
     unionReturnDataInitialized = true;
 });
 
-let toaster = createToaster();
+// let toaster = createToaster();
 
 const saveReturnNote = async () => {
     if ([...document.querySelectorAll<HTMLInputElement>('input[required]')].some((input) => input.value === '')) {
-        toaster.warning({
-            title: 'Fehler',
-            description: 'Bitte fülle alle Felder aus.'
-        });
+        // toaster.warning({
+        //     title: 'Fehler',
+        //     description: 'Bitte fülle alle Felder aus.'
+        // });
 
         return;
     }
@@ -62,10 +61,10 @@ const saveReturnNote = async () => {
 
         goto(`/delivery-note/${deliveryNote.id}`);
     } catch(error: unknown) {
-        toaster.error({
-            title: 'Fehler',
-            description: error instanceof Error ? error.message : 'Unbekannter Fehler'
-        });
+        // toaster.error({
+        //     title: 'Fehler',
+        //     description: error instanceof Error ? error.message : 'Unbekannter Fehler'
+        // });
     }
 }
 </script>
@@ -154,7 +153,7 @@ const saveReturnNote = async () => {
     </div>
 
     <div class="mt-4 mx-2">
-        <Toast.Group {toaster}>
+        <!-- <Toast.Group {toaster}>
             {#snippet children(toast)}
             <Toast {toast}>
                 <Toast.Message>
@@ -164,7 +163,7 @@ const saveReturnNote = async () => {
                 <Toast.CloseTrigger />
             </Toast>
             {/snippet}
-        </Toast.Group>
+        </Toast.Group> -->
 
         <button onclick={saveReturnNote} type="button" class="btn preset-filled w-full mb-150">
             <span>Speichern</span>

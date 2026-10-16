@@ -6,14 +6,13 @@ import { applyStateToDeliveryNoteForm, createAutosaveSnapshot, deliveryNoteFormT
 import { clearDeliveryNoteDraft, getDeliveryNoteDraftCustomerName, loadDeliveryNoteDraft, saveDeliveryNoteDraft } from "$lib/deliveryNote/draftStore";
 import { fetchApi } from "$lib/fetchApi";
 import { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
-import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
 import { onMount, tick } from "svelte";
 
 const deliveryNoteForm = new DeliveryNoteForm();
 
-const toaster = createToaster({
-    placement: 'top-end'
-});
+// const toaster = createToaster({
+//     placement: 'top-end'
+// });
 
 let autoSaveEnabled = $state(false);
 let draftToastId = $state('');
@@ -39,24 +38,24 @@ const restoreDraft = () => {
 const discardDraft = () => {
     clearDeliveryNoteDraft();
     autoSaveEnabled = true;
-    if (draftToastId) toaster.dismiss(draftToastId);
+    // if (draftToastId) toaster.dismiss(draftToastId);
 };
 
 onMount(async () => {
     const customerName = getDeliveryNoteDraftCustomerName();
     if (customerName) {
         await tick();
-        draftToastId = toaster.create({
+        // draftToastId = toaster.create({
             
-            title: 'Entwurf vorhanden',
-            description: `Lieferschein für ${customerName} weiter bearbeiten?`,
-            type: 'info',
-            duration: 60 * 60 * 1000,
-            action: {
-                label: 'Wiederherstellen',
-                onClick: restoreDraft,
-            },
-        });
+        //     title: 'Entwurf vorhanden',
+        //     description: `Lieferschein für ${customerName} weiter bearbeiten?`,
+        //     type: 'info',
+        //     duration: 60 * 60 * 1000,
+        //     action: {
+        //         label: 'Wiederherstellen',
+        //         onClick: restoreDraft,
+        //     },
+        // });
     } else {
         autoSaveEnabled = true;
     }
@@ -92,7 +91,7 @@ const saveDeliveryNote = async () => {
     <DeliveryNoteFormular deliveryNoteForm={deliveryNoteForm} saveDeliveryNote={saveDeliveryNote} />
 {/key}
 
-<Toast.Group {toaster}>
+<!-- <Toast.Group {toaster}>
     {#snippet children(toast)}
         <Toast {toast} class="flex flex-col">
             <Toast.Message class="w-full">
@@ -112,4 +111,4 @@ const saveDeliveryNote = async () => {
             </div>
         </Toast>
     {/snippet}
-</Toast.Group>
+</Toast.Group> -->

@@ -1,6 +1,5 @@
 <script lang="ts">
 import { fetchApi } from "$lib/fetchApi";
-import { Combobox, Portal, type ComboboxRootProps, useListCollection } from "@skeletonlabs/skeleton-svelte";
 import { CircleX } from "@lucide/svelte";
 
 interface SearchProduct {
@@ -20,41 +19,41 @@ let { name = $bindable(), selectedProducts = $bindable(), onSave, saving = false
 let searchResults = $state<SearchProduct[]>([]);
 let searchTimeout: ReturnType<typeof setTimeout>;
 
-const collection = $derived(useListCollection({
-    items: searchResults,
-    itemToString: (item) => item.name,
-    itemToValue: (item) => item.id
-}));
+// const collection = $derived(useListCollection({
+//     items: searchResults,
+//     itemToString: (item) => item.name,
+//     itemToValue: (item) => item.id
+// }));
 
-const onSearch: ComboboxRootProps['onInputValueChange'] = async (event) => {
-    const query = event.inputValue;
+// const onSearch: ComboboxRootProps['onInputValueChange'] = async (event) => {
+//     const query = event.inputValue;
 
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-        if (query.length < 2) {
-            searchResults = [];
-            return;
-        }
+//     clearTimeout(searchTimeout);
+//     searchTimeout = setTimeout(async () => {
+//         if (query.length < 2) {
+//             searchResults = [];
+//             return;
+//         }
 
-        searchResults = await fetchApi(`products/search?productName=${encodeURIComponent(query)}`, 'GET') as SearchProduct[];
-    }, 300);
-};
+//         searchResults = await fetchApi(`products/search?productName=${encodeURIComponent(query)}`, 'GET') as SearchProduct[];
+//     }, 300);
+// };
 
-const onSelect: ComboboxRootProps['onSelect'] = (event) => {
-    const value = event.itemValue;
-    if (typeof value !== 'string') {
-        return;
-    }
+// const onSelect: ComboboxRootProps['onSelect'] = (event) => {
+//     const value = event.itemValue;
+//     if (typeof value !== 'string') {
+//         return;
+//     }
 
-    const product = searchResults.find((item) => item.id === value);
-    if (!product) {
-        return;
-    }
+//     const product = searchResults.find((item) => item.id === value);
+//     if (!product) {
+//         return;
+//     }
 
-    if (!selectedProducts.some((p: { id: string }) => p.id === product.id)) {
-        selectedProducts.push({ id: product.id, name: product.name });
-    }
-};
+//     if (!selectedProducts.some((p: { id: string }) => p.id === product.id)) {
+//         selectedProducts.push({ id: product.id, name: product.name });
+//     }
+// };
 
 const removeProduct = (index: number) => {
     selectedProducts.splice(index, 1);
@@ -67,7 +66,7 @@ const removeProduct = (index: number) => {
         <input class="input" type="text" bind:value={name} />
     </label>
 
-    <Combobox {collection} onSelect={onSelect} onInputValueChange={onSearch} placeholder="Artikel suchen" multiple>
+    <!-- <Combobox {collection} onSelect={onSelect} onInputValueChange={onSearch} placeholder="Artikel suchen" multiple>
         <Combobox.Label>Artikel</Combobox.Label>
         <Combobox.Control>
             <Combobox.Input />
@@ -86,7 +85,7 @@ const removeProduct = (index: number) => {
                 {/if}
             </Combobox.Positioner>
         </Portal>
-    </Combobox>
+    </Combobox> -->
 
     <div class="flex flex-col gap-2">
         {#each selectedProducts as product, index}

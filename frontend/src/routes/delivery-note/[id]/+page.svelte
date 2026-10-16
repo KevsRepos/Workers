@@ -8,7 +8,6 @@ import TopNavigation from '$lib/components/TopNavigation.svelte';
 import { fetchApi } from '$lib/fetchApi.js';
 import { formatDate } from '$lib/functions/formatDate.js';
 import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup, PhoneOutgoing, Plus, PlusCircle, CirclePlus, Info, CircleAlert } from '@lucide/svelte';
-import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
 import ProductTable from './ProductTable.svelte';
 import InfoCard from '$lib/components/InfoCard.svelte';
@@ -53,7 +52,7 @@ const printReturnNote = async () => {
 />
 
 {#if !printing && !printingReturnNote}
-    <TopNavigation>
+    <!-- <TopNavigation>
         {#if data.deliveryNote.status < 4}
             <Navigation.TriggerAnchor href="/delivery-note/{data.deliveryNote.id}/edit">
                 <Pen />
@@ -74,9 +73,9 @@ const printReturnNote = async () => {
                 <Navigation.TriggerText>Rückschrift drucken</Navigation.TriggerText>
             </Navigation.TriggerAnchor>
         {/if}
-    </TopNavigation>
+    </TopNavigation> -->
 
-    <PageHeadline>Lieferschein</PageHeadline>
+    <!-- <PageHeadline>Lieferschein</PageHeadline> -->
 
     {#if data.deliveryNote.deliveryNoteProducts.find((product: DeliveryNoteProductDto) => !product.quantity)}
         <InfoCard title="Mengenangaben unvollständig" message="Bitte überprüfe die Mengenangaben der Artikel." type="warning" />

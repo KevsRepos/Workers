@@ -1,6 +1,5 @@
 <script lang="ts">
 import { BottleWine, Calendar1, Car, Dot, NotebookPen, Printer, User, Van } from "@lucide/svelte";
-import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { formatDate } from "$lib/functions/formatDate.js";
 import { fetchApi } from "$lib/fetchApi.js";
@@ -29,7 +28,7 @@ const onFilterChange = () => {
 $inspect(data);
 </script>
 
-<TopNavigation>
+<!-- <TopNavigation>
     <Navigation.TriggerAnchor href="/delivery-note/create">
         <NotebookPen />
         <Navigation.TriggerText>Erstellen</Navigation.TriggerText>
@@ -41,7 +40,7 @@ $inspect(data);
             {/each}
         </select>
     </Navigation.TriggerAnchor>
-</TopNavigation>
+</TopNavigation> -->
 
 <PageHeadline>Lieferscheine</PageHeadline>
 

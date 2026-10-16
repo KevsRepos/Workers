@@ -1,5 +1,4 @@
 <script lang="ts">
-import { parseDate, Steps } from "@skeletonlabs/skeleton-svelte";
 import CustomerSearch from "./CustomerSearch.svelte";
 import DatePicker from "../DatePicker.svelte";
 import ProductSearch from "./ProductSearch.svelte";
@@ -48,7 +47,7 @@ const setDeliveryNoteDate = (date: string) => {
 </script>
 
 <main class="px-4 flex flex-col h-full">
-    <Steps {step} onStepChange={(details) => (step = details.step)} orientation="vertical" count={steps.length} class="h-full flex-1 flex gap-8" linear={false} defaultStep={2}>
+    <!-- <Steps {step} onStepChange={(details) => (step = details.step)} orientation="vertical" count={steps.length} class="h-full flex-1 flex gap-8" linear={false} defaultStep={2}>
         <Steps.List class="hidden sm:flex h-fit">
             {#each steps as step, index}
                 <Steps.Item index={index}>
@@ -184,5 +183,5 @@ const setDeliveryNoteDate = (date: string) => {
                 <Steps.NextTrigger class="btn preset-filled">Weiter</Steps.NextTrigger>
             </div>
         </div>
-    </Steps>
+    </Steps> -->
 </main>

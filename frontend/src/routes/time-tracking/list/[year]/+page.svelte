@@ -3,7 +3,6 @@ import { goto } from "$app/navigation";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import TopNavigation from "$lib/components/TopNavigation.svelte";
 import { CalendarClock } from "@lucide/svelte";
-import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
 let { data } = $props();
 
@@ -20,7 +19,7 @@ const onFilterChange = () => {
 $inspect(data);
 </script>
 
-<TopNavigation>
+<!-- <TopNavigation>
     <Navigation.TriggerAnchor href="/time-tracking">
         <CalendarClock />
         <Navigation.TriggerText>Aktuell</Navigation.TriggerText>
@@ -32,7 +31,7 @@ $inspect(data);
             {/each}
         </select>
     </Navigation.TriggerAnchor>
-</TopNavigation>
+</TopNavigation> -->
 
 <PageHeadline>Zeiterfassung {data.year}</PageHeadline>
 

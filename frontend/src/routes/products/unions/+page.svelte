@@ -2,17 +2,17 @@
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import TopNavigation from "$lib/components/TopNavigation.svelte";
 import { CirclePlus, Pen } from "@lucide/svelte";
-import { Navigation } from "@skeletonlabs/skeleton-svelte";
+// import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
 let { data } = $props();
 </script>
 
-<TopNavigation>
+<!-- <TopNavigation>
     <Navigation.TriggerAnchor href="/products/unions/create">
         <CirclePlus />
         <Navigation.TriggerText>Anlegen</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
-</TopNavigation>
+</TopNavigation> -->
 
 <PageHeadline>Einheiten</PageHeadline>
 

@@ -2,7 +2,6 @@
 import './layout.css';
 import favicon from '$lib/assets/favicon.svg';
 import { Ham, Menu } from '@lucide/svelte';
-import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
 import { auth } from '$lib/auth.svelte';
 import PageHeadline from '$lib/components/PageHeadline.svelte';
@@ -42,17 +41,17 @@ async function handleLogin(e: Event) {
 
 <HamburgerMenu bind:open={menuOpen} {menuBtn} />
 
-<AppBar class="faboulus border-surface-200-800">
+<!-- <AppBar class="faboulus border-surface-200-800">
 	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
 		{#if data.loggedIn}
-			<!-- <AppBar.Lead> -->
+			<AppBar.Lead>
 				<button bind:this={menuBtn} onclick={() => menuOpen = !menuOpen}><Menu /></button>
-			<!-- </AppBar.Lead> -->
+			</AppBar.Lead>
 		{/if}
 		
 		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>
 	</AppBar.Toolbar>
-</AppBar>
+</AppBar> -->
 
 {#if !data.loggedIn}
 	<PageHeadline>Login</PageHeadline>

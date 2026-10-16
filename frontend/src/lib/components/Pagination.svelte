@@ -1,7 +1,7 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import { ChevronLeft, ChevronRight } from "@lucide/svelte";
-import { Pagination } from "@skeletonlabs/skeleton-svelte";
+// import { Pagination } from "@skeletonlabs/skeleton-svelte";
 
 let { data, href } = $props();
 
@@ -10,7 +10,7 @@ const changePage = (page: number) => {
 }
 </script>
 
-<Pagination
+<!-- <Pagination
     count={data.total}
     defaultPageSize={data.limit}
     page={data.page}
@@ -36,4 +36,4 @@ const changePage = (page: number) => {
     <Pagination.NextTrigger>
         <ChevronRight />
     </Pagination.NextTrigger>
-</Pagination>
+</Pagination> -->
