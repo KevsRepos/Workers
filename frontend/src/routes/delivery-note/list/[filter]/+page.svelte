@@ -21,7 +21,9 @@ const filterOptions = [
 
 let filter = $state(data.filter);
 
-const onFilterChange = () => {
+const onFilterChange = (event: CustomEvent<{ value: string }>) => {
+    filter = event.detail.value;
+    console.log(filter);
     goto(`/delivery-note/list/${filter}`);
 }
 
@@ -41,6 +43,26 @@ $inspect(data);
         </select>
     </Navigation.TriggerAnchor>
 </TopNavigation> -->
+
+<TopNavigation>
+    <ion-tab-button href="/delivery-note/create">
+        <NotebookPen />
+        Erstellen
+    </ion-tab-button>
+    <ion-tab-button>
+        <!-- <select bind:value={filter} onchange={onFilterChange}>
+            {#each filterOptions as opt}
+                <option value={opt.value}>{opt.label}</option>
+            {/each}
+        </select> -->
+
+        <ion-select value={filter} interface="action-sheet" onionChange={onFilterChange}>
+            {#each filterOptions as opt}
+                <ion-select-option value={opt.value}>{opt.label}</ion-select-option>
+            {/each}
+        </ion-select>
+    </ion-tab-button>
+</TopNavigation>
 
 <PageHeadline>Lieferscheine</PageHeadline>
 

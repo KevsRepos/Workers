@@ -50,10 +50,13 @@ const moveInList = (event: KeyboardEvent) => {
 <svelte:window onkeydown={moveInList} />
 
 <div class="relative">
-    <label class="label">
+    <!-- <label class="label">
         <span class="label-text">{label}</span>
         <input class="input bg-surface-50-950" type="text" oninput={searchItem} bind:value={input} bind:this={inputElement} placeholder={placeholder}/>
-    </label>
+    </label> -->
+
+    <!-- <IonInput bind:value={input} placeholder={placeholder} oninput={searchItem} label="Kunden suchen" /> -->
+    <ion-input label-placement="floating" fill="solid" placeholder={placeholder} oninput={searchItem} label={label}></ion-input>
 
     {#if input.length > 0}
         {@render aboveContent?.()}

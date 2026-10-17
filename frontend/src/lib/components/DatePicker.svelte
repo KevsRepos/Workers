@@ -103,3 +103,8 @@ let { label, class: className = "", value = $bindable<string>(), ...restProps } 
 		</DatePicker.View>
 	</DatePicker.Content>
 </DatePicker> -->
+
+<label class="label {className}">
+	<span class="label-text">{label}</span>
+	<input class="input bg-surface-50-950" type="date" bind:value {...restProps} />
+</label>

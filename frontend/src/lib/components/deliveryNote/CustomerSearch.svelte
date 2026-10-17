@@ -148,9 +148,9 @@ const saveAddress = async () => {
 // }));
 </script>
 
-<SearchSelectionBox bind:inputElement={inputElement} bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunde" placeholder="Kundename, Firma, Verein...">
+<SearchSelectionBox bind:inputElement={inputElement} bind:input={customerInput} bind:items={searchItems} searchItem={searchCustomer} onSelect={selectCustomer} label="Kunden suchen" placeholder="Kundename, Firma, Verein...">
     {#snippet aboveContent()}
-        <button onclick={addCustomer} class="btn preset-filled m-1">Kunden {customerInput} anlegen</button>
+        <ion-button onclick={addCustomer} class="btn preset-filled m-1">Kunden {customerInput} anlegen</ion-button>
     {/snippet}
 
     {#snippet content(item, onSelect)}
@@ -159,7 +159,7 @@ const saveAddress = async () => {
 </SearchSelectionBox>
 
 {#if selectedCustomer}
-    <div class="border-y border-surface-400-600 my-3 py-2 flex flex-col gap-1">
+    <div class="my-3 flex flex-col gap-1">
         <div class="flex items-center gap-2 text-2xl font-bold">
             <div>{selectedCustomer.displayName}</div>
         </div>
@@ -180,7 +180,7 @@ const saveAddress = async () => {
     </div>
 
     {#if selectedCustomer.addresses.length === 0}
-        <div class="pb-4 text-gray-400">Keine Adressen vorhanden</div>
+        <div class="text-gray-400">Keine Adressen vorhanden</div>
     {:else}
         <!-- <Listbox defaultValue={selectedShippingAddress ? [selectedShippingAddress] : []} onValueChange={(e) => selectedShippingAddress = e.value[0]} collection={addressCollection} deselectable={true} class="mb-2">
             <Listbox.Label>Adresse</Listbox.Label>
@@ -202,6 +202,20 @@ const saveAddress = async () => {
                 {/each}
             </Listbox.Content>
         </Listbox> -->
+
+        <ion-select placeholder="Adresse auswählen">
+            {#each selectedCustomer.addresses as address (address.id)}
+                <ion-select-option value={address.id}>
+                    {address.street} {address.houseNumber}, {address.postalCode} {address.city}
+                    {#if address.defaultShippingAddress}
+                        <span class="align-middle">Standard Versandadresse</span>
+                    {/if}
+                    {#if address.defaultBillingAddress}
+                        <span class="align-middle">Standard Rechnungsadresse</span>
+                    {/if}
+                </ion-select-option>
+            {/each}
+        </ion-select>
 
         <Checkbox label="Abweichende Rechnungsadresse" bind:checked={differentBillingAddress} />
 
@@ -230,10 +244,10 @@ const saveAddress = async () => {
     {/if}
 
     {#if !newAddress}
-        <button class="flex items-center justify-center gap-2 mt-8 shadow-sm h-48 w-full  bg-surface-50-950 hover:shadow-md transition rounded text-xl" onclick={() => newAddress = new Address("", "", "", "", false, false)}>
-            <MapPinHouse />
+        <ion-button expand="block" color="light" class="pt-2 h-48" onclick={() => newAddress = new Address("", "", "", "", false, false)}>
+            <MapPinHouse slot="start" />
             Neue Adresse hinzufügen
-        </button>
+        </ion-button>
     {/if}
 
     {#if newAddress}

@@ -3,8 +3,6 @@ import { invalidateAll } from "$app/navigation";
 import { auth } from "$lib/auth.svelte";
 import { BottleWine, ChevronRight, Clock, Cog, LogOut, NotebookPen, Settings, UserPen } from "@lucide/svelte";
 
-let { open = $bindable<boolean>(), menuBtn } = $props();
-
 const menuItems = [
     { icon: NotebookPen, label: 'Lieferscheine', href: '/delivery-note/list/1' },
     { icon: BottleWine, label: 'Artikel', href: '/products/list/all/1' },
@@ -13,17 +11,27 @@ const menuItems = [
 ];
 
 let nav = $state<HTMLElement>();
-
-const handleClick = (event: MouseEvent) => {
-    if (nav && !nav.contains(event.target as Node) && menuBtn && !menuBtn.contains(event.target as Node)) {
-        open = false;
-    }
-}
 </script>
 
-<svelte:document on:click={handleClick} />
+<ion-menu content-id="main-content" class="items-start">
+    <ion-content>
+        {#each menuItems as item}
+            <ion-item class="flex justify-between items-center hover:bg-surface-200" href={item.href} detail="false">
+                <div class="flex gap-2 items-center">
+                    <item.icon />
+                    {item.label}
+                </div>
+                <ChevronRight slot="end" />
+            </ion-item>
+        {/each}
+    </ion-content>
+</ion-menu>
 
-<nav bind:this={nav} class="{open ? 'visible slide-in' : 'slide-out invisible'} pt-4 flex flex-col lg:w-2/12 md:w-4/12 w-9/12 h-screen fixed top-0 bg-surface-100-900 z-50 shadow-md [&>a]:border-surface-950">
+<!-- <svelte:document on:click={handleClick} /> -->
+
+
+
+<!-- <nav bind:this={nav} class="{open ? 'visible slide-in' : 'slide-out invisible'} pt-4 flex flex-col lg:w-2/12 md:w-4/12 w-9/12 h-screen fixed top-0 bg-surface-100-900 z-50 shadow-md [&>a]:border-surface-950">
     {#each menuItems as item}
         <a onclick={() => open = false} class="px-2 py-4 flex justify-between items-center hover:bg-surface-200" href={item.href}>
             <div class="flex gap-2 items-center">
@@ -44,9 +52,9 @@ const handleClick = (event: MouseEvent) => {
         <LogOut />
         Ausloggen
     </button>
-</nav>
+</nav> -->
 
-<style>
+<!-- <style>
 .slide-in {
     animation: slideIn 0.3s forwards;
 }
@@ -61,4 +69,4 @@ const handleClick = (event: MouseEvent) => {
     from { left: 0; }
     to { left: -100%; }
 }
-</style>
+</style> -->
