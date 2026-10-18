@@ -97,10 +97,12 @@ const setDeliveryNoteDate = (date: string) => {
                 }></DatePicker>
 
                 {#if deliveryNoteForm.deliveryDate}
-                    <DatePicker class="mt-4" label="Abholdatum" bind:value={
-                    () => deliveryNoteForm.pickupDate && deliveryNoteForm.pickupDate.slice(0, 10),
-                    (v) => deliveryNoteForm.pickupDate = v
-                } min={parseDate(deliveryNoteForm.deliveryDate.slice(0, 10))}></DatePicker>
+                    {#key deliveryNoteForm.deliveryDate}
+                        <DatePicker class="mt-4" label="Abholdatum" bind:value={
+                            () => deliveryNoteForm.pickupDate && deliveryNoteForm.pickupDate.slice(0, 10),
+                            (v) => deliveryNoteForm.pickupDate = v
+                        } min={parseDate(deliveryNoteForm.deliveryDate.slice(0, 10))}></DatePicker>
+                    {/key}
                 {/if}
             </Steps.Content>
 
@@ -182,7 +184,7 @@ const setDeliveryNoteDate = (date: string) => {
 
             <div class="flex justify-between gap-2 w-full">
                 <Steps.PrevTrigger class="btn preset-filled">Zurück</Steps.PrevTrigger>
-                
+
                 {#if step === steps.length - 1}
                     <button class="btn preset-filled" type="button" disabled>Weiter</button>
                 {:else}
