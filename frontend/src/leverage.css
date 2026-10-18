@@ -27,8 +27,8 @@
 	--anchor-text-decoration-active: none;
 	--anchor-text-decoration-focus: none;
 	--spacing: 0.22rem;
-	--radius-base: .75rem;
-	--radius-container: 1.5rem;
+	--radius-base: .55rem;
+	--radius-container: 1rem;
 	--default-border-width: 1px;
 	--default-divide-width: 1px;
 	--default-ring-width: 1px;

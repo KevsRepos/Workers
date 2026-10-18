@@ -1,7 +1,7 @@
 <script lang="ts">
 import './layout.css';
 import favicon from '$lib/assets/favicon.svg';
-import { Ham, Menu } from '@lucide/svelte';
+import { Menu } from '@lucide/svelte';
 import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
 import { auth } from '$lib/auth.svelte';
@@ -45,9 +45,7 @@ async function handleLogin(e: Event) {
 <AppBar class="faboulus border-surface-200-800">
 	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
 		{#if data.loggedIn}
-			<!-- <AppBar.Lead> -->
-				<button bind:this={menuBtn} onclick={() => menuOpen = !menuOpen}><Menu /></button>
-			<!-- </AppBar.Lead> -->
+			<button bind:this={menuBtn} onclick={() => menuOpen = true}><Menu /></button>
 		{/if}
 		
 		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>

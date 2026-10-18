@@ -34,6 +34,10 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
     outline: none !important;
 }
 
+html {
+    touch-action: pan-y;
+}
+
 body {
     min-height: 100vh;
     display: flex;
