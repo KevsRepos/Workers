@@ -1,13 +1,13 @@
 <script lang="ts">
 import { parseDate, Steps } from "@skeletonlabs/skeleton-svelte";
 import CustomerSearch from "./CustomerSearch.svelte";
-import DatePicker from "../DatePicker.svelte";
 import ProductSearch from "./ProductSearch.svelte";
-import { CircleX } from "@lucide/svelte";
 import { onMount } from "svelte";
 import { isDeliveryNoteSubmittable, normalizePickupDate } from "$lib/deliveryNote/validation";
 import { formatDate } from "$lib/functions/formatDate";
 import OrderDescriptions from "./OrderDescriptions.svelte";
+import DeliveryDetails from "./DeliveryDetails.svelte";
+import Summary from "./Summary.svelte";
 
 let { deliveryNoteForm, saveDeliveryNote, removedProductIds = [] } = $props();
 
@@ -33,14 +33,6 @@ const steps = [
     { title: 'Artikel'},
     { title: 'Zusammenfassung'}
 ];
-
-const removeProduct = (index: number) => {
-    const removed = deliveryNoteForm.products.splice(index, 1);
-
-    if (removed[0].id) {
-        removedProductIds.push(removed[0].id);
-    }
-}
 
 const setDeliveryNoteDate = (date: string) => {
     deliveryNoteForm.deliveryDate = date;
@@ -79,115 +71,21 @@ const setDeliveryNoteDate = (date: string) => {
             </Steps.Content>
 
             <Steps.Content index={2}>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center justify-center h-20 bg-surface-50-950 rounded-2xl gap-2">
-                        <input bind:group={deliveryNoteForm.delivery} class="radio" type="radio" name="delivery" value={true}/>
-                        <p>Zum ausliefern</p>
-                    </label>
-
-                    <label class="flex h-20 bg-surface-50-950 rounded-2xl items-center justify-center gap-2">
-                        <input bind:group={deliveryNoteForm.delivery} class="radio" type="radio" name="delivery" value={false}/>
-                        <p>Selbstabholer</p>
-                    </label>
-                </div>
-
-                <DatePicker class="mt-4" label="Lieferdatum" bind:value={
-                    () => deliveryNoteForm.deliveryDate.slice(0, 10),
-                    (v) => setDeliveryNoteDate(v)
-                }></DatePicker>
-
-                {#if deliveryNoteForm.deliveryDate}
-                    {#key deliveryNoteForm.deliveryDate}
-                        <DatePicker class="mt-4" label="Abholdatum" bind:value={
-                            () => deliveryNoteForm.pickupDate && deliveryNoteForm.pickupDate.slice(0, 10),
-                            (v) => deliveryNoteForm.pickupDate = v
-                        } min={parseDate(deliveryNoteForm.deliveryDate.slice(0, 10))}></DatePicker>
-                    {/key}
-                {/if}
+                <DeliveryDetails {deliveryNoteForm} {setDeliveryNoteDate} {parseDate} />
             </Steps.Content>
 
             <Steps.Content index={3}>
-                <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} />
-
-                <div class="flex flex-col gap-2 mt-2 divider-y overflow-y-auto">
-                    {#each deliveryNoteForm.products as product, index}
-                        <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
-                            <div class="flex gap-2 items-center">
-                                <button onclick={() => removeProduct(index)} type="button">
-                                    <CircleX />
-                                </button>
-                                <div>{product.name}</div>
-                            </div>
-
-                            <input placeholder="Menge" class="input bg-surface-300-700 w-32" type="number" min="1" bind:value={deliveryNoteForm.products[index].quantity} />
-                        </div>
-                    {/each}
-                </div>
+                <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} removedProductIds={removedProductIds} />
             </Steps.Content>
 
             <Steps.Content index={4}>
-                <div class="border-b py-2">
-                    <strong>Kunde:</strong>
-                    {#if deliveryNoteForm.customer}
-                        {deliveryNoteForm.customer.firstName} {deliveryNoteForm.customer.surname}<br />
-                    {:else}
-                        <button onclick={() => step = 0} class="btn preset-outlined ml-2">Setzen</button>
-                    {/if}
-                </div>
-
-                <div class="border-b py-2">
-                    <strong>Kurzbeschreibung:</strong>
-                    {#if deliveryNoteForm.shortDescription}
-                        {deliveryNoteForm.shortDescription}<br />
-                    {:else}
-                        <button onclick={() => step = 1} class="btn preset-outlined ml-2">Setzen</button>
-                    {/if}
-                </div>
-
-                <div class="border-b py-2">
-                    <strong>Lieferung:</strong>
-                    {#if deliveryNoteForm.delivery !== null}
-                        {deliveryNoteForm.delivery ? 'Zum ausliefern' : 'Selbstabholer'}<br />
-                    {:else}
-                        <button onclick={() => step = 2} class="btn preset-outlined ml-2">Setzen</button>
-                    {/if}
-                </div>
-
-                 <div class="border-b py-2">
-                    <strong>Lieferdatum:</strong>
-                    {#if deliveryNoteForm.deliveryDate}
-                        {formatDate(deliveryNoteForm.deliveryDate)}<br />
-                    {:else}
-                        <button onclick={() => step = 2} class="btn preset-outlined ml-2">Setzen</button>
-                    {/if}
-                </div>
-                
-                <div class="border-b py-2">
-                    <strong>Artikel:</strong>
-                    {#if deliveryNoteForm.products.length > 0}
-                        <ul>
-                            {#each deliveryNoteForm.products as product}
-                                {#if product.quantity}
-                                    <li>{product.name} - {product.quantity} Stk.</li>
-                                {:else}
-                                    <li>{product.name} - <span class="badge preset-tonal-surface">Keine Menge</span></li>
-                                {/if}
-                            {/each}
-                        </ul>
-                    {:else}
-                        <button onclick={() => step = 3} class="btn preset-outlined ml-2">Setzen</button>
-                    {/if}
-                </div>
-
-                <button class="btn preset-filled-surface-950-50 w-full mt-4" disabled={!deliveryNoteIsValid} onclick={() => {saveDeliveryNote()}}>Speichern</button>
+                <Summary deliveryNoteForm={deliveryNoteForm} {step} {saveDeliveryNote} {deliveryNoteIsValid} {formatDate} />
             </Steps.Content>
 
             <div class="flex justify-between gap-2 w-full">
                 <Steps.PrevTrigger class="btn preset-filled">Zurück</Steps.PrevTrigger>
 
-                {#if step === steps.length - 1}
-                    <button class="btn preset-filled" type="button" disabled>Weiter</button>
-                {:else}
+                {#if step !== steps.length - 1}
                     <Steps.NextTrigger class="btn preset-filled">Weiter</Steps.NextTrigger>
                 {/if}
             </div>
