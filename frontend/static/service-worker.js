@@ -6,7 +6,8 @@ const CRITICAL_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/img/splash_icon512.png'
+  '/img/splash_icon512.png',
+  '/images/logo.png'
 ];
 
 // On install: cache critical assets

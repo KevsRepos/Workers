@@ -3,7 +3,7 @@ import { formatDate } from "$lib/functions/formatDate";
 import type { DeliveryNote } from "$lib/interfaces/DeliveryNote";
 import { company } from '$lib/config/company.js';
 
-const { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
+let { deliveryNote }: { deliveryNote: DeliveryNote } = $props();
 
 $inspect(deliveryNote);
 </script>
@@ -111,6 +111,9 @@ $inspect(deliveryNote);
     }
     tbody {
         font-size: 0.8em;
+    }
+    :global(nav) {
+        display: none;
     }
 }
 </style>
