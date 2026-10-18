@@ -1,5 +1,5 @@
 <script lang="ts">
-import { BottleWine, Calendar1, Car, Dot, NotebookPen, Printer, User, Van } from "@lucide/svelte";
+import { BottleWine, Calendar1, Car, Dot, FileStack, NotebookPen, NotepadTextDashed, Printer, User, Van } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import PageHeadline from "$lib/components/PageHeadline.svelte";
 import { formatDate } from "$lib/functions/formatDate.js";
@@ -40,6 +40,10 @@ $inspect(data);
                 <option value={opt.value}>{opt.label}</option>
             {/each}
         </select>
+    </Navigation.TriggerAnchor>
+    <Navigation.TriggerAnchor href="/delivery-note/order-preset">
+        <FileStack />
+        <Navigation.TriggerText>Bestellvorlagen</Navigation.TriggerText>
     </Navigation.TriggerAnchor>
 </TopNavigation>
 
