@@ -31,6 +31,7 @@ const steps = [
     { title: 'Beschreibungen'},
     { title: 'Lieferdetails'},
     { title: 'Artikel'},
+    { title: 'Zusammenfassung'}
 ];
 
 const removeProduct = (index: number) => {
@@ -181,7 +182,12 @@ const setDeliveryNoteDate = (date: string) => {
 
             <div class="flex justify-between gap-2 w-full">
                 <Steps.PrevTrigger class="btn preset-filled">Zurück</Steps.PrevTrigger>
-                <Steps.NextTrigger class="btn preset-filled">Weiter</Steps.NextTrigger>
+                
+                {#if step === steps.length - 1}
+                    <button class="btn preset-filled" type="button" disabled>Weiter</button>
+                {:else}
+                    <Steps.NextTrigger class="btn preset-filled">Weiter</Steps.NextTrigger>
+                {/if}
             </div>
         </div>
     </Steps>

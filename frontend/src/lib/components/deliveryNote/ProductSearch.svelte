@@ -85,7 +85,7 @@ const setQuantity = () => {
     quantity = '';
 }
 </script>
-<Checkbox class="mb-4 flex-row-reverse" label="Mengen Eingabe verbergen" bind:checked={
+<Checkbox class="mb-4 flex-row" label="Mengen Eingabe verbergen" bind:checked={
     () => getQuantityInputStorage(),
     (v: boolean) => setQuantityInputStorage(v)
 }/>
