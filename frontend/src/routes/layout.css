@@ -51,7 +51,7 @@ body {
 @media all and (display-mode: standalone) {
   @supports (padding-top: env(safe-area-inset-top)) {
     .app-header {
-      padding-top: max(var(--skeleton-app-header-padding-top, 1rem), env(safe-area-inset-top));
+      padding-top: env(safe-area-inset-top);
     }
   }
 }
