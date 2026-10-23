@@ -43,7 +43,7 @@ body {
     display: flex;
     flex-direction: column;
     padding-top: env(safe-area-inset-top);
-    padding-bottom: env(1rem + safe-area-inset-bottom);
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
 }
@@ -51,7 +51,7 @@ body {
 @media all and (display-mode: standalone) {
   @supports (padding-top: env(safe-area-inset-top)) {
     .app-header {
-      padding-top: env(safe-area-inset-top);
+      padding-top: max(var(--skeleton-app-header-padding-top, 1rem), env(safe-area-inset-top));
     }
   }
 }
