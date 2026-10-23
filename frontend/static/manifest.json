@@ -3,7 +3,7 @@
 	"short_name": "Workers",
 	"start_url": "/",
 	"display": "standalone",
-	"background_color": "#F3F3F3",
+	"background_color": "#FFFFFF",
 	"theme_color": "#FFFFFF",
 	"orientation": "portrait-primary",
 	"icons": [

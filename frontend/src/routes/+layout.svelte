@@ -42,13 +42,13 @@ async function handleLogin(e: Event) {
 
 <HamburgerMenu bind:open={menuOpen} {menuBtn} />
 
-<AppBar class="app-header faboulus border-surface-200-800">
-	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
+<AppBar class="app-header bg-white">
+	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] w-fit">
 		{#if data.loggedIn}
 			<button bind:this={menuBtn} onclick={() => menuOpen = true}><Menu /></button>
 		{/if}
 		
-		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl ">Workers</AppBar.Headline></a>
+		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl">Workers</AppBar.Headline></a>
 	</AppBar.Toolbar>
 </AppBar>
 
