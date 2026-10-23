@@ -1,12 +1,13 @@
 <script lang="ts">
 import './layout.css';
 import favicon from '$lib/assets/favicon.svg';
-import { Menu } from '@lucide/svelte';
+import { ArrowLeft, Menu } from '@lucide/svelte';
 import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
 import { auth } from '$lib/auth.svelte';
 import PageHeadline from '$lib/components/PageHeadline.svelte';
 import HamburgerMenu from '$lib/components/HamburgerMenu.svelte';
+import { page } from '$app/state';
 
 let { data, children } = $props();
 
@@ -22,6 +23,7 @@ let error = $state('');
 let menuOpen = $state(false);
 
 let menuBtn = $state<HTMLButtonElement>();
+let previousScrollY = 0;
 
 async function handleLogin(e: Event) {
     e.preventDefault();
@@ -36,16 +38,44 @@ async function handleLogin(e: Event) {
 
     await invalidateAll();
 }
+
+const slideHeaderIntoView = () => {
+	const currentScrollY = window.scrollY;
+	const header = document.querySelector('.app-header') as HTMLElement;
+	if (!header) return;
+
+	if (currentScrollY <= 0) {
+		header.style.transform = 'translateY(0)';
+		previousScrollY = currentScrollY;
+		return;
+	}
+
+	const scrollDelta = currentScrollY - previousScrollY;
+	if (Math.abs(scrollDelta) >= 4) {
+		header.style.transform = scrollDelta > 0 ? 'translateY(-100%)' : 'translateY(0)';
+		previousScrollY = currentScrollY;
+	}
+};
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<HamburgerMenu bind:open={menuOpen} {menuBtn} />
+<svelte:document onscroll={slideHeaderIntoView} />
 
-<AppBar class="app-header bg-white">
-	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] w-fit">
+{#if page.url.pathname === '/'}
+	<HamburgerMenu bind:open={menuOpen} {menuBtn} />
+{/if}
+
+<AppBar class="app-header bg-white py-0 ps-0 sticky top-0 z-40">
+	<AppBar.Toolbar class="flex gap-0 w-fit">
 		{#if data.loggedIn}
-			<button bind:this={menuBtn} onclick={() => menuOpen = true}><Menu /></button>
+			{#if page.url.pathname === '/'}
+				<button class="py-6 px-4" bind:this={menuBtn} onclick={() => menuOpen = true}><Menu /></button>
+			{:else}
+				<button class="py-6 px-4" onclick={() => window.history.back()}>
+					<ArrowLeft />
+				</button>
+			{/if}
 		{/if}
 		
 		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl">Workers</AppBar.Headline></a>

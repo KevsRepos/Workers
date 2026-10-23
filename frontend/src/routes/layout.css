@@ -56,6 +56,17 @@ body {
   }
 }
 
+.app-header {
+    transition: transform 180ms ease-out;
+    will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-header {
+    transition: none;
+    }
+}
+
 
 main {
     flex: 1;
