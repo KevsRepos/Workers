@@ -280,54 +280,54 @@ const addNew = () => {
                             <ChevronRight size="16"/>
                         </button>
                     </div>
-
-                    {#if dayIndex !== null}
-                        <Drawer close={() => dayIndex = null}>
-                            {#snippet title()}
-                                Neuer Eintrag für Tag {dayIndex}
-                            {/snippet}
-
-                            {#snippet body()}
-                                <div class="flex flex-col gap-2 pb-4 mb-4">
-                                    <label>
-                                        <span class="label-text">Beginn</span>
-                                        <input class="input bg-surface-50" step="1800" type="time" placeholder="Beginn (8:00)" bind:value={start}/>
-                                    </label>
-                                    <label>
-                                        <span class="label-text">Pause (Minuten)</span>
-                                        <input class="input bg-surface-50" type="number" placeholder="Pause (60 Min)" bind:value={breakDuration}/>
-                                    </label>
-                                    <label>
-                                        <span class="label-text">Ende</span>
-                                        <input class="input bg-surface-50" step="1800" type="time" placeholder="Ende (17:00)" bind:value={end}/>
-                                    </label>
-                                    <button onclick={() => saveForDay(dayIndex)} type="button" class="btn preset-filled">
-                                        Tag hinzufügen
-                                        <ChevronDown />
-                                    </button>
-
-                                    <hr class="hr"/>
-
-                                    <button onclick={() => saveEntryType(dayIndex!, 4)} type="button" class="btn preset-filled">
-                                        Urlaub
-                                        <TreePalm />
-                                    </button>
-
-                                    <button onclick={() => saveEntryType(dayIndex!, 3)} type="button" class="btn preset-filled">
-                                        Krank
-                                        <Hospital />
-                                    </button>
-
-                                    <button onclick={() => saveEntryType(dayIndex!, 2)} type="button" class="btn preset-filled">
-                                        Feiertag
-                                        <PartyPopper />
-                                    </button>
-                                </div>
-                            {/snippet}
-                        </Drawer>
-                    {/if}
                 {/if}
             {/each}
+
+            {#if dayIndex !== null}
+                <Drawer close={() => dayIndex = null}>
+                    {#snippet title()}
+                        Neuer Eintrag für Tag {dayIndex}
+                    {/snippet}
+
+                    {#snippet body()}
+                        <div class="flex flex-col gap-2 pb-4 mb-4">
+                            <label>
+                                <span class="label-text">Beginn</span>
+                                <input class="input bg-surface-50" step="1800" type="time" placeholder="Beginn (8:00)" bind:value={start}/>
+                            </label>
+                            <label>
+                                <span class="label-text">Pause (Minuten)</span>
+                                <input class="input bg-surface-50" type="number" placeholder="Pause (60 Min)" bind:value={breakDuration}/>
+                            </label>
+                            <label>
+                                <span class="label-text">Ende</span>
+                                <input class="input bg-surface-50" step="1800" type="time" placeholder="Ende (17:00)" bind:value={end}/>
+                            </label>
+                            <button onclick={() => saveForDay(dayIndex)} type="button" class="btn preset-filled">
+                                Tag hinzufügen
+                                <ChevronDown />
+                            </button>
+
+                            <hr class="hr"/>
+
+                            <button onclick={() => saveEntryType(dayIndex!, 4)} type="button" class="btn preset-filled">
+                                Urlaub
+                                <TreePalm />
+                            </button>
+
+                            <button onclick={() => saveEntryType(dayIndex!, 3)} type="button" class="btn preset-filled">
+                                Krank
+                                <Hospital />
+                            </button>
+
+                            <button onclick={() => saveEntryType(dayIndex!, 2)} type="button" class="btn preset-filled">
+                                Feiertag
+                                <PartyPopper />
+                            </button>
+                        </div>
+                    {/snippet}
+                </Drawer>
+            {/if}
         </div>
     {/if}
 </main>
