@@ -89,7 +89,7 @@ body {
 
 @media all and (display-mode: standalone) {
   @supports (padding-top: env(safe-area-inset-top)) {
-    .header-padding-giver, .app-header {
+    .app-header {
       padding-top: env(safe-area-inset-top);
     }
   }
