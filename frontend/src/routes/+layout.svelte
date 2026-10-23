@@ -70,15 +70,15 @@ const slideHeaderIntoView = () => {
 	<AppBar.Toolbar class="flex gap-0 w-fit">
 		{#if data.loggedIn}
 			{#if page.url.pathname === '/'}
-				<button class="py-6 px-4" bind:this={menuBtn} onclick={() => menuOpen = true}><Menu /></button>
+				<button class="header-padding-giver py-6 px-4" bind:this={menuBtn} onclick={() => menuOpen = true}><Menu /></button>
 			{:else}
-				<button class="py-6 px-4" onclick={() => window.history.back()}>
+				<button class="header-padding-giver py-6 px-4" onclick={() => window.history.back()}>
 					<ArrowLeft />
 				</button>
 			{/if}
 		{/if}
 		
-		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl">Workers</AppBar.Headline></a>
+		<a href="/"><AppBar.Headline class="falcon-poster-bold text-3xl text-[#003E18]">Workers</AppBar.Headline></a>
 	</AppBar.Toolbar>
 </AppBar>
 

@@ -34,6 +34,45 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
     outline: none !important;
 }
 
+.ripple-positioned {
+    position: relative;
+}
+
+.material-ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0.16;
+    pointer-events: none;
+    clip-path: circle(0 at var(--ripple-x) var(--ripple-y));
+    transition: clip-path 560ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.material-ripple.is-active {
+    clip-path: circle(var(--ripple-radius) at var(--ripple-x) var(--ripple-y));
+}
+
+.material-ripple.is-releasing {
+    animation: material-ripple-fade 180ms ease-out forwards;
+}
+
+@keyframes material-ripple-fade {
+    to {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .material-ripple {
+        transition-duration: 1ms;
+    }
+
+    .material-ripple.is-releasing {
+        animation-duration: 1ms;
+    }
+}
+
 html {
     touch-action: pan-y;
 }
@@ -50,7 +89,7 @@ body {
 
 @media all and (display-mode: standalone) {
   @supports (padding-top: env(safe-area-inset-top)) {
-    .app-header {
+    .header-padding-giver {
       padding-top: env(safe-area-inset-top);
     }
   }
