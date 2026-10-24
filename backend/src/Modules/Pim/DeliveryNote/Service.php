@@ -105,6 +105,7 @@ final class Service {
         $deliveryNote->assignment = $data->assignment;
         $deliveryNote->adultGuests = $data->adultGuests;
         $deliveryNote->childGuests = $data->childGuests;
+        $deliveryNote->callBefore = $data->callBefore;
 
         if ($data->shippingAddressId) {
             $deliveryNote->shippingAddress = $this->customerAddressService->getAddress($data->shippingAddressId);
