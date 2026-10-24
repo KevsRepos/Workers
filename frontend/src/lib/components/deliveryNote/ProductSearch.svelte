@@ -7,11 +7,7 @@ import { CircleX } from "@lucide/svelte";
 import Checkbox from "../elements/Checkbox.svelte";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";
 
-let { selectedProducts = $bindable(), deliveryNoteForm, removedProductIds = [] } = $props<{
-    selectedProducts: any;
-    deliveryNoteForm: any;
-    removedProductIds: string[];
-}>();
+let { selectedProducts = $bindable(), deliveryNoteForm, removedProductIds = [] } = $props();
 
 const removeProduct = (index: number) => {
     const removed = deliveryNoteForm.products.splice(index, 1);
@@ -23,6 +19,8 @@ const removeProduct = (index: number) => {
 
 const getQuantityInputStorage = (): boolean => {
     if(!browser) return false;
+
+    console.log(window.localStorage.getItem('deliveryNoteHideQuantityInput') === '1');
 
     return window.localStorage.getItem('deliveryNoteHideQuantityInput') === '1' ? true : false;
 }
@@ -96,7 +94,7 @@ const setQuantity = () => {
 }
 </script>
 <Checkbox class="mb-4 flex-row" label="Mengen Eingabe verbergen" bind:checked={
-    () => getQuantityInputStorage(),
+    () => hideQuantityInput,
     (v: boolean) => setQuantityInputStorage(v)
 }/>
 
