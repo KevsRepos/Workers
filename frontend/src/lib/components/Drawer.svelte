@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { swipeGesture } from "$lib/attachments/swipeGesture";
-    import { Minus, X } from "@lucide/svelte";
-    import { slide } from "svelte/transition";
+import { swipeGesture } from "$lib/attachments/swipeGesture";
+import { Minus, X } from "@lucide/svelte";
+import { slide } from "svelte/transition";
 
-    let { close, title, body } = $props();
+let { close, title, body } = $props();
 
-    let header: HTMLDivElement | null = $state(null);
+let header: HTMLDivElement | null = $state(null);
 
-    let open = $state(true);
+let open = $state(true);
 </script>
 
 <div

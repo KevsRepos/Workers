@@ -1,17 +1,17 @@
 <script lang="ts">
-let { deliveryNoteForm, step = $bindable(), saveDeliveryNote, deliveryNoteIsValid, formatDate } = $props<{
+let { deliveryNoteForm, step = $bindable(), saveDeliveryNote, deliveryNoteIsValid, formatDate }: {
     deliveryNoteForm: any;
     step: number;
     saveDeliveryNote: () => void;
     deliveryNoteIsValid: boolean;
     formatDate: (date: string) => string;
-}>();
+} = $props();
 </script>
 
 <div class="border-b py-2">
     <strong>Kunde:</strong>
     {#if deliveryNoteForm.customer}
-        {deliveryNoteForm.customer.firstName} {deliveryNoteForm.customer.surname}<br />
+        {deliveryNoteForm.customer.displayName}<br />
     {:else}
         <button onclick={() => step = 0} class="btn preset-outlined ml-2">Setzen</button>
     {/if}

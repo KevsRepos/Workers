@@ -13,15 +13,10 @@ let {
     selectedCustomer = $bindable(),
     selectedShippingAddress = $bindable(),
     selectedBillingAddress = $bindable(),
-    autoFocus = false,
-    jump,
-} = $props<{
-    selectedCustomer: any;
-    selectedShippingAddress?: string | null;
-    selectedBillingAddress?: string | null;
-    autoFocus?: boolean;
-    jump?: () => void;
-}>();
+    autoFocus = false
+} = $props();
+
+$inspect(selectedCustomer);
 
 let searchTimeout: ReturnType<typeof setTimeout>;
 
@@ -93,7 +88,6 @@ const selectCustomer = async (item: { id: string; name: string }) => {
     selectedCustomer = customer;
     
     customerInput = '';
-    jump?.();
 }
 
 const addCustomer = async () => {
