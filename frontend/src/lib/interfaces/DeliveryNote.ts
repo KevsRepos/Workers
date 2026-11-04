@@ -1,3 +1,6 @@
+import type { Product } from "./Product";
+import type { Deposit } from "./Deposit";
+
 interface Address {
     street: string;
     houseNumber: string;
@@ -44,20 +47,4 @@ export interface ReturnUnion {
     deposit: Deposit | null;
     deliveryNoteProductIds: string[];
     returnNoteEntry: ReturnNoteEntry | null;
-}
-
-export interface Product {
-    id: number;
-    name: string;
-    salesPrice: number | null;
-    deposit: Deposit | null;
-    sellable: boolean;
-    rentable: boolean;
-    quantityInCrate: number | null;
-}
-
-export interface Deposit {
-    id: number;
-    singleAmount: number;
-    crateAmount: number | null;
 }

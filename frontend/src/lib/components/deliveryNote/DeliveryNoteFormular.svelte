@@ -42,7 +42,7 @@ const setDeliveryNoteDate = (date: string) => {
 
 <main class="px-4 flex flex-col h-full">
     <Steps {step} onStepChange={(details) => (step = details.step)} orientation="vertical" count={steps.length} class="h-full flex-1 flex gap-8" linear={false} defaultStep={2}>
-        <Steps.List class="hidden sm:flex h-fit">
+        <Steps.List class="hidden sm:flex h-fit w-fit">
             {#each steps as step, index}
                 <Steps.Item index={index}>
                     <div class="flex items-center gap-2">
@@ -75,11 +75,11 @@ const setDeliveryNoteDate = (date: string) => {
             </Steps.Content>
 
             <Steps.Content index={3}>
-                <ProductSearch deliveryNoteForm={deliveryNoteForm} selectedProducts={deliveryNoteForm.products} removedProductIds={removedProductIds} />
+                <ProductSearch deliveryNoteForm={deliveryNoteForm} removedProductIds={removedProductIds} />
             </Steps.Content>
 
             <Steps.Content index={4}>
-                <Summary deliveryNoteForm={deliveryNoteForm} {step} {saveDeliveryNote} {deliveryNoteIsValid} {formatDate} />
+                <Summary deliveryNoteForm={deliveryNoteForm} bind:step {saveDeliveryNote} {deliveryNoteIsValid} {formatDate} />
             </Steps.Content>
 
             <div class="flex justify-between gap-2 w-full">

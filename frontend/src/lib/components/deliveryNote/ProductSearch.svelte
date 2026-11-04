@@ -3,11 +3,12 @@ import { browser } from "$app/env";
 import { addProductToDeliveryNote, updateDeliveryNoteProductQuantity } from "$lib/deliveryNote/actions";
 import { fetchApi } from "$lib/fetchApi";
 import { volumeHighlighter } from "$lib/volumeHighlighter";
-import { CircleX } from "@lucide/svelte";
+import { X } from "@lucide/svelte";
 import Checkbox from "../elements/Checkbox.svelte";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";
+import OrderPresetPicker from "./OrderPresetPicker.svelte";
 
-let { selectedProducts = $bindable(), deliveryNoteForm, removedProductIds = [] } = $props();
+let { deliveryNoteForm, removedProductIds = [] } = $props();
 
 const removeProduct = (index: number) => {
     const removed = deliveryNoteForm.products.splice(index, 1);
@@ -46,6 +47,8 @@ let searchTimeout: ReturnType<typeof setTimeout>;
 let searchItems = $state([]);
 
 let currentProduct: { id: string; name: string } | null = $state(null);
+
+let orderPresetPickerOpen = $state(false);
 
 const searchProduct = async (event: Event) => {
     clearTimeout(searchTimeout);
@@ -93,10 +96,15 @@ const setQuantity = () => {
     quantity = '';
 }
 </script>
+
 <Checkbox class="mb-4 flex-row" label="Mengen Eingabe verbergen" bind:checked={
     () => hideQuantityInput,
     (v: boolean) => setQuantityInputStorage(v)
 }/>
+
+<button onclick={() => orderPresetPickerOpen = true} class="mb-4 btn preset-filled">Vorlage wählen...</button>
+
+<OrderPresetPicker bind:open={orderPresetPickerOpen} deliveryNote={deliveryNoteForm}/>
 
 <SearchSelectionBox bind:inputElement={inputElement} bind:input={productInput} bind:items={searchItems} searchItem={searchProduct} onSelect={selectProduct} label="Artikel" placeholder="Krombacher, Coca Cola...">
     {#snippet content(item, onSelect)}
@@ -113,10 +121,10 @@ const setQuantity = () => {
 
 <div class="flex flex-col gap-2 mt-2 divider-y overflow-y-auto">
     {#each deliveryNoteForm.products as product, index}
-        <div class="flex row gap-2 justify-between items-center bg-surface-200-800 p-2 rounded">
+        <div class="flex row gap-2 justify-between items-center bg-surface-200-800 rounded">
             <div class="flex gap-2 items-center">
-                <button onclick={() => removeProduct(index)} type="button">
-                    <CircleX />
+                <button class="p-2" onclick={() => removeProduct(index)} type="button">
+                    <X />
                 </button>
                 <div>{product.name}</div>
             </div>
