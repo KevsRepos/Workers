@@ -1,6 +1,6 @@
 <script lang="ts">
 import { invalidate } from "$app/navigation";
-import { fetchApi } from "$lib/fetchApi";
+import { updateDeliveryNoteProductQuantities } from "$lib/modules/delivery-note/api";
 import { Pen } from "@lucide/svelte";
 import { tick } from "svelte";
 
@@ -68,9 +68,7 @@ const jumpToNext = (event: KeyboardEvent) => {
 }
 
 const saveQuantities = async () => {
-    await fetchApi(`delivery-notes/${deliveryNote.id}/products/quantities`, 'PUT', {
-        products: productQuantities
-    });
+    await updateDeliveryNoteProductQuantities(deliveryNote.id, productQuantities);
 
     quantityEditMode = false;
 

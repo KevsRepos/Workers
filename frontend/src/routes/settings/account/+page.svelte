@@ -1,13 +1,13 @@
 <script>
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import { fetchApi } from "$lib/fetchApi";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import { changePassword } from "$lib/modules/account/api";
 
 let oldPasswort = $state('');
 let newPasswort = $state('');
 let confirmNewPasswort = $state('');
 
 const saveNewPassword = () => {
-    const response = fetchApi('/account/change-password', 'POST', {
+    const response = changePassword({
         oldPassword: oldPasswort,
         newPassword: newPasswort,
         confirmNewPassword: confirmNewPasswort,

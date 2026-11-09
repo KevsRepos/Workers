@@ -1,17 +1,17 @@
 <script lang="ts">
-import type { DeliveryNoteProductDto } from '$lib/formDtos/deliveryNote.svelte';
-import PrintedDeliveryNoteCustomer from '$lib/components/deliveryNote/PrintedDeliveryNoteCustomer.svelte';
-import PrintedDeliveryNoteInternal from '$lib/components/deliveryNote/PrintedDeliveryNoteInternal.svelte';
-import PrintedReturnNote from '$lib/components/deliveryNote/PrintedReturnNote.svelte';
-import PageHeadline from '$lib/components/PageHeadline.svelte';
-import TopNavigation from '$lib/components/TopNavigation.svelte';
-import { fetchApi } from '$lib/fetchApi.js';
+import type { DeliveryNoteProductDto } from '$lib/modules/delivery-note/state/DeliveryNoteForm.svelte';
+import PrintedDeliveryNoteCustomer from '$lib/modules/delivery-note/components/printed/PrintedDeliveryNoteCustomer.svelte';
+import PrintedDeliveryNoteInternal from '$lib/modules/delivery-note/components/printed/PrintedDeliveryNoteInternal.svelte';
+import PrintedReturnNote from '$lib/modules/delivery-note/components/printed/PrintedReturnNote.svelte';
+import PageHeadline from '$lib/components/layout/PageHeadline.svelte';
+import TopNavigation from '$lib/components/navigation/TopNavigation.svelte';
+import { updateDeliveryNoteStatus } from '$lib/modules/delivery-note/api';
 import { formatDate } from '$lib/functions/formatDate.js';
 import { NotebookText, Printer, Pen, Navigation as  NavigationIcon, Mail, Phone, Truck, CalendarDays, UserGroup, PhoneOutgoing, Plus, PlusCircle, CirclePlus, Info, CircleAlert } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 import { tick } from 'svelte';
 import ProductTable from './ProductTable.svelte';
-import InfoCard from '$lib/components/InfoCard.svelte';
+import InfoCard from '$lib/components/feedback/InfoCard.svelte';
 
 let { data } = $props();
 
@@ -29,7 +29,7 @@ const printDeliveryNote = async () => {
     window.print();
 
     if(data.deliveryNote.status < 2) {
-        await fetchApi(`delivery-note/${data.deliveryNote.id}/status/2`, 'PUT');
+        await updateDeliveryNoteStatus(data.deliveryNote.id, 2);
     }
 }
 
@@ -42,7 +42,7 @@ const printReturnNote = async () => {
     window.print();
 
     if(data.deliveryNote.status < 5) {
-        await fetchApi(`delivery-note/${data.deliveryNote.id}/status/5`, 'PUT');
+        await updateDeliveryNoteStatus(data.deliveryNote.id, 5);
     }
 }
 </script>

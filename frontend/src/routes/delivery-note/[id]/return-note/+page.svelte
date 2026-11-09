@@ -1,10 +1,10 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import { fetchApi } from "$lib/fetchApi";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import { createReturnNote } from "$lib/modules/delivery-note/api";
 import { ChevronRight } from "@lucide/svelte";
 import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
-import type { ReturnUnion } from "$lib/interfaces/DeliveryNote";
+import type { ReturnUnion } from "$lib/modules/delivery-note/model/DeliveryNote";
 
 const { data } = $props();
 
@@ -58,7 +58,7 @@ const saveReturnNote = async () => {
     };
     
     try {
-        await fetchApi(`delivery-notes/${deliveryNote.id}/return-note`, 'POST', payload);
+        await createReturnNote(deliveryNote.id, payload);
 
         goto(`/delivery-note/${deliveryNote.id}`);
     } catch(error: unknown) {

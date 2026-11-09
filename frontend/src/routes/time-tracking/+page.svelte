@@ -1,9 +1,9 @@
 <script lang="ts">
 import { invalidateAll } from "$app/navigation";
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import Drawer from "$lib/components/Drawer.svelte";
-import TopNavigation from "$lib/components/TopNavigation.svelte";
-import { fetchApi } from "$lib/fetchApi";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import Drawer from "$lib/components/overlays/Drawer.svelte";
+import TopNavigation from "$lib/components/navigation/TopNavigation.svelte";
+import { createCurrentTimeSheet, createTimeSheetEntry, updateTimeSheetEntry } from "$lib/modules/time-tracking/api";
 import { Bell, CalendarClock, ChevronDown, ChevronRight, Hospital, LayoutList, PartyPopper, Pen, TreePalm } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
@@ -23,10 +23,7 @@ const ensureTimeSheet = async (): Promise<string | null> => {
 
     if (!timeSheetId) {
         const now = new Date();
-        const created = await fetchApi('time-sheets/current/create', 'POST', {
-            month: now.getMonth() + 1,
-            year: now.getFullYear()
-        });
+        const created = await createCurrentTimeSheet(now.getMonth() + 1, now.getFullYear());
         timeSheetId = created.data.id;
     }
 
@@ -37,7 +34,7 @@ const saveEntry = async (entryDay: number, entryStart: string, entryBreakDuratio
     try {
         const timeSheetId = await ensureTimeSheet();
 
-        await fetchApi(`time-sheets/${timeSheetId}/entries`, 'POST', {
+        await createTimeSheetEntry(timeSheetId, {
             day: entryDay,
             start: entryStart,
             breakDuration: entryBreakDuration,
@@ -69,7 +66,7 @@ const updateForDay = async (dayIndex: number, entry: { id: string; start: string
 
         console.log(dayIndex, entry);
 
-        await fetchApi(`time-sheets/entries/${entry.id}`, 'PUT', {
+        await updateTimeSheetEntry(entry.id, {
             day: dayIndex,
             start: entry.start,
             breakDuration: entry.breakDuration,
@@ -104,7 +101,7 @@ const editEntry = (entryId: string) => {
 const saveEntryType = async (entryDay: number, type: number) => {
     try {
         const timeSheetId = await ensureTimeSheet();
-        await fetchApi(`time-sheets/${timeSheetId}/entries`, 'POST', { day: entryDay, type });
+        await createTimeSheetEntry(timeSheetId, { day: entryDay, type });
         await invalidateAll();
         newEntry = false;
         dayIndex = null;
@@ -115,7 +112,7 @@ const saveEntryType = async (entryDay: number, type: number) => {
 
 const updateEntryType = async (entryId: string, type: number) => {
     try {
-        await fetchApi(`time-sheets/entries/${entryId}`, 'PUT', { type });
+        await updateTimeSheetEntry(entryId, { type });
         editingEntryId = null;
         await invalidateAll();
     } catch (e) {

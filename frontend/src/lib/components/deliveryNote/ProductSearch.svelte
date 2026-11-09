@@ -1,8 +1,8 @@
 <script lang="ts">
 import { browser } from "$app/env";
 import { addProductToDeliveryNote, updateDeliveryNoteProductQuantity } from "$lib/deliveryNote/actions";
-import { fetchApi } from "$lib/fetchApi";
-import { volumeHighlighter } from "$lib/volumeHighlighter";
+import { fetchApi } from "$lib/api/fetchApi";
+import { volumeHighlighter } from "$lib/functions/volumeHighlighter";
 import { X } from "@lucide/svelte";
 import Checkbox from "../elements/Checkbox.svelte";
 import SearchSelectionBox from "../SearchSelectionBox.svelte";

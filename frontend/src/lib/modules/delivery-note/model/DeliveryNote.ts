@@ -1,0 +1,50 @@
+import type { Product } from "$lib/modules/product/model/Product";
+import type { Deposit } from "$lib/modules/product/model/Deposit";
+
+interface Address {
+    street: string;
+    houseNumber: string;
+    postalCode: string;
+    city: string;
+}
+
+export interface DeliveryNote {
+    id: number;
+    deliveryDate: string; // ISO date string
+    delivery: boolean;
+    displayName: string;
+    shippingAddress?: Address;
+    billingAddress?: Address;
+    deliveryNoteProducts: DeliveryNoteProduct[];
+    status: number,
+    shortDescription?: string | null;
+    assignment?: string | null;
+}
+
+export interface DeliveryNoteProduct {
+    id: number;
+    productId: number;
+    name: string;
+    quantity: number;
+    product: Product;
+    returnNoteEntry: ReturnNoteEntry | null;
+}
+
+export interface ReturnNoteEntry {
+    id: string;
+    returnedTotal: number | null;
+    returnedTotalBottles: number | null;
+    returnedFull: number | null;
+    returnedFullBottles: number | null;
+}
+
+export interface ReturnUnion {
+    name: string;
+    isUnion: boolean;
+    quantity: number;
+    rentable: boolean;
+    quantityInCrate: number | null;
+    deposit: Deposit | null;
+    deliveryNoteProductIds: string[];
+    returnNoteEntry: ReturnNoteEntry | null;
+}

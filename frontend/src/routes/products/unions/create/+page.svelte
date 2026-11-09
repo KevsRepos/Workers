@@ -1,8 +1,8 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import ProductUnionForm from "$lib/components/productUnion/ProductUnionForm.svelte";
-import { fetchApi } from "$lib/fetchApi";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import ProductUnionForm from "$lib/modules/product-union/components/ProductUnionForm.svelte";
+import { createProductUnion } from "$lib/modules/product-union/api";
 
 let name = $state('');
 let selectedProducts = $state<{ id: string; name: string }[]>([]);
@@ -14,7 +14,7 @@ async function handleSave() {
     error = '';
 
     try {
-        const result = await fetchApi('product-unions', 'POST', {
+        const result = await createProductUnion({
             name,
             productIds: selectedProducts.map(p => p.id)
         });

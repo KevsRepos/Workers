@@ -1,10 +1,10 @@
 <script lang="ts">
 import { invalidateAll } from '$app/navigation';
-import PageHeadline from '$lib/components/PageHeadline.svelte';
-import Drawer from '$lib/components/Drawer.svelte';
-import PrintedTimeSheet from '$lib/components/timeSheet/PrintedTimeSheet.svelte';
-import TopNavigation from '$lib/components/TopNavigation.svelte';
-import { fetchApi } from '$lib/fetchApi';
+import PageHeadline from '$lib/components/layout/PageHeadline.svelte';
+import Drawer from '$lib/components/overlays/Drawer.svelte';
+import PrintedTimeSheet from '$lib/modules/time-tracking/components/printed/PrintedTimeSheet.svelte';
+import TopNavigation from '$lib/components/navigation/TopNavigation.svelte';
+import { createTimeSheetEntry, updateTimeSheetEntry } from '$lib/modules/time-tracking/api';
 import { ChevronDown, ChevronRight, Hospital, Pen, PartyPopper, Printer, TreePalm } from '@lucide/svelte';
 import { Navigation } from '@skeletonlabs/skeleton-svelte';
 
@@ -18,7 +18,7 @@ let editingEntryId: string | null = $state(null);
 let addingDay: number | null = $state(null);
 
 const saveEntry = async (day: number, entryStart: string, entryBreakDuration: number, entryEnd: string) => {
-    await fetchApi(`time-sheets/${data.timeSheet.id}/entries`, 'POST', {
+    await createTimeSheetEntry(data.timeSheet.id, {
         day,
         start: entryStart,
         breakDuration: entryBreakDuration,
@@ -32,13 +32,13 @@ const saveEntry = async (day: number, entryStart: string, entryBreakDuration: nu
 };
 
 const saveEntryType = async (day: number, type: string) => {
-    await fetchApi(`time-sheets/${data.timeSheet.id}/entries`, 'POST', { day, type });
+    await createTimeSheetEntry(data.timeSheet.id, { day, type });
     await invalidateAll();
     addingDay = null;
 };
 
 const updateEntry = async (entryId: string, day: number, entryStart: string, entryBreakDuration: number, entryEnd: string) => {
-    await fetchApi(`time-sheets/entries/${entryId}`, 'PUT', {
+    await updateTimeSheetEntry(entryId, {
         day,
         start: entryStart,
         breakDuration: entryBreakDuration,
@@ -52,7 +52,7 @@ const updateEntry = async (entryId: string, day: number, entryStart: string, ent
 };
 
 const updateEntryType = async (entryId: string, type: string) => {
-    await fetchApi(`time-sheets/entries/${entryId}`, 'PUT', { type });
+    await updateTimeSheetEntry(entryId, { type });
     await invalidateAll();
     editingEntryId = null;
 };

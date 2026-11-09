@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Tent10, Leg, GableSupport, type DoorDirection, Tent20 } from '$lib/eventPlanner/tentPlanner/Tent.js';
+    import { Tent10, Leg, GableSupport, type DoorDirection, Tent20 } from '$lib/modules/tent-planner/model/Tent.js';
 
     const DOOR_WIDTH_M = 2.5;
     const tent = new Tent20(9);

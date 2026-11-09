@@ -4,9 +4,9 @@ import favicon from '$lib/assets/favicon.svg';
 import { ArrowLeft, Menu } from '@lucide/svelte';
 import { AppBar } from '@skeletonlabs/skeleton-svelte';
 import { invalidateAll } from '$app/navigation';
-import { auth } from '$lib/auth.svelte';
-import PageHeadline from '$lib/components/PageHeadline.svelte';
-import HamburgerMenu from '$lib/components/HamburgerMenu.svelte';
+import { auth } from '$lib/state/auth.svelte';
+import PageHeadline from '$lib/components/layout/PageHeadline.svelte';
+import HamburgerMenu from '$lib/components/navigation/HamburgerMenu.svelte';
 import { page } from '$app/state';
 
 let { data, children } = $props();

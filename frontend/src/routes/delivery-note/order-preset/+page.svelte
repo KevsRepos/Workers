@@ -1,6 +1,6 @@
 <script lang="ts">
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import TopNavigation from "$lib/components/TopNavigation.svelte";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import TopNavigation from "$lib/components/navigation/TopNavigation.svelte";
 import { Pen, StickyNotePlus } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 

@@ -1,11 +1,11 @@
 <script lang="ts">
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import Pagination from "$lib/components/Pagination.svelte";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import Pagination from "$lib/components/navigation/Pagination.svelte";
 import { Boxes, CirclePlus, Pen } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
 import { centToEuro } from "$lib/functions/helpers";
 import { goto } from "$app/navigation";
-import TopNavigation from "$lib/components/TopNavigation.svelte";
+import TopNavigation from "$lib/components/navigation/TopNavigation.svelte";
 
 let { data } = $props();
 

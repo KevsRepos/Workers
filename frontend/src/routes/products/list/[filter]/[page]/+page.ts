@@ -1,7 +1,6 @@
 import { browser } from "$app/environment";
 import { PUBLIC_BACKEND_URL } from "$env/static/public";
-import { auth } from "$lib/auth.svelte";
-import { fetchApi } from "$lib/fetchApi.js";
+import { auth } from "$lib/state/auth.svelte";
 import { error } from "@sveltejs/kit";
 
 export const load = async ({ parent, fetch, params }) => {
@@ -33,14 +32,6 @@ export const load = async ({ parent, fetch, params }) => {
 
 
     
-    // const json = await fetchApi(
-    //     'delivery-notes/1', 
-    //     'GET', 
-    //     null, 
-    //     token, 
-    //     fetch.bind(this, `${PUBLIC_BACKEND_URL}/delivery-notes/1`, undefined)
-    // );
-
     if (json.error) {
         error(404, 'Ein Fehler ist aufgetreten');
     }

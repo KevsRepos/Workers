@@ -1,10 +1,9 @@
 <script lang="ts">
 import { BottleWine, Calendar1, Car, Dot, FileStack, NotebookPen, NotepadTextDashed, Printer, User, Van } from "@lucide/svelte";
 import { Navigation } from "@skeletonlabs/skeleton-svelte";
-import PageHeadline from "$lib/components/PageHeadline.svelte";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
 import { formatDate } from "$lib/functions/formatDate.js";
-import { fetchApi } from "$lib/fetchApi.js";
-import TopNavigation from "$lib/components/TopNavigation.svelte";
+import TopNavigation from "$lib/components/navigation/TopNavigation.svelte";
 import { tick } from "svelte";
 import { goto } from "$app/navigation";
 

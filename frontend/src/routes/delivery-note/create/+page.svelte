@@ -1,11 +1,12 @@
 <script>
 import { goto } from "$app/navigation";
-import DeliveryNoteFormular from "$lib/components/deliveryNote/DeliveryNoteFormular.svelte";
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import { applyStateToDeliveryNoteForm, createAutosaveSnapshot, deliveryNoteFormToState, stateToCreatePayload } from "$lib/deliveryNote/formMapper";
-import { clearDeliveryNoteDraft, getDeliveryNoteDraftCustomerName, loadDeliveryNoteDraft, saveDeliveryNoteDraft } from "$lib/deliveryNote/draftStore";
-import { fetchApi } from "$lib/fetchApi";
-import { DeliveryNoteForm } from "$lib/formDtos/deliveryNote.svelte";
+import DeliveryNoteFormular from "$lib/modules/delivery-note/components/create/DeliveryNoteFormular.svelte";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import { applyStateToDeliveryNoteForm, createAutosaveSnapshot, deliveryNoteFormToState, stateToCreatePayload } from "$lib/modules/delivery-note/mapping/formMapper";
+import { clearDeliveryNoteDraft, getDeliveryNoteDraftCustomerName, loadDeliveryNoteDraft, saveDeliveryNoteDraft } from "$lib/modules/delivery-note/storage/draftStore";
+import { createDeliveryNote } from "$lib/modules/delivery-note/api";
+import { getCustomerAddresses } from "$lib/modules/customer/api";
+import { DeliveryNoteForm } from "$lib/modules/delivery-note/state/DeliveryNoteForm.svelte";
 import { createToaster, Toast } from "@skeletonlabs/skeleton-svelte";
 import { onMount, tick } from "svelte";
 
@@ -26,7 +27,7 @@ const restoreDraft = () => {
 
     if(deliveryNoteForm.customer !== null) {
         const customer = deliveryNoteForm.customer;
-        fetchApi(`customers/${encodeURIComponent(deliveryNoteForm.customer.id)}/addresses`, 'GET')
+        getCustomerAddresses(deliveryNoteForm.customer.id)
         .then((json) => {
             customer.addresses = json;
         });
@@ -73,7 +74,7 @@ $effect(() => {
 const saveDeliveryNote = async () => {    
     try {
         const state = deliveryNoteFormToState(deliveryNoteForm);
-        const json = await fetchApi('delivery-notes', 'POST', stateToCreatePayload(state));
+        const json = await createDeliveryNote(stateToCreatePayload(state));
 
         if (autoSaveEnabled) {
             clearDeliveryNoteDraft();

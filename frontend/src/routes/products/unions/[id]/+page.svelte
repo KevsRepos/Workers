@@ -1,7 +1,7 @@
 <script lang="ts">
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import ProductUnionForm from "$lib/components/productUnion/ProductUnionForm.svelte";
-import { fetchApi } from "$lib/fetchApi";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import ProductUnionForm from "$lib/modules/product-union/components/ProductUnionForm.svelte";
+import { updateProductUnion } from "$lib/modules/product-union/api";
 
 let { data } = $props();
 
@@ -20,7 +20,7 @@ async function handleSave() {
     success = '';
 
     try {
-        await fetchApi(`product-unions/${data.productUnion.id}`, 'PUT', {
+        await updateProductUnion(data.productUnion.id, {
             name,
             productIds: selectedProducts.map(p => p.id)
         });

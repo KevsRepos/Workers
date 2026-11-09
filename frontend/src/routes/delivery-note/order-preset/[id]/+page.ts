@@ -1,5 +1,5 @@
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
-import { OrderPreset } from '$lib/dto/orderPreset/OrderPreset';
+import { OrderPreset } from '$lib/modules/order-preset/model/OrderPreset';
 
 export const load = async ({ parent, params, fetch }) => {
     const { token } = await parent();

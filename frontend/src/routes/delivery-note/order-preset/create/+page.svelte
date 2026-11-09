@@ -1,14 +1,14 @@
 <script lang="ts">
-import OrderPresetForm from "$lib/components/deliveryNote/orderPreset/OrderPresetForm.svelte";
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import { OrderPreset } from "$lib/dto/orderPreset/OrderPreset";
-import { fetchApi } from "$lib/fetchApi";
+import OrderPresetForm from "$lib/modules/order-preset/components/OrderPresetForm.svelte";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import { OrderPreset } from "$lib/modules/order-preset/model/OrderPreset";
+import { createOrderPreset } from "$lib/modules/order-preset/api";
 import { goto } from "$app/navigation";
 
 const orderPreset = new OrderPreset(null, "", []);
 
 const handleSubmit = async (submittedOrderPreset: OrderPreset) => {
-    const response = await fetchApi("order-presets", "POST", {
+    const response = await createOrderPreset({
         name: submittedOrderPreset.name,
         productIds: submittedOrderPreset.items.map((item) => item.product.id)
     });

@@ -1,9 +1,9 @@
 <script lang="ts">
-import PageHeadline from "$lib/components/PageHeadline.svelte";
-import ProductForm from "$lib/components/product/ProductForm.svelte";
-import { fetchApi } from "$lib/fetchApi";
-import type { Product } from "$lib/interfaces/Product.d.ts";
-import type { Deposit } from "$lib/interfaces/Deposit.d.ts";
+import PageHeadline from "$lib/components/layout/PageHeadline.svelte";
+import ProductForm from "$lib/modules/product/components/ProductForm.svelte";
+import { updateProduct } from "$lib/modules/product/api";
+import type { Product } from "$lib/modules/product/model/Product.d.ts";
+import type { Deposit } from "$lib/modules/product/model/Deposit.d.ts";
 
 let { data }: { data: { product: Product; deposits: Deposit[] } } = $props();
 
@@ -25,7 +25,7 @@ async function handleSave() {
     success = '';
 
     try {
-        await fetchApi(`products/${data.product.id}`, 'PUT', {
+        await updateProduct(data.product.id, {
             name,
             salesPrice: salesPrice !== '' ? Number(salesPrice) : null,
             sellable,
