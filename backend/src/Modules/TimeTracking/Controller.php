@@ -50,16 +50,16 @@ class Controller extends AbstractController
         return $this->json($service->getByYearMonth($year, $month));
     }
 
-    #[Route('/time-sheets/detail/{id}', methods: ['GET'])]
-    public function getTimeSheet(string $id, Service $service): JsonResponse
-    {
-        $timeSheet = $service->getTimeSheet($id);
-        if (!$timeSheet) {
-            return new JsonResponse(['error' => 'TimeSheetNotFound'], 404);
-        }
+    // #[Route('/time-sheets/detail/{id}', methods: ['GET'])]
+    // public function getTimeSheet(string $id, Service $service): JsonResponse
+    // {
+    //     $timeSheet = $service->getTimeSheet($id);
+    //     if (!$timeSheet) {
+    //         return new JsonResponse(['error' => 'TimeSheetNotFound'], 404);
+    //     }
 
-        return new JsonResponse($timeSheet);
-    }
+    //     return $this->json($service->normalizeMonthlyTimeSheetEntries($timeSheet));
+    // }
 
     #[Route('/time-sheets/{id}/entries', methods: ['POST'])]
     public function createEntry(
