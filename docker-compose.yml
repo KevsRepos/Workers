@@ -99,7 +99,7 @@ services:
       - ssl_certs:/ssl:ro
     # Entrypoint will import mounted CA if present
     environment:
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - BACKEND_INTERNAL_URL=http://nginx:8080/workers
 
   setup-migrate:
     image: workers-backend:latest
