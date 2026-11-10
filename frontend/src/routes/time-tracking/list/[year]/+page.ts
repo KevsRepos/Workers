@@ -1,19 +1,15 @@
 import { browser } from "$app/environment";
-import { PUBLIC_BACKEND_URL } from "$env/static/public";
+import { backendApiUrl } from "$lib/api/backendApiUrl";
 import { auth } from "$lib/state/auth.svelte";
 
-export const load = async ({ parent, fetch, params }) => {
-    const { token } = await parent();
+export const load = async ({ fetch, params }) => {
     const { year } = params;
 
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-    };
+    const headers = { 'Content-Type': 'application/json' };
 
     const [sheetsRes, yearsRes] = await Promise.all([
-        fetch(`${PUBLIC_BACKEND_URL}/time-sheets/${year}`, { method: 'GET', headers, body: null }),
-        fetch(`${PUBLIC_BACKEND_URL}/time-sheets/years`, { method: 'GET', headers, body: null })
+        fetch(backendApiUrl(`time-sheets/${year}`), { method: 'GET', headers, body: null }),
+        fetch(backendApiUrl('time-sheets/years'), { method: 'GET', headers, body: null })
     ]);
 
     if ((sheetsRes.status === 401 || yearsRes.status === 401) && browser) {

@@ -1,14 +1,11 @@
-import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import { backendApiUrl } from '$lib/api/backendApiUrl';
 import { OrderPreset } from '$lib/modules/order-preset/model/OrderPreset';
 
-export const load = async ({ parent, params, fetch }) => {
-    const { token } = await parent();
-
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/order-presets/${params.id}`, {
+export const load = async ({ params, fetch }) => {
+    const res = await fetch(backendApiUrl(`order-presets/${params.id}`), {
         method: 'GET',
         headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
         body: null
     });

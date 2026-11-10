@@ -1,17 +1,15 @@
 import { browser } from "$app/environment";
-import { PUBLIC_BACKEND_URL } from "$env/static/public";
+import { backendApiUrl } from "$lib/api/backendApiUrl";
 import { auth } from "$lib/state/auth.svelte";
 import { error } from "@sveltejs/kit";
 
-export const load = async ({ parent, fetch, params }) => {
-    const { token } = await parent();
+export const load = async ({ fetch, params }) => {
     const { id } = params;
 
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/products/${id}`, {
+    const res = await fetch(backendApiUrl(`products/${id}`), {
         method: 'GET',
         headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
         body: null
     });
@@ -30,11 +28,10 @@ export const load = async ({ parent, fetch, params }) => {
 
     const json = await res.json();
 
-    const depositsRes = await fetch(`${PUBLIC_BACKEND_URL}/deposits`, {
+    const depositsRes = await fetch(backendApiUrl('deposits'), {
         method: 'GET',
         headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
         body: null
     });

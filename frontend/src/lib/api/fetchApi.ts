@@ -1,32 +1,25 @@
-import { PUBLIC_BACKEND_URL } from "$env/static/public";
 import { auth } from "$lib/state/auth.svelte";
+import { backendApiUrl } from "$lib/api/backendApiUrl";
 import { browser } from "$app/environment";
 
 export const fetchApi = async (
     endpoint: string, 
     method: string = 'GET', 
     body: any = null, 
-    token?: string | null,
     customFetch: typeof fetch | null = fetch
 ) => {
-    // On server: use passed token, on client: use auth.token
-    const authToken = browser ? auth.token : token;
-
     const headers: Record<string, string> = { 
         'Content-Type': 'application/json'
     };
-    
-    if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-    }
 
     if(!customFetch) {
         customFetch = fetch;
     }
 
-    const res = await customFetch(`${PUBLIC_BACKEND_URL}/${endpoint}`, {
+    const res = await customFetch(backendApiUrl(endpoint), {
         method,
         headers,
+        credentials: 'same-origin',
         body: body ? JSON.stringify(body) : null
     });
 

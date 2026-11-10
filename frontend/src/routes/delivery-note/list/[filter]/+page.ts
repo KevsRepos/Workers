@@ -1,22 +1,20 @@
 import { browser } from "$app/environment";
 import { invalidateAll } from "$app/navigation";
-import { PUBLIC_BACKEND_URL } from "$env/static/public";
+import { backendApiUrl } from "$lib/api/backendApiUrl";
 import { auth } from "$lib/state/auth.svelte";
 import { error } from "@sveltejs/kit";
 
-export const load = async ({ parent, fetch, params}) => {
-    const { token } = await parent();
+export const load = async ({ fetch, params}) => {
     const { filter } = params;
     
     // if (!token) {
     //     return { deliveryNotes: [] };
     // }
 
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/delivery-notes/${filter}`, {
+    const res = await fetch(backendApiUrl(`delivery-notes/${filter}`), {
         method: 'GET',
         headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
         body: null
     });

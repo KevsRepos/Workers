@@ -1,29 +1,16 @@
-/**
- * Auth state module - stores JWT in memory for client-side access.
- * Token is hydrated from server via +layout.svelte on page load.
- * This keeps the actual token secure in an httpOnly cookie while
- * still allowing client-side API calls.
- */
-
 import { browser } from '$app/environment';
 
 class Auth {
-    token: string | null = $state(null);
+    private loggedIn = $state(false);
 
     get isLoggedIn(): boolean {
-        return !!this.token;
+        return this.loggedIn;
     }
 
-    /**
-     * Hydrate auth state from server data (called in +layout.svelte)
-     */
-    hydrate(token: string | null) {
-        this.token = token;
+    hydrate(loggedIn: boolean) {
+        this.loggedIn = loggedIn;
     }
 
-    /**
-     * Login via server route (sets httpOnly cookie)
-     */
     async login(username: string, password: string): Promise<{ success: boolean; error?: string }> {
         if (!browser) {
             return { success: false, error: 'Login nur client-seitig möglich' };
@@ -40,8 +27,7 @@ class Auth {
             return { success: false, error: data.error || 'Login fehlgeschlagen' };
         }
 
-        const data = await response.json();
-        this.token = data.token;
+        this.loggedIn = true;
 
         return { success: true };
     }
@@ -53,7 +39,7 @@ class Auth {
         if (!browser) return;
         
         await fetch('/api/auth/logout', { method: 'POST' });
-        this.token = null;
+        this.loggedIn = false;
     }
 }
 

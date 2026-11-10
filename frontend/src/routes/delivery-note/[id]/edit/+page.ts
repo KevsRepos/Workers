@@ -1,15 +1,13 @@
-import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import { backendApiUrl } from '$lib/api/backendApiUrl';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ params, parent, fetch }) => {
-    const { token } = await parent();
+export const load = async ({ params, fetch }) => {
     const { id } = params;
 
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/delivery-note/${id}`, {
+    const res = await fetch(backendApiUrl(`delivery-note/${id}`), {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
         body: null
     });

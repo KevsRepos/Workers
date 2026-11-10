@@ -17,14 +17,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
     const result = await response.json();
 
-    // Set httpOnly cookie - JS can't read it, XSS can't exfiltrate it
+    // Keep the JWT in a cookie that browser JavaScript cannot read.
     cookies.set('jwt_token', result.token, {
         path: '/',
         httpOnly: true,
-        secure: false, // only secure in production (HTTPS)
+        secure: !dev,
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7 // 7 days
     });
 
-    return json({ token: result.token });
+    return json({ success: true });
 };

@@ -1,16 +1,14 @@
 import { browser } from "$app/environment";
-import { PUBLIC_BACKEND_URL } from "$env/static/public";
+import { backendApiUrl } from "$lib/api/backendApiUrl";
 import { auth } from "$lib/state/auth.svelte";
 
-export const load = async ({ parent, fetch, params }) => {
-    const { token } = await parent();
+export const load = async ({ fetch, params }) => {
     const { year, month } = params;
 
-    const res = await fetch(`${PUBLIC_BACKEND_URL}/time-sheets/${year}/${month}`, {
+    const res = await fetch(backendApiUrl(`time-sheets/${year}/${month}`), {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
         body: null
     });

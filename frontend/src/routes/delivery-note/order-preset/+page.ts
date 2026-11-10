@@ -1,13 +1,11 @@
 import { browser } from "$app/environment";
-import { PUBLIC_BACKEND_URL } from "$env/static/public";
+import { backendApiUrl } from "$lib/api/backendApiUrl";
 import { auth } from "$lib/state/auth.svelte";
 
-export const load = async ({ parent, fetch }) => {
-    const { token } = await parent();
-    const response = await fetch(`${PUBLIC_BACKEND_URL}/order-presets`, {
+export const load = async ({ fetch }) => {
+    const response = await fetch(backendApiUrl('order-presets'), {
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            "Content-Type": "application/json"
         }
     });
 

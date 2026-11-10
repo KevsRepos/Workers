@@ -11,9 +11,8 @@ import { page } from '$app/state';
 
 let { data, children } = $props();
 
-// Hydrate auth state from server data
 $effect(() => {
-    auth.hydrate(data.token);
+	auth.hydrate(data.loggedIn);
 });
 
 let username = $state('');
