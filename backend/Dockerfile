@@ -31,6 +31,7 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 
 # Copy application sources
 COPY . ./
+RUN touch .env && chmod 644 .env
 
 # Rebuild optimized autoloader now that sources are present
 RUN composer dump-autoload --optimize

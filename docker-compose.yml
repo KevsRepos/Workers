@@ -25,7 +25,6 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      - ./backend/.env:/var/www/workers/backend/.env:ro
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
     command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm -F"
     healthcheck:
@@ -116,7 +115,6 @@ services:
     restart: "no"
     volumes:
       - migrate_state:/var/www/migrate_state:rw
-      - ./backend/.env:/var/www/workers/backend/.env:ro
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
 
 volumes:
