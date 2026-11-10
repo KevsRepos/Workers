@@ -14,16 +14,16 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
 class Controller extends AbstractController {
-    #[Route(path: '/register', methods: [Request::METHOD_POST])]
-    public function createAccount(
-        #[MapRequestPayload] CreateAccountRequestDto $dto,
-        Service $accountService
-    ): JsonResponse
-    {
-        $response = $accountService->save($dto);
+    // #[Route(path: '/register', methods: [Request::METHOD_POST])]
+    // public function createAccount(
+    //     #[MapRequestPayload] CreateAccountRequestDto $dto,
+    //     Service $accountService
+    // ): JsonResponse
+    // {
+    //     $response = $accountService->save($dto);
 
-        return new JsonResponse($response->getMessage(), $response->getCode());
-    }
+    //     return new JsonResponse($response->getMessage(), $response->getCode());
+    // }
 
 	/**
 	 * Leave this method empty. It just needs to be here as a referenceable method. Symfony handles the rest.
