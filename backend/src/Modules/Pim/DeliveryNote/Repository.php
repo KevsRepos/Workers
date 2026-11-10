@@ -71,17 +71,37 @@ class Repository extends ServiceEntityRepository
         }
     }
 
-    public function removeDeliveryNoteProducts(array $deliveryNoteProductIds): void
+    /**
+     * @param string[] $deliveryNoteProductIds
+     * @return DeliveryNoteProduct[]
+     */
+    public function findDeliveryNoteProducts(DeliveryNote $deliveryNote, array $deliveryNoteProductIds): array
     {
-        foreach ($deliveryNoteProductIds as $id) {
-            $entity = $this->getEntityManager()->getRepository(DeliveryNoteProduct::class)->find($id);
-
-            if ($entity) {
-                $this->getEntityManager()->remove($entity);
-            }
+        if ($deliveryNoteProductIds === []) {
+            return [];
         }
 
-        $this->getEntityManager()->flush();
+        return $this->getEntityManager()->getRepository(DeliveryNoteProduct::class)->findBy([
+            'id' => array_values(array_unique($deliveryNoteProductIds)),
+            'deliveryNote' => $deliveryNote,
+        ]);
+    }
+
+    /**
+     * @param string[] $deliveryNoteProductIds
+     */
+    public function removeDeliveryNoteProducts(DeliveryNote $deliveryNote, array $deliveryNoteProductIds): bool
+    {
+        $entities = $this->findDeliveryNoteProducts($deliveryNote, $deliveryNoteProductIds);
+        if (count($entities) !== count($deliveryNoteProductIds)) {
+            return false;
+        }
+
+        foreach ($entities as $entity) {
+            $this->getEntityManager()->remove($entity);
+        }
+
+        return true;
     }
 
     public function flush()

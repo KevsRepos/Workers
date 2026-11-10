@@ -98,9 +98,9 @@ class Controller extends AbstractController
     }
 
     #[Route('/delivery-notes/{id}/return-note', methods: ['POST'])]
-    public function createReturnNote(#[MapRequestPayload] CreateReturnNoteRequestDto $dto, Service $service): JsonResponse
+    public function createReturnNote(string $id, #[MapRequestPayload] CreateReturnNoteRequestDto $dto, Service $service): JsonResponse
     {
-        $result = $service->createReturnNote($dto);
+        $result = $service->createReturnNote($id, $dto);
         if ($result instanceof \Error) {
             return new JsonResponse($result, $result->getCode());
         }

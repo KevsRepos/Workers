@@ -59,12 +59,14 @@ final class Service {
             $deliveryNoteId = $this->repo->saveDeliveryNote($deliveryNote, true);
 
             $deliveryNoteProducts = $this->factory->createDeliveryNoteProducts(
-                $deliveryNoteId,
+                $deliveryNote,
                 $data->deliveryNoteProducts,
             );
             $this->repo->saveDeliveryNoteProducts($deliveryNoteProducts, true);
 
             return new Success("DeliveryNoteCreated", ['id' => $deliveryNoteId]);
+        } catch(\InvalidArgumentException $e) {
+            return new Error($e->getMessage(), 400);
         } catch(UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
         } catch(Exception $e) {
@@ -78,6 +80,20 @@ final class Service {
 
         if (!$deliveryNote) {
             return new Error("DeliveryNote not found", 404);
+        }
+
+        $existingProductIds = array_values(array_filter(array_map(
+            static fn($product): ?string => $product->id,
+            $data->deliveryNoteProducts,
+        ), static fn(?string $id): bool => $id !== null));
+        
+        $productIds = array_merge($existingProductIds, $data->removedProductIds);
+
+        if (
+            count($productIds) !== count(array_unique($productIds))
+            || count($this->repo->findDeliveryNoteProducts($deliveryNote, $productIds)) !== count($productIds)
+        ) {
+            return new Error("Invalid delivery note product IDs", 400);
         }
 
         if ($data->customerId) {
@@ -122,14 +138,16 @@ final class Service {
         if ($data->deliveryNoteProducts) {
             // $deliveryNote->deliveryNoteProducts = $data->deliveryNoteProducts;
             $deliveryNote->deliveryNoteProducts = $this->factory->createDeliveryNoteProducts(
-                $id,
+                $deliveryNote,
                 $data->deliveryNoteProducts,
             );
             // $this->repo->saveDeliveryNoteProducts($deliveryNoteProducts, true);
         }
 
         if ($data->removedProductIds) {
-                $this->repo->removeDeliveryNoteProducts($data->removedProductIds);
+            if (!$this->repo->removeDeliveryNoteProducts($deliveryNote, $data->removedProductIds)) {
+                return new Error("Invalid delivery note product IDs", 400);
+            }
         }
 
         try {
@@ -163,15 +181,34 @@ final class Service {
         }
     }
 
-    public function createReturnNote(CreateReturnNoteRequestDto $data): Error|Success
+    public function createReturnNote(string $deliveryNoteId, CreateReturnNoteRequestDto $data): Error|Success
     {
-        $deliveryNote = $this->repo->findById($data->deliveryNoteId);
+        if ($data->deliveryNoteId !== $deliveryNoteId) {
+            return new Error("Delivery note ID does not match request path", 400);
+        }
+
+        $deliveryNote = $this->repo->findById($deliveryNoteId);
 
         if (!$deliveryNote) {
             return new Error("DeliveryNote not found", 404);
         }
 
-        $entries = $this->factory->createReturnNoteEntries($data->returnNoteEntries);
+        $productIds = [];
+        foreach ($data->returnNoteEntries as $entry) {
+            $productIds = array_merge($productIds, $entry->deliveryNoteProductIds);
+        }
+        if (
+            count($productIds) !== count(array_unique($productIds))
+            || count($this->repo->findDeliveryNoteProducts($deliveryNote, $productIds)) !== count($productIds)
+        ) {
+            return new Error("Invalid delivery note product IDs", 400);
+        }
+
+        try {
+            $entries = $this->factory->createReturnNoteEntries($deliveryNote, $data->returnNoteEntries);
+        } catch (\InvalidArgumentException $e) {
+            return new Error($e->getMessage(), 400);
+        }
 
         $deliveryNote->status = DeliveryNoteStatus::RETURNED;
 
@@ -259,12 +296,22 @@ final class Service {
             return new Error("DeliveryNote not found", 404);
         }
 
+        $productIds = array_map(static fn($product): ?string => $product->id, $dto->products);
+        if (
+            in_array(null, $productIds, true)
+            || count($productIds) !== count(array_unique($productIds))
+            || count($this->repo->findDeliveryNoteProducts($deliveryNote, $productIds)) !== count($productIds)
+        ) {
+            return new Error("Invalid delivery note product IDs", 400);
+        }
+
         foreach ($dto->products as $dnp) {
-            $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->find($dnp->id);
-            if ($deliveryNoteProduct) {
-                $deliveryNoteProduct->quantity = $dnp->quantity;
-                $this->em->persist($deliveryNoteProduct);
-            }
+            $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->findOneBy([
+                'id' => $dnp->id,
+                'deliveryNote' => $deliveryNote,
+            ]);
+            $deliveryNoteProduct->quantity = $dnp->quantity;
+            $this->em->persist($deliveryNoteProduct);
         }
 
         $this->em->flush();

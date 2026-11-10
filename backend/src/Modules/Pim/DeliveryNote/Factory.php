@@ -88,18 +88,21 @@ class Factory {
      * @param DeliveryNoteProductDto[] $deliveryNoteProducts
      */
     public function createDeliveryNoteProducts(
-        string $deliveryNoteId,
+        DeliveryNote $deliveryNote,
         array $deliveryNoteProducts,
     ): ArrayCollection {
-        $deliveryNote = $this->em->getRepository(DeliveryNote::class)->find($deliveryNoteId);
         $entities = new ArrayCollection();
 
         foreach ($deliveryNoteProducts as $productDto) {
             $deliveryNoteProduct = new DeliveryNoteProduct();
 
             if ($productDto->id) {
-                $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->find($productDto->id);
+                $deliveryNoteProduct = $this->em->getRepository(DeliveryNoteProduct::class)->findOneBy([
+                    'id' => $productDto->id,
+                    'deliveryNote' => $deliveryNote,
+                ]);
                 if (!$deliveryNoteProduct) {
+                    // TODO: Log a warning here when a logger is available.
                     continue;
                 }
             }
@@ -118,8 +121,23 @@ class Factory {
     /**
      * @param Dto\ReturnNoteEntryDto[] $returnNoteEntryDtos
      */
-    public function createReturnNoteEntries(array $returnNoteEntryDtos): ArrayCollection
+    public function createReturnNoteEntries(DeliveryNote $deliveryNote, array $returnNoteEntryDtos): ArrayCollection
     {
+        $deliveryNoteProducts = [];
+        foreach ($returnNoteEntryDtos as $dto) {
+            foreach ($dto->deliveryNoteProductIds as $dnpId) {
+                $dnp = $this->em->getRepository(DeliveryNoteProduct::class)->findOneBy([
+                    'id' => $dnpId,
+                    'deliveryNote' => $deliveryNote,
+                ]);
+                if (!$dnp) {
+                    throw new \InvalidArgumentException('Delivery note product does not belong to this delivery note.');
+                }
+
+                $deliveryNoteProducts[$dnpId] = $dnp;
+            }
+        }
+
         $entries = new ArrayCollection();
 
         foreach ($returnNoteEntryDtos as $dto) {
@@ -130,10 +148,7 @@ class Factory {
             $entry->returnedFullBottles = $dto->returnedFullBottles;
 
             foreach ($dto->deliveryNoteProductIds as $dnpId) {
-                $dnp = $this->em->getRepository(DeliveryNoteProduct::class)->find($dnpId);
-                if ($dnp) {
-                    $dnp->returnNoteEntry = $entry;
-                }
+                $deliveryNoteProducts[$dnpId]->returnNoteEntry = $entry;
             }
 
             $entries->add($entry);
