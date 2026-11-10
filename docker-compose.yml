@@ -1,11 +1,19 @@
+x-backend-environment: &backend-environment
+  APP_ENV: prod
+  APP_SECRET: ${APP_SECRET:?Set APP_SECRET in the root .env file}
+  DATABASE_URL: "mysql://db:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in the root .env file}@mariadb:3306/db?serverVersion=mariadb-12.3.3&charset=utf8mb4"
+  JWT_SECRET_KEY: /var/www/workers/backend/config/jwt/private.pem
+  JWT_PUBLIC_KEY: /var/www/workers/backend/config/jwt/public.pem
+  JWT_PASSPHRASE: ${JWT_PASSPHRASE:?Set JWT_PASSPHRASE in the root .env file}
+
 services:
   mariadb:
     image: mariadb:12.3.3
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in the root .env file}
       MYSQL_DATABASE: db
       MYSQL_USER: db
-      MYSQL_PASSWORD: "123456"
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in the root .env file}
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -22,6 +30,7 @@ services:
     working_dir: /var/www/workers/backend
     depends_on:
       - mariadb
+    environment: *backend-environment
     volumes:
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
     command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm -F"
@@ -104,6 +113,7 @@ services:
   setup-migrate:
     image: workers-backend:latest
     working_dir: /var/www/workers/backend
+    environment: *backend-environment
     command: /bin/sh -c "set -eux; until nc -z mariadb 3306; do echo 'waiting for mariadb...'; sleep 1; done; php bin/console doctrine:migrations:migrate --no-interaction; mkdir -p /var/www/migrate_state; touch /var/www/migrate_state/done"
     depends_on:
       - mariadb
@@ -111,6 +121,7 @@ services:
     restart: "no"
     volumes:
       - migrate_state:/var/www/migrate_state:rw
+      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
 
 volumes:
   db_data:

@@ -1,3 +1,4 @@
 .env
+/backend/.env
 /frontend/static/img/logo.png
 /frontend/src/lib/config/company.js
