@@ -15,24 +15,18 @@ export const VOLUME_HIGHLIGHTS = {
     '50l': 'highlight-50l',
 };
 
-/**
- * 
- * Returns an html containing string - make sure tu use {@html} when rendering it in Svelte.
- */
-export const volumeHighlighter = (string: string) => {
-    let result = string;
-
+export const highlightVolumePart = (string: string): { text: string; className?: string }[] => {
     for (const [volume, className] of Object.entries(VOLUME_HIGHLIGHTS)) {
-        const startIndex = result.indexOf(volume);
+        const startIndex = string.indexOf(volume);
 
-        if(startIndex === -1) continue;
+        if (startIndex === -1) continue;
 
-        result = result.slice(0, startIndex) +
-                 `<span class="volume-highlight ${className}">${volume}</span>` +
-                 result.slice(startIndex + volume.length);
-
-        break;
+        return [
+            { text: string.slice(0, startIndex) },
+            { text: volume, className: `volume-highlight ${className}` },
+            { text: string.slice(startIndex + volume.length) },
+        ];
     }
 
-    return result;
+    return [{ text: string }];
 }

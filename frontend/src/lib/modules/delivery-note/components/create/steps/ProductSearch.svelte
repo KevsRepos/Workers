@@ -2,7 +2,7 @@
 import { browser } from "$app/env";
 import { addProductToDeliveryNote, updateDeliveryNoteProductQuantity } from "$lib/modules/delivery-note/actions";
 import { searchProducts } from "$lib/modules/product/api";
-import { volumeHighlighter } from "$lib/functions/volumeHighlighter";
+import { highlightVolumePart } from "$lib/functions/volumeHighlighter";
 import { X } from "@lucide/svelte";
 import Checkbox from "$lib/components/forms/Checkbox.svelte";
 import SearchSelectionBox from "$lib/components/forms/SearchSelectionBox.svelte";
@@ -108,7 +108,15 @@ const setQuantity = () => {
 
 <SearchSelectionBox bind:inputElement={inputElement} bind:input={productInput} bind:items={searchItems} searchItem={searchProduct} onSelect={selectProduct} label="Artikel" placeholder="Krombacher, Coca Cola...">
     {#snippet content(item, onSelect)}
-        <button onclick={() => onSelect(item)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">{@html volumeHighlighter(item.name)}</button>
+        <button onclick={() => onSelect(item)} class="w-full text-left p-2 hover:bg-gray-200 cursor-pointer">
+            {#each highlightVolumePart(item.name) as part}
+                {#if part.className}
+                    <span class={part.className}>{part.text}</span>
+                {:else}
+                    {part.text}
+                {/if}
+            {/each}
+        </button>
     {/snippet}
 </SearchSelectionBox>
 
