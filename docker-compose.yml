@@ -26,7 +26,7 @@ services:
       - ./backend/.env
     volumes:
       - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
-    command: /bin/sh -c "mkdir -p config/jwt; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction; chown -R www-data:www-data config/jwt || true; fi; php-fpm -F"
+    command: /bin/sh -c "mkdir -p config/jwt var/cache var/log; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction || exit 1; fi; chown -R www-data:www-data config/jwt var/cache var/log; exec php-fpm -F"
     healthcheck:
       test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 9000"]
       interval: 5s
