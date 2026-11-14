@@ -32,23 +32,23 @@ class Controller extends AbstractController {
 	#[Route(path: '/login', methods: [Request::METHOD_POST])]
     public function login() {}
 
-    #[Route(path: "/account", methods: [Request::METHOD_PUT])]
-    public function updateAccountData(
-        #[MapRequestPayload] UpdateAccountRequestDto $dto,
-        Service $accountService
-    ): JsonResponse
-    {
-        if (
-            empty($dto->emailAddress) &&
-            empty($dto->firstName) &&
-            empty($dto->surname) &&
-            empty($dto->password)
-        ) {
-            return new JsonResponse("NoDataProvided", 400);
-        }
-        $response = $accountService->update($dto);
-        return new JsonResponse($response->getMessage(), $response->getCode());
-    }
+    // #[Route(path: "/account", methods: [Request::METHOD_PUT])]
+    // public function updateAccountData(
+    //     #[MapRequestPayload] UpdateAccountRequestDto $dto,
+    //     Service $accountService
+    // ): JsonResponse
+    // {
+    //     if (
+    //         empty($dto->emailAddress) &&
+    //         empty($dto->firstName) &&
+    //         empty($dto->surname) &&
+    //         empty($dto->password)
+    //     ) {
+    //         return new JsonResponse("NoDataProvided", 400);
+    //     }
+    //     $response = $accountService->update($dto);
+    //     return new JsonResponse($response->getMessage(), $response->getCode());
+    // }
 
     #[Route(path: '/account/change-password', methods: [Request::METHOD_POST])]
     public function changePassword(#[MapRequestPayload] ChangePasswordRequestDto $dto, Service $accountService): JsonResponse
