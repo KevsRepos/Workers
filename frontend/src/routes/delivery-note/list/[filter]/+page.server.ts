@@ -7,7 +7,7 @@ export const load = async ({ params }) => {
     const res = await requestWorkers(`delivery-notes/${filter}`, 'GET');
 
     if(res.error) {
-        error(404, 'Ein Fehler ist aufgetreten');
+        error(500, 'Ein Fehler ist aufgetreten');
     }
 
     return { deliveryNotes: res, filter };
