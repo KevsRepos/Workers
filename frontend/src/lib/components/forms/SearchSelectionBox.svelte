@@ -32,27 +32,34 @@ const moveInList = (event: KeyboardEvent) => {
 
     if (event.key === "ArrowDown") {
         event.preventDefault();
-        preSelectedIndex = (preSelectedIndex === null || preSelectedIndex === items.length) ? 0 : preSelectedIndex + 1;
+        preSelectedIndex = preSelectedIndex === null
+            ? 0
+            : (preSelectedIndex + 1) % items.length;
     }
 
     if (event.key === "ArrowUp") {
         event.preventDefault();
-        preSelectedIndex = (preSelectedIndex === null || preSelectedIndex === 0) ? items.length - 1 : preSelectedIndex - 1;
+        preSelectedIndex = preSelectedIndex === null
+            ? items.length - 1
+            : (preSelectedIndex - 1 + items.length) % items.length;
     }
 
     if (event.key === "Enter" && preSelectedIndex !== null) {
-        onSelect(items[preSelectedIndex]);
+        const selectedItem = items[preSelectedIndex];
+
+        if (selectedItem !== undefined) {
+            onSelect(selectedItem);
+        }
+
         preSelectedIndex = null;
     }
 };
 </script>
 
-<svelte:window onkeydown={moveInList} />
-
 <div class="relative">
     <label class="label">
         <span class="label-text">{label}</span>
-        <input class="input bg-surface-50-950" type="text" oninput={searchItem} bind:value={input} bind:this={inputElement} placeholder={placeholder}/>
+        <input onkeydown={moveInList} class="input bg-surface-50-950" type="text" oninput={searchItem} bind:value={input} bind:this={inputElement} placeholder={placeholder}/>
     </label>
 
     {#if input.length > 0}
