@@ -2,6 +2,14 @@
 
 namespace App\Modules\Pim\DeliveryNote;
 
+/**
+ * Delivery note statuses are intentionally unrestricted.
+ *
+ * A status can always be changed to any other status without enforcing
+ * predefined transition rules or business constraints. Real-world workflows
+ * are way too flexible and dynamic to be constrained by assumptions about which status
+ * transitions should or should not be allowed under certain conditions.
+ */
 enum DeliveryNoteStatus: int
 {
     case OPEN = 1;
