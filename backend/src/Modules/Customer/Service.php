@@ -30,8 +30,8 @@ final class Service
                     $address->id,
                     $address->street,
                     $address->houseNumber,
-                    $address->city,
                     $address->postalCode,
+                    $address->city,
                     $address->country,
                     $address->id === $customer->defaultShippingAddress?->id,
                     $address->id === $customer->defaultBillingAddress?->id
@@ -43,8 +43,8 @@ final class Service
                 $customer->defaultShippingAddress->id,
                 $customer->defaultShippingAddress->street,
                 $customer->defaultShippingAddress->houseNumber,
-                $customer->defaultShippingAddress->city,
                 $customer->defaultShippingAddress->postalCode,
+                $customer->defaultShippingAddress->city,
                 $customer->defaultShippingAddress->country,
                 true,
                 false
@@ -54,8 +54,8 @@ final class Service
                 $customer->defaultBillingAddress->id,
                 $customer->defaultBillingAddress->street,
                 $customer->defaultBillingAddress->houseNumber,
-                $customer->defaultBillingAddress->city,
                 $customer->defaultBillingAddress->postalCode,
+                $customer->defaultBillingAddress->city,
                 $customer->defaultBillingAddress->country,
                 false,
                 true
@@ -100,8 +100,8 @@ final class Service
                 $address->id,
                 $address->street,
                 $address->houseNumber,
-                $address->city,
                 $address->postalCode,
+                $address->city,
                 $address->country,
                 $address->id === $customer->defaultShippingAddress?->id,
                 $address->id === $customer->defaultBillingAddress?->id
@@ -113,8 +113,8 @@ final class Service
             $customer->defaultShippingAddress->id,
             $customer->defaultShippingAddress->street,
             $customer->defaultShippingAddress->houseNumber,
-            $customer->defaultShippingAddress->city,
             $customer->defaultShippingAddress->postalCode,
+            $customer->defaultShippingAddress->city,
             $customer->defaultShippingAddress->country,
             true,
             false
@@ -124,8 +124,8 @@ final class Service
             $customer->defaultBillingAddress->id,
             $customer->defaultBillingAddress->street,
             $customer->defaultBillingAddress->houseNumber,
-            $customer->defaultBillingAddress->city,
             $customer->defaultBillingAddress->postalCode,
+            $customer->defaultBillingAddress->city,
             $customer->defaultBillingAddress->country,
             false,
             true

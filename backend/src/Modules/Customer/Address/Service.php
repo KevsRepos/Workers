@@ -70,8 +70,8 @@ final class Service
                 $address->id,
                 $address->street,
                 $address->houseNumber,
-                $address->city,
                 $address->postalCode,
+                $address->city,
                 $address->country,
                 $address->defaultShippingAddress,
                 $address->defaultBillingAddress
