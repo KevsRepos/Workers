@@ -15,16 +15,42 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
         return json({ error: await response.text() }, { status: 401 });
     }
 
-    const result = await response.json();
+    const httpCookies = await response.headers.getSetCookie();
 
-    // Keep the JWT in a cookie that browser JavaScript cannot read.
-    cookies.set('jwt_token', result.token, {
-        path: '/',
-        httpOnly: true,
-        secure: !dev,
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7 // 7 days
-    });
+    for (const cookie of httpCookies) {
+        const [nameValue, ...attributes] = cookie.split(';');
+        const separatorIndex = nameValue.indexOf('=');
+
+        const name = nameValue.slice(0, separatorIndex).trim();
+        const value = nameValue.slice(separatorIndex + 1).trim();
+
+
+        const pathAttribute = attributes.find(a =>
+            a.trim().toLowerCase().startsWith('path=')
+        );
+
+        const path = pathAttribute?.split('=')[1].trim() ?? '/';
+
+        if(name !== 'refresh_token' && name !== 'jwt_token') {
+            continue;
+        }
+
+        const options = {
+            path: path,
+            httpOnly: attributes.some(a => a.trim().toLowerCase() === 'httponly'),
+            secure: !dev,
+            sameSite: 'lax' as const,
+            expires: undefined as Date | undefined
+        };
+
+        const expires = attributes.find(a => a.trim().toLowerCase().startsWith('expires='));
+
+        if (expires) {
+            options.expires = new Date(expires.trim().slice(8));
+        }
+
+        cookies.set(name, value, options);
+    }
 
     return json({ success: true });
 };

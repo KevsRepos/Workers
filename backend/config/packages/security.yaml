@@ -17,6 +17,10 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        refresh-token:
+            pattern: ^/refresh-token$
+            security: false
+
         login:
             pattern: ^/login
             stateless: true
@@ -25,6 +29,12 @@ security:
                 provider: entity_user
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        logout:
+            pattern: ^/logout
+            stateless: true
+            jwt: ~
+            provider: jwt
 
         api:
             pattern: ^/

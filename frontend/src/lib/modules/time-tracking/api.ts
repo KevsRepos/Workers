@@ -1,10 +1,10 @@
-import { fetchApi } from "$lib/api/fetchApi";
+import { requestWorkers } from "$lib/api/requestWorkers";
 
 export const createCurrentTimeSheet = (month: number, year: number) =>
-    fetchApi("time-sheets/current/create", "POST", { month, year });
+    requestWorkers("time-sheets/current/create", "POST", { month, year });
 
 export const createTimeSheetEntry = (timeSheetId: string | null, payload: object) =>
-    fetchApi(`time-sheets/${timeSheetId}/entries`, "POST", payload);
+    requestWorkers(`time-sheets/${timeSheetId}/entries`, "POST", payload);
 
 export const updateTimeSheetEntry = (entryId: string, payload: object) =>
-    fetchApi(`time-sheets/entries/${entryId}`, "PUT", payload);
+    requestWorkers(`time-sheets/entries/${entryId}`, "PUT", payload);

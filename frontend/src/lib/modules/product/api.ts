@@ -1,4 +1,4 @@
-import { fetchApi } from "$lib/api/fetchApi";
+import { requestWorkers } from "$lib/api/requestWorkers";
 
 export interface ProductInput {
     name: string;
@@ -10,10 +10,10 @@ export interface ProductInput {
 }
 
 export const searchProducts = (query: string) =>
-    fetchApi(`products/search?productName=${encodeURIComponent(query)}`, "GET");
+    requestWorkers(`products/search?productName=${encodeURIComponent(query)}`, "GET");
 
 export const createProduct = (payload: ProductInput) =>
-    fetchApi("products", "POST", payload);
+    requestWorkers("products", "POST", payload);
 
 export const updateProduct = (id: string, payload: ProductInput) =>
-    fetchApi(`products/${id}`, "PUT", payload);
+    requestWorkers(`products/${id}`, "PUT", payload);

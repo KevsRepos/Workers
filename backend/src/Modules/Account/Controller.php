@@ -4,8 +4,6 @@ namespace App\Modules\Account;
 
 use App\Modules\Account\DTO\AccountDataResponseDto;
 use App\Modules\Account\DTO\ChangePasswordRequestDto;
-use App\Modules\Account\DTO\UpdateAccountRequestDto;
-use App\Modules\Account\DTO\CreateAccountRequestDto;
 use App\Modules\Account\Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

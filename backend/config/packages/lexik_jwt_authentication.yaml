@@ -3,7 +3,7 @@ lexik_jwt_authentication:
     secret_key: '%env(resolve:JWT_SECRET_KEY)%' # required for token creation
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%' # required for token verification
     pass_phrase: '%env(JWT_PASSPHRASE)%' # required for token creation
-    token_ttl: 604800 # 7 days in seconds
+    token_ttl: 900 # 15 minutes in seconds
 
     token_extractors:      
       authorization_header:
@@ -13,3 +13,14 @@ lexik_jwt_authentication:
       cookie:
         enabled: true
         name: jwt_token
+    
+    set_cookies:
+      jwt_token:
+        lifetime: null # null = übernimmt automatisch token_ttl
+        samesite: lax
+        path: /
+        domain: null
+        secure: true # Achtung: Lokal ohne HTTPS auf false setzen!
+        httpOnly: true
+    
+    remove_token_from_body_when_cookies_used: true

@@ -12,7 +12,6 @@ use App\Lib\Success;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Lib\JWTExtractor;
-use DateTimeImmutable;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 final class Service {
@@ -129,5 +128,10 @@ final class Service {
         }
 
         return new Success("PasswordChanged");
+    }
+
+    public function getAccountById(string $accountId): ?Account
+    {
+        return $this->repo->find($accountId);
     }
 }

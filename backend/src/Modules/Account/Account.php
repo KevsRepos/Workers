@@ -4,7 +4,6 @@ namespace App\Modules\Account;
 
 use App\Lib\Entity;
 use App\Modules\Account\Repository;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -34,7 +33,7 @@ class Account extends Entity implements UserInterface, PasswordAuthenticatedUser
 
     public function getUserIdentifier(): string
     {
-        return $this->emailAddress;
+        return $this->id;
     }
 
     public function getPassword(): ?string

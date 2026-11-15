@@ -1,4 +1,4 @@
-import { fetchApi } from "$lib/api/fetchApi";
+import { requestWorkers } from "$lib/api/requestWorkers";
 
 export interface ProductUnionInput {
     name: string;
@@ -6,7 +6,7 @@ export interface ProductUnionInput {
 }
 
 export const createProductUnion = (payload: ProductUnionInput) =>
-    fetchApi("product-unions", "POST", payload);
+    requestWorkers("product-unions", "POST", payload);
 
 export const updateProductUnion = (id: string, payload: ProductUnionInput) =>
-    fetchApi(`product-unions/${id}`, "PUT", payload);
+    requestWorkers(`product-unions/${id}`, "PUT", payload);

@@ -1,10 +1,10 @@
-import { fetchApi } from "$lib/api/fetchApi";
+import { requestWorkers } from "$lib/api/requestWorkers";
 
-export const getOrderPresets = () =>
-    fetchApi("order-presets", "GET");
+export const getOrderPresets = () => 
+    requestWorkers("order-presets");
 
 export const createOrderPreset = (payload: { name: string; productIds: string[] }) =>
-    fetchApi("order-presets", "POST", payload);
+    requestWorkers("order-presets", "POST", payload);
 
 export const updateOrderPreset = (id: string, payload: { name: string; productIds: string[] }) =>
-    fetchApi(`order-presets/${id}`, "PUT", payload);
+    requestWorkers(`order-presets/${id}`, "PUT", payload);

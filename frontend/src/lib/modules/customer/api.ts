@@ -1,16 +1,16 @@
-import { fetchApi } from "$lib/api/fetchApi";
+import { requestWorkers } from "$lib/api/requestWorkers";
 
 export const searchCustomers = (query: string) =>
-    fetchApi(`customers/search?customerQuery=${encodeURIComponent(query)}`, "GET");
+    requestWorkers(`customers/search?customerQuery=${encodeURIComponent(query)}`, "GET");
 
 export const getCustomer = (customerId: string) =>
-    fetchApi(`customer/${encodeURIComponent(customerId)}`, "GET");
+    requestWorkers(`customer/${encodeURIComponent(customerId)}`, "GET");
 
 export const createCustomer = (customer: object) =>
-    fetchApi("customers", "POST", customer);
+    requestWorkers("customers", "POST", customer);
 
 export const createCustomerAddress = (customerId: string, address: object) =>
-    fetchApi(`customer-address/${encodeURIComponent(customerId)}`, "POST", address);
+    requestWorkers(`customer-address/${encodeURIComponent(customerId)}`, "POST", address);
 
 export const getCustomerAddresses = (customerId: string) =>
-    fetchApi(`customers/${encodeURIComponent(customerId)}/addresses`, "GET");
+    requestWorkers(`customers/${encodeURIComponent(customerId)}/addresses`, "GET");
