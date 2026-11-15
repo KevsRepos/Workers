@@ -6,7 +6,7 @@ export const POST: RequestHandler = async ({ cookies, locals, fetch }) => {
     });
 
     if (!response.ok) {
-        return json({ error: await response.text() }, { status: 401 });
+        //logging
     }
 
     cookies.delete('jwt_token', { path: '/' });

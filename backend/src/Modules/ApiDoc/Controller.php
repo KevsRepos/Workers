@@ -3,15 +3,25 @@
 namespace App\Modules\ApiDoc;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route as AttributeRoute;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Uid\Uuid;
 
 class Controller extends AbstractController
 {
     public function __construct(private RouterInterface $router) {}
+
+    #[AttributeRoute('/api/uuid', methods: ['GET'])]
+    public function uuid(): Response
+    {
+        $binary = Uuid::v7()->toBinary();
+
+        $id = '0x' . bin2hex($binary);
+
+        return new Response($id);
+    }
 
     #[AttributeRoute('/api/doc', methods: ['GET'])]
     public function apiDoc(): Response
