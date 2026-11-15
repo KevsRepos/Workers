@@ -4,11 +4,7 @@ export const requestWorkers = async (endpoint: string, method: string = 'GET', b
     const { cookies, fetch } = getRequestEvent();
 
     try {
-        if(!cookies.get('jwt_token')) {
-            throw new Error('not authenticated');
-        }
-
-        if(isTokenExpired(cookies.get('jwt_token') ?? '')) {
+        if(!cookies.get('jwt_token') || isTokenExpired(cookies.get('jwt_token') ?? '')) {
             await refreshToken(fetch);
         }
 
