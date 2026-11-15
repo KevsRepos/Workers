@@ -8,13 +8,14 @@ use App\Modules\Customer\Dto\CustomerResponseDto;
 use Exception;
 use App\Modules\Customer\Dto\CreateCustomerRequestDto;
 use App\Lib\Success;
+use App\Modules\Customer\Address\CustomerAddress;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 final class Service
 {
     public function __construct(
         private Repository $repo,
-        private Factory $factory
+        private Factory $factory,
     ) {}
 
     public function save(CreateCustomerRequestDto $data): Error|Success
@@ -147,20 +148,20 @@ final class Service
         return $customerResponse;
     }
 
-    public function setDefaultShippingAddress(string $customerId, string $addressId): Error|Success
+    public function setDefaultShippingAddress(CustomerAddress $address): Error|Success
     {
         try {
-            $this->repo->saveDefaultShippingAddress($customerId, $addressId);
+            $this->repo->saveDefaultShippingAddress($address->customer->id, $address->id);
         } catch (Exception $e) {
             return new Error($e->getMessage(), 500);
         }
         return new Success("DefaultShippingAddressSet");
     }
 
-    public function setDefaultBillingAddress(string $customerId, string $addressId): Error|Success
+    public function setDefaultBillingAddress(CustomerAddress $address): Error|Success
     {
         try {
-            $this->repo->saveDefaultBillingAddress($customerId, $addressId);
+            $this->repo->saveDefaultBillingAddress($address->customer->id, $address->id);
         } catch (Exception $e) {
             return new Error($e->getMessage(), 500);
         }

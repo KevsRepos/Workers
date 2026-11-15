@@ -33,10 +33,10 @@ final class Service
             $this->repo->save($address, true);
 
             if ($data->standardShippingAddress) {
-                $this->customerService->setDefaultShippingAddress($customerId, $address->id);
+                $this->customerService->setDefaultShippingAddress($address);
             }
             if ($data->standardBillingAddress) {
-                $this->customerService->setDefaultBillingAddress($customerId, $address->id);
+                $this->customerService->setDefaultBillingAddress($address);
             }
         } catch (UniqueConstraintViolationException) {
             return new Error("UniqueConstraintViolation", 400);
