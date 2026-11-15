@@ -86,11 +86,4 @@ class Controller extends AbstractController
         }
         return new JsonResponse($result->getMessage(), 200);
     }
-
-    #[Route('/products/{id}', methods: ['DELETE'])]
-    public function deleteProduct(string $id): JsonResponse
-    {
-        // TODO: Delete product by $id
-        return $this->json(['status' => 'deleted', 'id' => $id]);
-    }
 }
