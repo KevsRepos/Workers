@@ -23,11 +23,14 @@ class Controller extends AbstractController
 
     #[Route('/customer/{customerId}', methods: ['GET'])]
     public function getCustomer(string $customerId, Service $service): JsonResponse {
-        $customer = $service->createCustomerResponse($service->findById($customerId));
+        $entity = $service->findById($customerId);
 
-        if (!$customer) {
+        if(!$entity) {
             return $this->json([], 404);
         }
+
+        $customer = $service->createCustomerResponse($entity);
+
         return $this->json($customer);
     }
 
