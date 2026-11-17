@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Modules\TimeTracking;
 
+use App\Modules\Account\Account;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,100 +18,64 @@ class Repository extends ServiceEntityRepository
         parent::__construct($registry, MonthlyTimeSheet::class);
     }
 
-    public function save(MonthlyTimeSheet $entity, bool $flush = false): void
+    public function add(MonthlyTimeSheet $sheet): void
     {
-        $this->getEntityManager()->persist($entity);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->persist($sheet);
     }
 
-    public function remove(MonthlyTimeSheet $entity, bool $flush = false): void
+    public function findForMonth(Account $account, int $year, int $month): ?MonthlyTimeSheet
     {
-        $this->getEntityManager()->remove($entity);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function flush(): void
-    {
-        $this->getEntityManager()->flush();
-    }
-
-    public function findById(string $id): ?MonthlyTimeSheet
-    {
-        return $this->find($id);
-    }
-
-    public function findYearsByAccount(string $accountId): array
-    {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('DISTINCT t.year')
-            ->from(MonthlyTimeSheet::class, 't')
-            ->where('t.account = :accountId')
-            ->setParameter('accountId', $accountId, 'uuid')
-            ->orderBy('t.year', 'DESC')
-            ->getQuery()
-            ->getSingleColumnResult();
-    }
-
-    public function findByAccountAndYear(string $accountId, int $year): array
-    {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('t')
-            ->from(MonthlyTimeSheet::class, 't')
-            ->where('t.account = :accountId')
-            ->andWhere('t.year = :year')
-            ->setParameter('accountId', $accountId, 'uuid')
+        return $this->createQueryBuilder('t')
+            ->addSelect('e')
+            ->leftJoin('t.entries', 'e')
+            ->where('t.account = :account AND t.year = :year AND t.month = :month')
+            ->setParameter('account', $account->id, 'app_uuid')
             ->setParameter('year', $year)
-            ->orderBy('t.month', 'ASC')
-            ->getQuery()
-            ->getArrayResult();
-    }
-
-    public function findByAccountMonthYear(string $accountId, int $month, int $year): ?MonthlyTimeSheet
-    {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('t', 'e')
-            ->from(MonthlyTimeSheet::class, 't')
-            ->leftJoin('t.MonthlyTimeSheetEntries', 'e')
-            ->where('t.account = :accountId')
-            ->andWhere('t.month = :month')
-            ->andWhere('t.year = :year')
-            ->setParameter('accountId', $accountId, 'uuid')
             ->setParameter('month', $month)
-            ->setParameter('year', $year)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
-    public function saveEntry(MonthlyTimeSheetEntry $entry, bool $flush = false): void
+    /**
+     * @return list<MonthlyTimeSheet>
+     */
+    public function findForYear(Account $account, int $year): array
     {
-        $this->getEntityManager()->persist($entry);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function removeEntry(MonthlyTimeSheetEntry $entry, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entry);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function findEntryById(string $id): ?MonthlyTimeSheetEntry
-    {
-        return $this->getEntityManager()->getRepository(MonthlyTimeSheetEntry::class)->find($id);
+        return $this->createQueryBuilder('t')
+            ->addSelect('e')
+            ->leftJoin('t.entries', 'e')
+            ->where('t.account = :account AND t.year = :year')
+            ->setParameter('account', $account->id, 'app_uuid')
+            ->setParameter('year', $year)
+            ->orderBy('t.month', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
-     * @return TimeTrackingNotification[]
+     * @return list<int>
      */
-    public function findAllNotifications(): array
+    public function findYears(Account $account): array
     {
-        return $this->getEntityManager()->getRepository(TimeTrackingNotification::class)->findAll();
+        $rows = $this->createQueryBuilder('t')
+            ->select('DISTINCT t.year')
+            ->where('t.account = :account')
+            ->setParameter('account', $account->id, 'app_uuid')
+            ->orderBy('t.year', 'DESC')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_map('intval', $rows);
+    }
+
+    public function findEntry(string $id): ?MonthlyTimeSheetEntry
+    {
+        return $this->getEntityManager()->find(MonthlyTimeSheetEntry::class, $id);
+    }
+
+    public function removeEntry(MonthlyTimeSheetEntry $entry): void
+    {
+        $entry->timeSheet->entries->removeElement($entry);
+        $this->getEntityManager()->remove($entry);
     }
 }

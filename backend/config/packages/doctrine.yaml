@@ -1,34 +1,35 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-        logging: true
-
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '15'
+        types:
+            app_uuid: App\Shared\Doctrine\UuidStringType
+        # Tables managed by hand-written migrations (append-only audit log, counters).
+        schema_filter: ~^(?!(audit_log|audit_chain_head|document_sequence|messenger_messages)$)~
+        profiling_collect_backtrace: '%kernel.debug%'
     orm:
-        auto_generate_proxy_classes: true
-        enable_lazy_ghost_objects: true
+        enable_native_lazy_objects: true
+        validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
+        report_fields_where_declared: true
+        auto_mapping: false
+        controller_resolver:
+            auto_mapping: false
         mappings:
             App:
+                type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Modules'
-                prefix: 'App\Modules'
+                dir: '%kernel.project_dir%/src'
+                prefix: 'App'
                 alias: App
 
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:
     doctrine:
         orm:
-            auto_generate_proxy_classes: false
-            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool

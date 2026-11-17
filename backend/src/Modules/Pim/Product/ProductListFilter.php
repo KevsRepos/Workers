@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Modules\Pim\Product;
 
@@ -9,4 +11,5 @@ enum ProductListFilter: string
     case WITHOUT_DEPOSIT = 'without-deposit';
     case SELLABLE = 'sellable';
     case RENTABLE = 'rentable';
+    case ARCHIVED = 'archived';
 }

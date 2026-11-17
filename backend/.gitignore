@@ -1,4 +1,3 @@
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -13,4 +12,11 @@
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-/certs/*
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache
+###< phpunit/phpunit ###
+
+/.php-cs-fixer.cache
+/composer.local.json
+/composer.local.lock

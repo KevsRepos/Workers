@@ -1,18 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Account;
 
-use App\Modules\Account\Account;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Account>
- *
- * @method Account|null find($id, $lockMode = null, $lockVersion = null)
- * @method Account|null findOneBy(array $criteria, array $orderBy = null)
- * @method Account[]    findAll()
- * @method Account[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class Repository extends ServiceEntityRepository
 {
@@ -21,51 +17,37 @@ class Repository extends ServiceEntityRepository
         parent::__construct($registry, Account::class);
     }
 
-    public function save(Account $entity, bool $flush = false): void
+    public function findByEmail(string $email): ?Account
     {
-        $this->getEntityManager()->persist($entity);
+        return $this->findOneBy(['emailAddress' => Account::normalizeEmail($email)]);
+    }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
+    /**
+     * @return list<Account>
+     */
+    public function findAllOrdered(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.surname', 'ASC')
+            ->addOrderBy('a.firstName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countActiveAdmins(): int
+    {
+        $count = 0;
+        foreach ($this->findBy(['active' => true]) as $account) {
+            if ($account->isAdmin()) {
+                ++$count;
+            }
         }
+
+        return $count;
     }
 
-    public function remove(Account $entity, bool $flush = false): void
+    public function add(Account $account): void
     {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->persist($account);
     }
-
-    public function flush()
-    {
-        $this->getEntityManager()->flush();
-    }
-
-//    /**
-//     * @return Account[] Returns an array of Account objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Account
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Pim\Product;
 
-use App\Modules\Pim\Product\Product;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Product>
- *
- * @method Product|null find($id, $lockMode = null, $lockVersion = null)
- * @method Product|null findOneBy(array $criteria, array $orderBy = null)
- * @method Product[]    findAll()
- * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class Repository extends ServiceEntityRepository
 {
@@ -21,97 +21,69 @@ class Repository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function save(Product $entity, bool $flush = false): void
+    public function add(Product $product): void
     {
-        $this->getEntityManager()->persist($entity);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Product $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function flush()
-    {
-        $this->getEntityManager()->flush();
-    }
-
-    public function search(string $query): array
-    {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('p')
-            ->from(Product::class, 'p')
-            ->where('LOWER(p.name) LIKE LOWER(:query)')
-            ->setParameter('query', '%' . $query . '%')
-            ->orderBy('p.name', 'ASC')
-            ->setMaxResults(20)
-            ->getQuery()
-            ->getArrayResult();
+        $this->getEntityManager()->persist($product);
     }
 
     /**
-     * Return all products as arrays ordered by name
-     *
-     * @return array
+     * @return array{list<Product>, int}
      */
-    public function listAll(): array
+    public function search(?string $query, ProductListFilter $filter, int $offset, int $limit): array
     {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('p', 'd')
-            ->from(Product::class, 'p')
+        $qb = $this->createQueryBuilder('p')
+            ->addSelect('d')
             ->leftJoin('p.deposit', 'd')
             ->orderBy('p.name', 'ASC')
-            ->getQuery()
-            ->getArrayResult();
-    }
-
-    /**
-     * Return paginated list of products
-     *
-     * @param int $page 1-based page
-     * @param int $limit
-     * @return array
-     */
-    public function listPaginated(int $page, int $limit, ProductListFilter $filter = ProductListFilter::ALL): array
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->select('p', 'd')
-            ->from(Product::class, 'p')
-            ->leftJoin('p.deposit', 'd')
-            ->orderBy('p.name', 'ASC')
-            ->setFirstResult(($page - 1) * $limit)
+            ->setFirstResult($offset)
             ->setMaxResults($limit);
 
         $this->applyFilter($qb, $filter);
 
-        return $qb->getQuery()->getArrayResult();
+        if ($query !== null && trim($query) !== '') {
+            $qb->andWhere('LOWER(p.name) LIKE :q')->setParameter('q', '%' . addcslashes(mb_strtolower(trim($query)), '%_\\') . '%');
+        }
+
+        $paginator = new Paginator($qb->getQuery(), fetchJoinCollection: false);
+
+        return [iterator_to_array($paginator->getIterator(), false), \count($paginator)];
     }
 
-    public function findById(string $id): ?Product
+    /**
+     * @param list<string> $ids
+     *
+     * @return array<string, Product> indexed by id
+     */
+    public function findByIds(array $ids): array
     {
-        return $this->find($id);
+        $ids = array_values(array_unique(array_filter($ids, static fn (string $id): bool => Uuid::isValid($id))));
+        if ($ids === []) {
+            return [];
+        }
+
+        $products = $this->createQueryBuilder('p')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', array_map(static fn (string $id): string => Uuid::fromString($id)->toBinary(), $ids), ArrayParameterType::BINARY)
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+        foreach ($products as $product) {
+            $indexed[(string) $product->id] = $product;
+        }
+
+        return $indexed;
     }
 
-    public function countAll(ProductListFilter $filter = ProductListFilter::ALL): int
+    private function applyFilter(QueryBuilder $qb, ProductListFilter $filter): void
     {
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->select('COUNT(p.id)')
-            ->from(Product::class, 'p')
-            ->leftJoin('p.deposit', 'd');
+        if ($filter === ProductListFilter::ARCHIVED) {
+            $qb->andWhere('p.archived = true');
 
-        $this->applyFilter($qb, $filter);
+            return;
+        }
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
-    }
-
-    private function applyFilter(\Doctrine\ORM\QueryBuilder $qb, ProductListFilter $filter): void
-    {
+        $qb->andWhere('p.archived = false');
         match ($filter) {
             ProductListFilter::WITH_DEPOSIT => $qb->andWhere('p.deposit IS NOT NULL'),
             ProductListFilter::WITHOUT_DEPOSIT => $qb->andWhere('p.deposit IS NULL'),

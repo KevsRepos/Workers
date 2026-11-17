@@ -1,18 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Pim\DeliveryNote;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @extends ServiceEntityRepository<DeliveryNote>
- *
- * @method DeliveryNote|null find($id, $lockMode = null, $lockVersion = null)
- * @method DeliveryNote|null findOneBy(array $criteria, array $orderBy = null)
- * @method DeliveryNote[]    findAll()
- * @method DeliveryNote[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class Repository extends ServiceEntityRepository
 {
@@ -21,91 +18,80 @@ class Repository extends ServiceEntityRepository
         parent::__construct($registry, DeliveryNote::class);
     }
 
-    public function findById(string $id): ?DeliveryNote
+    public function add(DeliveryNote $note): void
     {
-        return $this->find($id);
+        $this->getEntityManager()->persist($note);
+    }
+
+    public function findDetailed(string $id): ?DeliveryNote
+    {
+        return $this->createQueryBuilder('d')
+            ->addSelect('c', 'l', 'p', 'r', 'sa', 'ba')
+            ->join('d.customer', 'c')
+            ->leftJoin('d.lines', 'l')
+            ->leftJoin('l.product', 'p')
+            ->leftJoin('l.returnNoteEntry', 'r')
+            ->leftJoin('d.shippingAddress', 'sa')
+            ->leftJoin('d.billingAddress', 'ba')
+            ->where('d.id = :id')
+            ->setParameter('id', $id, 'app_uuid')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
-     * @return DeliveryNote[]
+     * @return array{list<DeliveryNote>, int}
      */
-    public function findByStatus(DeliveryNoteStatus $status): array
+    public function search(?DeliveryNoteStatus $status, ?string $query, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to, int $offset, int $limit): array
     {
-        return $this->findBy(['status' => $status], ['deliveryDate' => 'DESC']);
-    }
+        $qb = $this->createQueryBuilder('d')
+            ->addSelect('c', 'sa')
+            ->join('d.customer', 'c')
+            ->leftJoin('d.shippingAddress', 'sa')
+            ->orderBy('d.deliveryDate', $status === DeliveryNoteStatus::OPEN ? 'ASC' : 'DESC')
+            ->addOrderBy('d.number', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
 
-    public function saveDeliveryNote(DeliveryNote $entity, bool $flush = false): string
-    {
-        $this->getEntityManager()->persist($entity);
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        if ($status !== null) {
+            $qb->andWhere('d.status = :status')->setParameter('status', $status);
         }
-        return $entity->id;
-    }
+        if ($from !== null) {
+            $qb->andWhere('d.deliveryDate >= :from')->setParameter('from', $from, 'date_immutable');
+        }
+        if ($to !== null) {
+            $qb->andWhere('d.deliveryDate <= :to')->setParameter('to', $to, 'date_immutable');
+        }
+        if ($query !== null && trim($query) !== '') {
+            $qb->andWhere('(LOWER(d.number) LIKE :q OR LOWER(c.companyName) LIKE :q OR LOWER(c.surname) LIKE :q OR LOWER(c.firstName) LIKE :q OR LOWER(d.shortDescription) LIKE :q OR LOWER(d.assignment) LIKE :q)')
+                ->setParameter('q', '%' . addcslashes(mb_strtolower(trim($query)), '%_\\') . '%');
+        }
 
-    public function saveDeliveryNoteProducts(ArrayCollection $entities, bool $flush = false): void
-    {
-        foreach ($entities as $entity) {
-            $this->getEntityManager()->persist($entity);
-        }
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
+        $paginator = new Paginator($qb->getQuery(), fetchJoinCollection: false);
 
-    public function saveReturnNoteEntries(ArrayCollection $entries, bool $flush = false): void
-    {
-        foreach ($entries as $entry) {
-            $this->getEntityManager()->persist($entry);
-        }
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(DeliveryNote $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        return [iterator_to_array($paginator->getIterator(), false), \count($paginator)];
     }
 
     /**
-     * @param string[] $deliveryNoteProductIds
-     * @return DeliveryNoteProduct[]
+     * @return array<int, int> number of notes per status value
      */
-    public function findDeliveryNoteProducts(DeliveryNote $deliveryNote, array $deliveryNoteProductIds): array
+    public function countByStatus(): array
     {
-        if ($deliveryNoteProductIds === []) {
-            return [];
+        $rows = $this->createQueryBuilder('d')
+            ->select('d.status AS status', 'COUNT(d.id) AS total')
+            ->groupBy('d.status')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+        foreach (DeliveryNoteStatus::cases() as $case) {
+            $counts[$case->value] = 0;
+        }
+        foreach ($rows as $row) {
+            $status = $row['status'] instanceof DeliveryNoteStatus ? $row['status']->value : (int) $row['status'];
+            $counts[$status] = (int) $row['total'];
         }
 
-        return $this->getEntityManager()->getRepository(DeliveryNoteProduct::class)->findBy([
-            'id' => array_values(array_unique($deliveryNoteProductIds)),
-            'deliveryNote' => $deliveryNote,
-        ]);
-    }
-
-    /**
-     * @param string[] $deliveryNoteProductIds
-     */
-    public function removeDeliveryNoteProducts(DeliveryNote $deliveryNote, array $deliveryNoteProductIds): bool
-    {
-        $entities = $this->findDeliveryNoteProducts($deliveryNote, $deliveryNoteProductIds);
-        if (count($entities) !== count($deliveryNoteProductIds)) {
-            return false;
-        }
-
-        foreach ($entities as $entity) {
-            $this->getEntityManager()->remove($entity);
-        }
-
-        return true;
-    }
-
-    public function flush()
-    {
-        $this->getEntityManager()->flush();
+        return $counts;
     }
 }

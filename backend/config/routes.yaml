@@ -1,8 +1,7 @@
-controllers:
+api:
     resource:
-        path: ../src/Modules
-        namespace: App\Modules
+        path: ../src/
+        namespace: App
     type: attribute
-# config/routes.yaml
-api_login_check:
-    path: /login
+    prefix: /api/v1
+    name_prefix: api_

@@ -1,4 +1,11 @@
-.env
-.env.*
-!.env.example
+.env.local
+.env.*.local
+.env.test
 config/jwt/*.pem
+var/
+vendor/
+tests/
+.phpunit.cache
+.php-cs-fixer.cache
+composer.local.*
+phpunit.xml

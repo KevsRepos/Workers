@@ -1,24 +1,29 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    # Refresh token lifetime (sliding, renewed on every refresh): 7 days.
+    app.auth.refresh_token_ttl: 604800
+    # Absolute maximum duration of a login session: 30 days.
+    app.auth.session_max_lifetime: 2592000
+    # Retention of audit log entries. Default 6 years (HGB § 257 / AO § 147 for commercial letters).
+    app.audit.retention_days: '%env(int:AUDIT_RETENTION_DAYS)%'
+    # Hours credited for vacation, sick leave and public holidays.
+    app.time_tracking.absence_hours: '%env(float:TIME_TRACKING_ABSENCE_HOURS)%'
+
+    env(AUDIT_RETENTION_DAYS): '2190'
+    env(TIME_TRACKING_ABSENCE_HOURS): '8'
+    env(TRUSTED_PROXIES): '127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
+    env(MAILER_DSN): 'null://null'
+    env(MAILER_FROM): 'workers@localhost'
 
 services:
-    # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: true
+        autoconfigure: true
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
         exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
             - '../src/Kernel.php'
-
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+            - '../src/**/Dto/'
+            - '../src/Modules/**/{Account,Customer,CustomerAddress,Deposit,Product,ProductUnion,ProductUnionProduct,DeliveryNote,DeliveryNoteProduct,ReturnNoteEntry,OrderPreset,OrderPresetItem,MonthlyTimeSheet,MonthlyTimeSheetEntry,RefreshToken,ReminderSetting}.php'
+            - '../src/Shared/Domain/'
+            - '../src/Shared/Exception/'
