@@ -258,6 +258,7 @@ export interface TimeEntry {
 	start: string | null;
 	end: string | null;
 	breakMinutes: number | null;
+	endsNextDay: boolean;
 	note: string | null;
 	hours: number;
 	warnings: string[];

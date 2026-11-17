@@ -48,7 +48,7 @@
 					<td class="py-0.5">{day.day}. {WEEKDAYS_SHORT[day.weekday - 1]}</td>
 					<td class="py-0.5">{day.entry ? typeInfo(day.entry.type).label : ''}</td>
 					<td class="py-0.5">{day.entry?.start ?? ''}</td>
-					<td class="py-0.5">{day.entry?.end ?? ''}</td>
+					<td class="py-0.5">{day.entry?.end ?? ''}{day.entry?.endsNextDay ? ' (+1)' : ''}</td>
 					<td class="py-0.5 text-right">{day.entry?.breakMinutes ? `${day.entry.breakMinutes} min` : ''}</td>
 					<td class="py-0.5 text-right">{day.entry ? formatHours(day.entry.hours) : ''}</td>
 					<td class="py-0.5">{day.entry?.note ?? ''}</td>

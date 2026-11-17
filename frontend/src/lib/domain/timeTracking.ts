@@ -50,8 +50,16 @@ export const previewHours = (form: EntryForm): number | null => {
 	if (form.type !== 'work') return null;
 	const start = minutes(form.start);
 	const end = minutes(form.end);
-	if (start === null || end === null || end <= start) return null;
-	return Math.max(0, (end - start - Number(form.breakMinutes || 0)) / 60);
+	if (start === null || end === null || end === start) return null;
+	// end before start = shift ends on the following day
+	const span = end > start ? end - start : end + 24 * 60 - start;
+	return Math.max(0, (span - Number(form.breakMinutes || 0)) / 60);
+};
+
+export const endsNextDay = (form: EntryForm): boolean => {
+	const start = minutes(form.start);
+	const end = minutes(form.end);
+	return form.type === 'work' && start !== null && end !== null && end < start;
 };
 
 /**
@@ -62,7 +70,8 @@ export const previewWarnings = (form: EntryForm): string[] => {
 	if (hours === null) return [];
 	const pause = Number(form.breakMinutes || 0);
 	const warnings: string[] = [];
-	if (hours > 10) warnings.push('Mehr als 10 Stunden Arbeitszeit (§ 3 ArbZG).');
+	if (hours > 16) warnings.push('Mehr als 16 Stunden – bitte Beginn und Ende prüfen.');
+	else if (hours > 10) warnings.push('Mehr als 10 Stunden Arbeitszeit (§ 3 ArbZG).');
 	if (hours > 9 && pause < 45)
 		warnings.push('Bei mehr als 9 Stunden sind mindestens 45 Minuten Pause vorgeschrieben (§ 4 ArbZG).');
 	else if (hours > 6 && pause < 30)

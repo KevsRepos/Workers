@@ -12,6 +12,7 @@
 		formToInput,
 		previewHours,
 		previewWarnings,
+		endsNextDay,
 		type EntryForm
 	} from '$lib/domain/timeTracking';
 	import { toast } from '$lib/stores/toast.svelte';
@@ -43,6 +44,7 @@
 	});
 
 	const hours = $derived(previewHours(form));
+	const overnight = $derived(endsNextDay(form));
 	const warnings = $derived(previewWarnings(form));
 
 	const save = async () => {
@@ -135,7 +137,8 @@
 					/>
 				</div>
 				{#if hours !== null}<p class="text-sm text-stone-600">
-						Arbeitszeit: <strong>{formatHours(Math.round(hours * 100) / 100)}</strong>
+						Arbeitszeit: <strong>{formatHours(Math.round(hours * 100) / 100)}</strong>{#if overnight}
+							· endet am Folgetag{/if}
 					</p>{/if}
 				{#each warnings as warning (warning)}<Alert tone="warning">{warning}</Alert>{/each}
 			{/if}

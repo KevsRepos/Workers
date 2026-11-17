@@ -50,7 +50,25 @@ class MonthlyTimeSheetEntry extends Entity
             return 0;
         }
 
-        return max(0, self::minutesOfDay($this->end) - self::minutesOfDay($this->start) - ($this->breakMinutes ?? 0));
+        return max(0, self::spanMinutes($this->start, $this->end) - ($this->breakMinutes ?? 0));
+    }
+
+    /**
+     * Shifts ending at or before their start time end on the following day (e.g. 18:00–02:00).
+     */
+    public function endsNextDay(): bool
+    {
+        return $this->start !== null && $this->end !== null && self::minutesOfDay($this->end) <= self::minutesOfDay($this->start);
+    }
+
+    /**
+     * Gross span between start and end in minutes, crossing midnight if necessary.
+     */
+    public static function spanMinutes(\DateTimeImmutable $start, \DateTimeImmutable $end): int
+    {
+        $span = self::minutesOfDay($end) - self::minutesOfDay($start);
+
+        return $span <= 0 ? $span + 24 * 60 : $span;
     }
 
     public static function minutesOfDay(\DateTimeImmutable $time): int

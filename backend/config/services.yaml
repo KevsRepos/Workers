@@ -8,7 +8,11 @@ parameters:
     # Hours credited for vacation, sick leave and public holidays.
     app.time_tracking.absence_hours: '%env(float:TIME_TRACKING_ABSENCE_HOURS)%'
 
+    # Time records are kept at least 2 years after the end of the calendar year (ArbZG § 16 Abs. 2).
+    app.time_tracking.retention_years: '%env(int:TIME_TRACKING_RETENTION_YEARS)%'
+
     env(AUDIT_RETENTION_DAYS): '2190'
+    env(TIME_TRACKING_RETENTION_YEARS): '2'
     env(TIME_TRACKING_ABSENCE_HOURS): '8'
     env(TRUSTED_PROXIES): '127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
     env(MAILER_DSN): 'null://null'

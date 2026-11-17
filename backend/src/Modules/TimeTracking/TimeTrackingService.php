@@ -21,6 +21,12 @@ final readonly class TimeTrackingService
     /** ArbZG § 3: maximum daily working time. */
     private const int MAX_DAILY_MINUTES = 600;
 
+    /** ArbZG § 5: minimum uninterrupted rest period between two working days. */
+    private const int MIN_REST_MINUTES = 660;
+
+    /** Longer spans are treated as input errors (e.g. swapped times). */
+    private const int MAX_SPAN_MINUTES = 960;
+
     public function __construct(
         private Repository $sheets,
         private ClockInterface $clock,
@@ -171,10 +177,14 @@ final readonly class TimeTrackingService
      *
      * @return list<string>
      */
-    public function warnings(MonthlyTimeSheetEntry $entry): array
+    public function warnings(MonthlyTimeSheetEntry $entry, ?MonthlyTimeSheetEntry $previousDay = null, bool $previousResolved = false): array
     {
         if ($entry->type !== TimeSheetEntryType::WORK || $entry->start === null || $entry->end === null) {
             return [];
+        }
+
+        if (!$previousResolved) {
+            $previousDay = $this->previousDayEntry($entry);
         }
 
         $warnings = [];
@@ -190,7 +200,47 @@ final readonly class TimeTrackingService
             $warnings[] = 'Bei mehr als 6 Stunden sind mindestens 30 Minuten Pause vorgeschrieben (§ 4 ArbZG).';
         }
 
+        $rest = $this->restMinutes($previousDay, $entry);
+        if ($rest !== null && $rest < self::MIN_REST_MINUTES) {
+            $warnings[] = \sprintf('Nur %s Stunden Ruhezeit seit dem Vortag; vorgeschrieben sind mindestens 11 Stunden (§ 5 ArbZG).', number_format($rest / 60, 1, ',', ''));
+        }
+
+        if ($entry->date()->format('N') === '7') {
+            $warnings[] = 'Sonntagsarbeit: nur im Rahmen der Ausnahmen nach § 10 ArbZG zulässig; Ersatzruhetag innerhalb von zwei Wochen gewähren (§ 11 ArbZG).';
+        }
+
         return $warnings;
+    }
+
+    /**
+     * Work entry of the calendar day before (may be in the previous month's sheet).
+     */
+    public function previousDayEntry(MonthlyTimeSheetEntry $entry): ?MonthlyTimeSheetEntry
+    {
+        $sheet = $entry->timeSheet;
+        if ($entry->day > 1) {
+            return $sheet->entryForDay($entry->day - 1);
+        }
+
+        $previousMonth = $entry->date()->modify('-1 day');
+        $previousSheet = $this->sheets->findForMonth($sheet->account, (int) $previousMonth->format('Y'), (int) $previousMonth->format('n'));
+
+        return $previousSheet?->entryForDay((int) $previousMonth->format('j'));
+    }
+
+    /**
+     * Minutes between the end of the previous day's work and the start of this entry.
+     */
+    private function restMinutes(?MonthlyTimeSheetEntry $previous, MonthlyTimeSheetEntry $entry): ?int
+    {
+        if ($previous === null || $previous->type !== TimeSheetEntryType::WORK || $previous->end === null || $entry->start === null) {
+            return null;
+        }
+
+        $previousEnd = MonthlyTimeSheetEntry::minutesOfDay($previous->end) + ($previous->endsNextDay() ? 24 * 60 : 0);
+        $start = 24 * 60 + MonthlyTimeSheetEntry::minutesOfDay($entry->start);
+
+        return $start - $previousEnd;
     }
 
     private function apply(MonthlyTimeSheetEntry $entry, EntryData $data): void
@@ -227,9 +277,13 @@ final readonly class TimeTrackingService
             throw BusinessRuleException::forField('start', 'Invalid time.', 'invalid-time');
         }
 
-        $duration = MonthlyTimeSheetEntry::minutesOfDay($end) - MonthlyTimeSheetEntry::minutesOfDay($start);
-        if ($duration <= 0) {
-            throw BusinessRuleException::forField('end', 'The end time must be after the start time.', 'end-before-start');
+        if (MonthlyTimeSheetEntry::minutesOfDay($end) === MonthlyTimeSheetEntry::minutesOfDay($start)) {
+            throw BusinessRuleException::forField('end', 'The end time must differ from the start time.', 'end-equals-start');
+        }
+        // An end time before the start time means the shift ends on the following day.
+        $duration = MonthlyTimeSheetEntry::spanMinutes($start, $end);
+        if ($duration > self::MAX_SPAN_MINUTES) {
+            throw BusinessRuleException::forField('end', 'The working period exceeds 16 hours. Please check start and end time.', 'implausible-span');
         }
         $break = $data->breakMinutes ?? 0;
         if ($break >= $duration) {

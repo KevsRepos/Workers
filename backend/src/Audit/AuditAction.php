@@ -25,6 +25,7 @@ final class AuditAction
 
     public const string AUDIT_PURGED = 'audit.purged';
     public const string DATA_ANONYMIZED = 'privacy.anonymized';
+    public const string RETENTION_PURGED = 'privacy.retention_purged';
 
     public static function category(string $action): string
     {

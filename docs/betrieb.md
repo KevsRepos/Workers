@@ -38,6 +38,16 @@ Vorher ein Backup erstellen (siehe unten). Abhängigkeits-Updates kommen wöchen
 - Bereinigung nach Ablauf der Aufbewahrung (`AUDIT_RETENTION_DAYS`, Standard 6 Jahre): `bin/console app:audit:purge --dry-run`, dann ohne `--dry-run`. Die Bereinigung wird selbst protokolliert; die Restkette bleibt prüfbar.
 - Härtung (empfohlen): Dem Anwendungs-DB-Benutzer `UPDATE`/`DELETE` auf `audit_log` entziehen.
 
+## Jährliche Löschläufe (Januar)
+
+```bash
+docker compose run --rm php bin/console app:time-tracking:purge --dry-run
+docker compose run --rm php bin/console app:time-tracking:purge
+docker compose run --rm php bin/console app:audit:purge --dry-run
+```
+
+Jeder Löschlauf wird im Audit-Log protokolliert (nur Anzahl, keine Inhalte).
+
 ## Logs und Überwachung
 
 - Alle Container loggen strukturiert (JSON) nach stdout/stderr, jeweils mit `request_id`; die ID wird an den Browser (`X-Request-Id`) und in Fehlermeldungen („Referenz“) gegeben.

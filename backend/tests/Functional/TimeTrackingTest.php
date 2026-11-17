@@ -139,4 +139,50 @@ final class TimeTrackingTest extends ApiTestCase
         $invalid = $this->request('PUT', '/api/v1/time-tracking/reminder', ['enabled' => true, 'time' => '25:00', 'weekdays' => [8]], $token);
         $this->assertProblem(422, 'validation-failed', $invalid);
     }
+
+    public function testOvernightShiftRestPeriodAndSundayHints(): void
+    {
+        $token = $this->tokenFor();
+        // A month in the past that starts on a Saturday (2025-11-01), so day 2 is a Sunday.
+        $first = $this->request('POST', '/api/v1/time-sheets/2025/11/entries', ['day' => 1, 'type' => 'work', 'start' => '18:00', 'end' => '02:00', 'breakMinutes' => 30], $token);
+        $this->assertStatus(201);
+        self::assertTrue($first['endsNextDay']);
+        self::assertSame(7.5, (float) $first['hours']);
+
+        $second = $this->request('POST', '/api/v1/time-sheets/2025/11/entries', ['day' => 2, 'type' => 'work', 'start' => '10:00', 'end' => '14:00', 'breakMinutes' => 0], $token);
+        $this->assertStatus(201);
+        $warnings = implode(' ', $second['warnings']);
+        self::assertStringContainsString('§ 5 ArbZG', $warnings, 'Only 8 h rest after the overnight shift');
+        self::assertStringContainsString('Sonntagsarbeit', $warnings);
+
+        $same = $this->request('POST', '/api/v1/time-sheets/2025/11/entries', ['day' => 3, 'type' => 'work', 'start' => '08:00', 'end' => '08:00'], $token);
+        $this->assertProblem(422, 'business-rule-violation', $same);
+    }
+
+    public function testRestPeriodIsCheckedAcrossMonthBoundary(): void
+    {
+        $token = $this->tokenFor();
+        $this->request('POST', '/api/v1/time-sheets/2025/9/entries', ['day' => 30, 'type' => 'work', 'start' => '14:00', 'end' => '23:00', 'breakMinutes' => 45], $token);
+        $entry = $this->request('POST', '/api/v1/time-sheets/2025/10/entries', ['day' => 1, 'type' => 'work', 'start' => '07:00', 'end' => '12:00'], $token);
+
+        self::assertStringContainsString('8,0 Stunden Ruhezeit', implode(' ', $entry['warnings']));
+    }
+
+    public function testRetentionPurgeDeletesOnlyExpiredRecords(): void
+    {
+        $token = $this->tokenFor();
+        $now = (int) new \DateTimeImmutable()->format('Y');
+        $this->request('POST', \sprintf('/api/v1/time-sheets/%d/1/entries', $now - 3), ['day' => 5, 'type' => 'vacation'], $token);
+        $this->request('POST', \sprintf('/api/v1/time-sheets/%d/1/entries', $now - 2), ['day' => 5, 'type' => 'vacation'], $token);
+
+        $application = new \Symfony\Bundle\FrameworkBundle\Console\Application(static::$kernel);
+        $tester = new \Symfony\Component\Console\Tester\CommandTester($application->find('app:time-tracking:purge'));
+        $tester->execute([]);
+        $tester->assertCommandIsSuccessful();
+
+        $years = $this->em()->getConnection()->fetchFirstColumn('SELECT year FROM monthly_time_sheet');
+        self::assertSame([$now - 2], array_map('intval', $years));
+        self::assertSame(0, (int) $this->em()->getConnection()->fetchOne('SELECT COUNT(*) FROM monthly_time_sheet_entry e JOIN monthly_time_sheet s ON s.id = e.time_sheet_id WHERE s.year = ?', [$now - 3]));
+        self::assertCount(1, $this->auditRows(AuditAction::RETENTION_PURGED));
+    }
 }

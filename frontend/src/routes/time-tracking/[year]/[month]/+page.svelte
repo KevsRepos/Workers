@@ -121,7 +121,7 @@
 						{#if day.entry && info}
 							<Badge tone={info.tone}>{info.label}</Badge>
 							{#if day.entry.type === 'work'}<span class="text-stone-700"
-									>{day.entry.start}–{day.entry.end}{day.entry.breakMinutes
+									>{day.entry.start}–{day.entry.end}{day.entry.endsNextDay ? ' (+1)' : ''}{day.entry.breakMinutes
 										? ` · ${day.entry.breakMinutes} min Pause`
 										: ''}</span
 								>{/if}

@@ -124,7 +124,8 @@ const TRANSLATIONS: Array<[RegExp, string]> = [
 		/^Working time cannot be recorded for future days\.?$/i,
 		'Arbeitszeit kann nicht für zukünftige Tage erfasst werden.'
 	],
-	[/^The end time must be after the start time\.?$/i, 'Das Ende muss nach dem Beginn liegen.'],
+	[/^The end time must differ from the start time\.?$/i, 'Beginn und Ende dürfen nicht gleich sein.'],
+	[/^The working period exceeds 16 hours/i, 'Mehr als 16 Stunden – bitte Beginn und Ende prüfen.'],
 	[/^The break must be shorter than the working period\.?$/i, 'Die Pause muss kürzer als die Arbeitszeit sein.'],
 	[/^There is already an entry for this day/i, 'Für diesen Tag gibt es bereits einen Eintrag.'],
 	[/^This day does not exist in the selected month\.?$/i, 'Diesen Tag gibt es im gewählten Monat nicht.'],
