@@ -1,12 +1,10 @@
 node_modules
 
 # Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
 /build
+/.svelte-kit
+/playwright-report
+/test-results
 
 # OS
 .DS_Store
@@ -16,8 +14,10 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-!.env.test
 
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Company logo is deployment specific
+/static/img/logo.png
