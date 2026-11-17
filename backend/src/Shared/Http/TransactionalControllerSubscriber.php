@@ -41,7 +41,7 @@ final readonly class TransactionalControllerSubscriber implements EventSubscribe
 
         $event->setController(
             static fn (mixed ...$arguments): mixed => $entityManager->wrapInTransaction(
-                static fn (): mixed => $controller(...$arguments),
+                static fn (): mixed => ControllerInvoker::invoke($controller, $arguments),
             ),
             $event->getAttributes(),
         );

@@ -39,6 +39,9 @@ final readonly class DeliveryNoteResponse
 
     public static function fromEntity(DeliveryNote $note): self
     {
+        $lines = $note->lines->toArray();
+        usort($lines, static fn ($a, $b): int => $a->position <=> $b->position);
+
         return new self(
             (string) $note->id,
             $note->number,
@@ -56,7 +59,7 @@ final readonly class DeliveryNoteResponse
             $note->adultGuests,
             $note->childGuests,
             $note->callBefore,
-            array_values(array_map(DeliveryNoteLineResponse::fromEntity(...), $note->lines->toArray())),
+            array_map(DeliveryNoteLineResponse::fromEntity(...), $lines),
             $note->createdBy?->displayName,
             $note->createdAt,
             $note->updatedAt,

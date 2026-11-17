@@ -6,9 +6,9 @@ namespace App\Audit\Http;
 
 use App\Audit\AuditLogReader;
 use App\Modules\Account\Role;
+use App\Shared\Http\ApiController;
 use App\Shared\Http\PageRequest;
 use App\Shared\Http\PageResponse;
-use App\Shared\Http\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;

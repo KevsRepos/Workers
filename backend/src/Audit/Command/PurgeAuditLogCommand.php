@@ -39,7 +39,7 @@ final class PurgeAuditLogCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $cutoff = (new \DateTimeImmutable(\sprintf('-%d days', $this->retentionDays), new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
+        $cutoff = new \DateTimeImmutable(\sprintf('-%d days', $this->retentionDays), new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
 
         $maxSeq = $this->connection->fetchOne('SELECT MAX(seq) FROM audit_log WHERE occurred_at < ?', [$cutoff]);
         if ($maxSeq === null || $maxSeq === false) {

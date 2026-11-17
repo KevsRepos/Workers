@@ -38,7 +38,7 @@ final readonly class AuditTrail
         return new AuditEvent(
             $action,
             $actor?->id,
-            $actor?->emailAddress ?? (\PHP_SAPI === 'cli' ? 'system:cli' : null),
+            $actor?->emailAddress ?? ($this->requestContext->getRequestId() === null ? 'system' : null),
             $subjectType,
             $subjectId,
             $changes,
@@ -60,7 +60,7 @@ final readonly class AuditTrail
     private function context(): array
     {
         return array_filter([
-            'channel' => \PHP_SAPI === 'cli' ? 'cli' : 'http',
+            'channel' => $this->requestContext->getRequestId() !== null ? 'http' : 'system',
             'requestId' => $this->requestContext->getRequestId(),
             'ip' => $this->requestContext->getClientIp(),
             'userAgent' => $this->requestContext->getUserAgent(),

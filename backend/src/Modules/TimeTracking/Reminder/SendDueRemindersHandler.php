@@ -37,14 +37,14 @@ final readonly class SendDueRemindersHandler
 
         foreach ($this->reminders->findEnabled() as $reminder) {
             $due = (int) $reminder->time->format('G') * 60 + (int) $reminder->time->format('i');
-            if (!\in_array($weekday, $reminder->weekdays, true) || $minutesNow < $due || $reminder->lastSentOn == $today) {
+            if (!\in_array($weekday, $reminder->weekdays, true) || $minutesNow < $due || $reminder->lastSentOn?->format('Y-m-d') === $today->format('Y-m-d')) {
                 continue;
             }
 
             $sheet = $this->sheets->findForMonth($reminder->account, (int) $now->format('Y'), (int) $now->format('n'));
             if ($sheet?->entryForDay((int) $now->format('j')) === null) {
                 try {
-                    $this->mailer->send((new Email())
+                    $this->mailer->send(new Email()
                         ->from($this->from)
                         ->to($reminder->account->emailAddress)
                         ->subject('Erinnerung: Arbeitszeit erfassen')

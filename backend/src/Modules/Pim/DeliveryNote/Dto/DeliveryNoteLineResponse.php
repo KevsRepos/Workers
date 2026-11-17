@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Pim\DeliveryNote\Dto;
 
-use App\Modules\Pim\Deposit\Dto\DepositResponse;
 use App\Modules\Pim\DeliveryNote\DeliveryNoteProduct;
+use App\Modules\Pim\Deposit\Dto\DepositResponse;
 
 final readonly class DeliveryNoteLineResponse
 {

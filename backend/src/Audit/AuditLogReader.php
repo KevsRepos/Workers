@@ -135,7 +135,7 @@ final readonly class AuditLogReader
         return [
             'seq' => (int) $row['seq'],
             'eventId' => $row['event_id'],
-            'occurredAt' => (new \DateTimeImmutable((string) $row['occurred_at'], new \DateTimeZone('UTC')))->format(\DATE_ATOM),
+            'occurredAt' => new \DateTimeImmutable((string) $row['occurred_at'], new \DateTimeZone('UTC'))->format(\DATE_ATOM),
             'category' => $row['category'],
             'action' => $row['action'],
             'actorId' => $row['actor_id'],

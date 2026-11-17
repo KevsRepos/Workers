@@ -6,12 +6,12 @@ namespace App\Modules\Pim\DeliveryNote;
 
 use App\Modules\Customer\Customer;
 use App\Modules\Customer\CustomerService;
-use App\Modules\Pim\Deposit\Dto\DepositResponse;
 use App\Modules\Pim\DeliveryNote\Dto\DeliveryNoteData;
 use App\Modules\Pim\DeliveryNote\Dto\QuantityUpdateRequest;
 use App\Modules\Pim\DeliveryNote\Dto\ReturnEntryResponse;
 use App\Modules\Pim\DeliveryNote\Dto\ReturnLineGroup;
 use App\Modules\Pim\DeliveryNote\Dto\ReturnNoteRequest;
+use App\Modules\Pim\Deposit\Dto\DepositResponse;
 use App\Modules\Pim\Product\ProductService;
 use App\Modules\Pim\ProductUnion\Repository as ProductUnionRepository;
 use App\Shared\Exception\BusinessRuleException;

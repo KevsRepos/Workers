@@ -151,7 +151,6 @@ final class DoctrineAuditListener implements ResetInterface
 
     private function entityReference(object $entity): ?string
     {
-        /** @var mixed $id */
         $id = property_exists($entity, 'id') ? $entity->id : null;
 
         return \is_scalar($id) ? (string) $id : null;

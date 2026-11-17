@@ -6,7 +6,9 @@ namespace App\Modules\Pim\ProductUnion;
 
 use App\Modules\Pim\Product\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<ProductUnion>
@@ -59,7 +61,7 @@ class Repository extends ServiceEntityRepository
             ->from(ProductUnionProduct::class, 'm')
             ->join('m.productUnion', 'u')
             ->where('m.product IN (:products)')
-            ->setParameter('products', $products)
+            ->setParameter('products', array_map(static fn (Product $p): string => Uuid::fromString((string) $p->id)->toBinary(), $products), ArrayParameterType::BINARY)
             ->getQuery()
             ->getResult();
 

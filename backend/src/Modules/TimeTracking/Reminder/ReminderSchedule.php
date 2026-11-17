@@ -11,7 +11,7 @@ use Symfony\Component\Scheduler\ScheduleProviderInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 /**
- * Consumed by the "scheduler_default" transport: bin/console messenger:consume scheduler_default
+ * Consumed by the "scheduler_default" transport: bin/console messenger:consume scheduler_default.
  */
 #[AsSchedule]
 final readonly class ReminderSchedule implements ScheduleProviderInterface
@@ -22,7 +22,7 @@ final readonly class ReminderSchedule implements ScheduleProviderInterface
 
     public function getSchedule(): Schedule
     {
-        return (new Schedule())
+        return new Schedule()
             ->stateful($this->cache)
             ->processOnlyLastMissedRun(true)
             ->add(RecurringMessage::every('5 minutes', new SendDueRemindersMessage()))

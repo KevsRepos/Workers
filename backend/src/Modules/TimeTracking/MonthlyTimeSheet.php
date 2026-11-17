@@ -40,7 +40,7 @@ class MonthlyTimeSheet extends Entity
 
     public function daysInMonth(): int
     {
-        return (int) (new \DateTimeImmutable(\sprintf('%04d-%02d-01', $this->year, $this->month)))->format('t');
+        return (int) new \DateTimeImmutable(\sprintf('%04d-%02d-01', $this->year, $this->month))->format('t');
     }
 
     public function entryForDay(int $day): ?MonthlyTimeSheetEntry
