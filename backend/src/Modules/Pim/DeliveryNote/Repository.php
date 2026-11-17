@@ -42,7 +42,7 @@ class Repository extends ServiceEntityRepository
     /**
      * @return array{list<DeliveryNote>, int}
      */
-    public function search(?DeliveryNoteStatus $status, ?string $query, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to, int $offset, int $limit): array
+    public function search(?DeliveryNoteStatus $status, ?string $query, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to, int $offset, int $limit, ?string $customerId = null): array
     {
         $qb = $this->createQueryBuilder('d')
             ->addSelect('c', 'sa')
@@ -55,6 +55,9 @@ class Repository extends ServiceEntityRepository
 
         if ($status !== null) {
             $qb->andWhere('d.status = :status')->setParameter('status', $status);
+        }
+        if ($customerId !== null) {
+            $qb->andWhere('d.customer = :customer')->setParameter('customer', $customerId, 'app_uuid');
         }
         if ($from !== null) {
             $qb->andWhere('d.deliveryDate >= :from')->setParameter('from', $from, 'date_immutable');

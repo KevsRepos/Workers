@@ -45,9 +45,9 @@ final readonly class DeliveryNoteService
     /**
      * @return array{list<DeliveryNote>, int}
      */
-    public function search(?DeliveryNoteStatus $status, ?string $query, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to, int $offset, int $limit): array
+    public function search(?DeliveryNoteStatus $status, ?string $query, ?\DateTimeImmutable $from, ?\DateTimeImmutable $to, int $offset, int $limit, ?string $customerId = null): array
     {
-        return $this->notes->search($status, $query, $from, $to, $offset, $limit);
+        return $this->notes->search($status, $query, $from, $to, $offset, $limit, $customerId);
     }
 
     /**

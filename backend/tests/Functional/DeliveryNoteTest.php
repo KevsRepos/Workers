@@ -81,6 +81,8 @@ final class DeliveryNoteTest extends ApiTestCase
         self::assertSame(2, $list['total']);
         $search = $this->request('GET', '/api/v1/delivery-notes?q=sportverein', token: $this->token);
         self::assertSame(2, $search['total']);
+        $byCustomer = $this->request('GET', '/api/v1/delivery-notes?customerId=' . $this->customer['id'], token: $this->token);
+        self::assertSame(2, $byCustomer['total']);
 
         self::assertCount(2, $this->auditRows(AuditAction::ENTITY_CREATED, 'DeliveryNote'));
         self::assertCount(6, $this->auditRows(AuditAction::ENTITY_CREATED, 'DeliveryNoteProduct'));

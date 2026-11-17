@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * Delivery notes are never deleted (GoBD); use the status "canceled" instead.
@@ -53,6 +54,7 @@ final class DeliveryNoteController extends ApiController
             self::date($request->query->getString('to')),
             $page->offset(),
             $page->limit,
+            self::uuid($request->query->getString('customerId')),
         );
 
         return $this->json(new PageResponse(array_map(DeliveryNoteSummary::fromEntity(...), $items), $page->page, $page->limit, $total));
@@ -118,6 +120,15 @@ final class DeliveryNoteController extends ApiController
         $note = $this->notes->saveReturnNote($this->notes->get($id), $payload);
 
         return $this->persisted(static fn () => DeliveryNoteResponse::fromEntity($note));
+    }
+
+    private static function uuid(string $value): ?string
+    {
+        if ($value === '') {
+            return null;
+        }
+
+        return Uuid::isValid($value) ? $value : throw new BadRequestException('Invalid customer id.');
     }
 
     private static function date(string $value): ?\DateTimeImmutable
