@@ -15,7 +15,8 @@ export const login = async (page: Page, email = ADMIN_EMAIL, password = ADMIN_PA
 export const watchConsole = (page: Page) => {
 	const problems: string[] = [];
 	page.on('console', (message) => {
-		if (message.type() === 'error' && /Content Security Policy|Refused to/i.test(message.text())) problems.push(message.text());
+		if (message.type() === 'error' && /Content Security Policy|Refused to/i.test(message.text()))
+			problems.push(message.text());
 	});
 	page.on('pageerror', (error) => problems.push(error.message));
 	return problems;

@@ -1,0 +1,44 @@
+# Local development: database, mail catcher and backend API.
+#   docker compose -f compose.dev.yaml up -d
+#   docker compose -f compose.dev.yaml exec api composer install
+#   docker compose -f compose.dev.yaml exec api bin/console lexik:jwt:generate-keypair --skip-if-exists
+#   docker compose -f compose.dev.yaml exec api bin/console doctrine:migrations:migrate -n
+#   docker compose -f compose.dev.yaml exec api bin/console app:account:create you@example.org Vorname Nachname --admin
+# Frontend: cd frontend && cp .env.example .env && npm ci && npm run dev  (http://localhost:5173)
+
+services:
+  db:
+    image: mariadb:12.3.3
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: workers
+      MARIADB_USER: workers
+      MARIADB_PASSWORD: workers
+    ports: ["127.0.0.1:3306:3306"]
+    volumes: [dev_db:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:8025:8025"]
+
+  api:
+    build:
+      context: ./backend
+      target: dev
+    working_dir: /srv/app
+    command: ["php", "-S", "0.0.0.0:8080", "-t", "public"]
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: mysql://root:root@db:3306/workers?serverVersion=12.3.3-MariaDB&charset=utf8mb4
+      MAILER_DSN: smtp://mailpit:1025
+    volumes: ["./backend:/srv/app"]
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      db: { condition: service_healthy }
+
+volumes:
+  dev_db:

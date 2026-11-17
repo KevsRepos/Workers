@@ -20,4 +20,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Company logo is deployment specific
-/static/img/logo.png
+/static/img/branding/

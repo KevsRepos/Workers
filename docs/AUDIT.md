@@ -2,7 +2,29 @@
 
 Stand: 2026-11-17 · Basis: Branch `ccr-da845230-3m8mcc` (Commit `d5b837d`) · Methode: manuelles Review aller Backend-Module, Auth-Pfad, Frontend-BFF, Infrastruktur; `composer audit`, `npm audit`. Kein Laufzeit-/Pentest.
 
-## 1. Zweck und Ist-Architektur
+## 0. Umsetzungsstand (2026-11-17)
+
+Alle Befunde aus Abschnitt 2 sind umgesetzt. Kurzüberblick:
+
+| Befund | Umsetzung |
+|---|---|
+| S1 IDOR Zeiterfassung | `TimeSheetVoter` (Eigentümer/Admin), Tests `TimeTrackingTest` |
+| S2 Refresh-Token | SHA-256-Hash, Ablauf 7 Tage gleitend / 30 Tage absolut, Rotation, Reuse-Detection, Widerruf bei Logout/Passwort/Deaktivierung |
+| S3 Rollen | `ROLE_USER`/`ROLE_ADMIN`, Berechtigungskonzept in `docs/compliance/` |
+| S4 Brute-Force | `login_throttling` + nginx `limit_req` |
+| S5 Advisories | Symfony 7.4.23, `composer audit`: 0; `roave/security-advisories`; npm audit (prod): 0 |
+| S6 Fehlerlecks | RFC 9457 Problem Details, generische 5xx mit Korrelations-ID |
+| S7 BFF-Proxy | Allowlist, Origin-/Content-Type-Prüfung, Statuscodes durchgereicht, interne Backend-URL |
+| S8 Header | CSP mit Nonces, HSTS, X-Frame-Options, Referrer-/Permissions-Policy |
+| S9–S12 | API-Doku-Endpunkt entfernt, CORS entfernt, Logout per POST mit Refresh-Token, Response-DTOs |
+| S13 Container | Multi-Stage, non-root, read-only, `cap_drop: ALL`, gepinnte Images, API nicht öffentlich |
+| F1–F9 | Storno statt Pseudo-Löschen, Fehlerformat, Statusvalidierung, Kundenliste/-suche, Erinnerungen mit Worker, Transaktion je Request, Laufzeit-Konfiguration, Zeitzone Europe/Berlin, Altlasten entfernt |
+| Audit-Trail | Hash-Kette, DB-Trigger, Prüf- und Bereinigungsbefehl, Oberfläche für Admins |
+| Tests | Backend 61 PHPUnit-Tests (MariaDB), Frontend 23 Vitest + 11 Playwright-E2E (Desktop/Mobil, CSP-Prüfung) |
+
+Nicht lokal ausgeführt (Sandbox ohne Zugriff auf die Quellen): PHPStan, Docker-Builds der Prod-Images, Trivy, Gitleaks – diese laufen in der CI (`.github/workflows/ci.yml`).
+
+## 1. Zweck und Ist-Architektur (Ausgangslage)
 
 Interne Web-App (PWA) für einen Betrieb mit Verkauf/Verleih (Getränke, Pfand, Zelte/Events):
 Produkte & Pfand (PIM), Produktverbünde, Kunden & Adressen, Lieferscheine inkl. Rückgabescheine und Auftragsvorlagen, Arbeitszeiterfassung, Zeltplaner. Geplant laut README: Rechnungen.

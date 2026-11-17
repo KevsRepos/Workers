@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (lint, static analysis, tests, audit)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      mariadb:
+        image: mariadb:12.3.3
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/workers?serverVersion=12.3.3-MariaDB&charset=utf8mb4
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+      - run: composer validate --strict
+      - run: composer install --no-interaction --no-progress
+      - run: composer audit
+      - run: vendor/bin/php-cs-fixer fix --dry-run --diff
+      - run: php bin/console lint:container
+      - run: php bin/console lint:yaml config
+      - run: php bin/console doctrine:schema:validate --skip-sync
+      - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+      - run: vendor/bin/phpunit
+
+  frontend:
+    name: Frontend (lint, types, unit tests, build, audit)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    name: End-to-end (Playwright)
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    services:
+      mariadb:
+        image: mariadb:12.3.3
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: workers
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/workers?serverVersion=12.3.3-MariaDB&charset=utf8mb4
+      E2E_ADMIN_EMAIL: admin@example.org
+      E2E_ADMIN_PASSWORD: e2e-admin-passphrase-2026
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_mysql
+          tools: composer:v2
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Start backend
+        working-directory: backend
+        run: |
+          composer install --no-interaction --no-progress
+          php bin/console lexik:jwt:generate-keypair --no-interaction
+          php bin/console doctrine:migrations:migrate --no-interaction
+          echo "$E2E_ADMIN_PASSWORD" | php bin/console app:account:create "$E2E_ADMIN_EMAIL" Ada Admin --admin --password-stdin
+          php -S 127.0.0.1:8080 -t public > /tmp/backend.log 2>&1 &
+      - name: Start frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm run build
+          BACKEND_URL=http://127.0.0.1:8080 COOKIE_SECURE=false ORIGIN=http://localhost:3000 PORT=3000 node build/index.js > /tmp/frontend.log 2>&1 &
+          npx --yes wait-on http://localhost:3000/health
+      - name: Playwright
+        working-directory: frontend
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-report
+          path: |
+            frontend/playwright-report
+            /tmp/backend.log
+            /tmp/frontend.log
+
+  images:
+    name: Container images (build + vulnerability scan)
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker build --target prod -t workers-backend:ci backend
+      - run: docker build -t workers-frontend:ci frontend
+      - uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: workers-backend:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'
+      - uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: workers-frontend:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'
+
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -27,7 +27,7 @@
 		// Probe the optional logo without an inline onerror handler (blocked by the CSP).
 		const probe = new Image();
 		probe.onload = () => (logoAvailable = true);
-		probe.src = '/img/logo.png';
+		probe.src = '/img/branding/logo.png';
 		const timer = setTimeout(print, 300);
 		return () => clearTimeout(timer);
 	});
@@ -72,7 +72,7 @@
 			{/if}
 		</div>
 		<div class="w-[5.5cm] text-right text-[9pt]">
-			{#if logoAvailable}<img src="/img/logo.png" alt="" class="mb-4 ml-auto w-[5cm]" />{/if}
+			{#if logoAvailable}<img src="/img/branding/logo.png" alt="" class="mb-4 ml-auto w-[5cm]" />{/if}
 			<p>{company.name}<br />{company.street}<br />{company.postalCode} {company.city}</p>
 			<p class="mt-2">
 				{#if company.phone}Tel. {company.phone}<br />{/if}
