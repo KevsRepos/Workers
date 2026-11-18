@@ -107,6 +107,9 @@ jobs:
         working-directory: backend
         run: |
           composer install --no-interaction --no-progress
+          # PHP's built-in server does not expose job env vars to Symfony (variables_order),
+          # so the CI database URL goes into .env.local.
+          echo "DATABASE_URL=\"$DATABASE_URL\"" > .env.local
           php bin/console lexik:jwt:generate-keypair --no-interaction
           php bin/console doctrine:migrations:migrate --no-interaction
           echo "$E2E_ADMIN_PASSWORD" | php bin/console app:account:create "$E2E_ADMIN_EMAIL" Ada Admin --admin --password-stdin

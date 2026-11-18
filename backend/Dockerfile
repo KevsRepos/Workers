@@ -19,6 +19,7 @@ ENV APP_DIR=/srv/app \
 
 RUN set -eux; \
     apt-get update; \
+    apt-get upgrade -y --no-install-recommends; \
     apt-get install -y --no-install-recommends libicu-dev libfcgi-bin; \
     docker-php-ext-install -j"$(nproc)" intl pdo_mysql opcache; \
     apt-mark manual 'libicu[0-9]*'; \
