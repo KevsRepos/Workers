@@ -1,4 +1,4 @@
-.env
+/.env
 /backups/
 /deploy/branding/*
 !/deploy/branding/.gitkeep
