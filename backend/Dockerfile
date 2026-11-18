@@ -51,6 +51,11 @@ COPY docker/php/php-dev.ini /usr/local/etc/php/conf.d/zz-app-dev.ini
 # ---------------------------------------------------------------------------
 FROM base AS vendor
 
+# unzip is only needed to extract Composer dist archives; this stage is discarded.
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends unzip; \
+    rm -rf /var/lib/apt/lists/*
 COPY --from=composer_bin /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY composer.json composer.lock symfony.lock ./
@@ -71,11 +76,11 @@ COPY --chown=root:root composer.json composer.lock symfony.lock ./
 COPY --from=composer_bin /usr/bin/composer /tmp/composer
 
 # Build-time values only. Real secrets are injected at runtime via environment.
+# .env.local.php replaces .env files: real configuration comes from environment variables.
 RUN set -eux; \
-    printf 'APP_ENV=prod\n' > .env; \
-    /tmp/composer dump-autoload --no-dev --classmap-authoritative --no-interaction; \
-    /tmp/composer dump-env prod --no-interaction; \
-    rm -f /tmp/composer .env; \
+    printf '%s\n' '<?php return ["APP_ENV" => "prod", "APP_DEBUG" => "0"];' > .env.local.php; \
+    COMPOSER_ALLOW_SUPERUSER=1 /tmp/composer dump-autoload --no-dev --classmap-authoritative --no-interaction; \
+    rm -f /tmp/composer; \
     APP_SECRET=build DATABASE_URL='mysql://u:p@localhost:3306/db?serverVersion=mariadb-11.8.0' \
       JWT_PASSPHRASE=build php bin/console cache:warmup --no-interaction; \
     mkdir -p var/log config/jwt; \

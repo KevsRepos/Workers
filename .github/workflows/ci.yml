@@ -75,6 +75,7 @@ jobs:
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     needs: [backend, frontend]
     services:
       mariadb:
@@ -117,7 +118,11 @@ jobs:
           npx playwright install --with-deps chromium
           npm run build
           BACKEND_URL=http://127.0.0.1:8080 COOKIE_SECURE=false ORIGIN=http://localhost:3000 PORT=3000 node build/index.js > /tmp/frontend.log 2>&1 &
-          npx --yes wait-on http://localhost:3000/health
+          for i in $(seq 1 60); do
+            curl -fsS http://127.0.0.1:3000/health && curl -fsS http://127.0.0.1:8080/api/v1/health && exit 0
+            sleep 1
+          done
+          echo "Services did not become healthy"; cat /tmp/frontend.log /tmp/backend.log; exit 1
       - name: Playwright
         working-directory: frontend
         run: npx playwright test
@@ -133,6 +138,7 @@ jobs:
   images:
     name: Container images (build + vulnerability scan)
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     needs: [backend, frontend]
     steps:
       - uses: actions/checkout@v5
