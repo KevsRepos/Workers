@@ -51,6 +51,8 @@ Jeder Löschlauf wird im Audit-Log protokolliert (nur Anzahl, keine Inhalte).
 ## Logs und Überwachung
 
 - Alle Container loggen strukturiert (JSON) nach stdout/stderr, jeweils mit `request_id`; die ID wird an den Browser (`X-Request-Id`) und in Fehlermeldungen („Referenz“) gegeben.
+- Browserfehler (JavaScript-Fehler, unbehandelte Promises, Fehler bei der Navigation) werden an `POST /client-errors` gemeldet und vom Frontend-Container als JSON mit `"source":"browser"` geloggt. Die angezeigte Referenz entspricht dem Feld `reference`. Meldungen werden vorher bereinigt (E-Mail-Adressen, Tokens, Passwörter und URL-Parameter entfernt), gekürzt und auf 20 pro Minute und Client begrenzt.
+  Suche nach Referenz: `docker compose logs node | grep <referenz>` bzw. für Serverfehler `docker compose logs php node | grep <referenz>`.
 - Health-Checks: Frontend `GET /health`, API `GET /api/v1/health` (prüft DB), PHP-FPM-Ping im Container.
 - Empfohlen: Log-Rotation des Docker-Daemons (`max-size`), externe Verfügbarkeitsüberwachung von `https://DOMAIN/health`.
 

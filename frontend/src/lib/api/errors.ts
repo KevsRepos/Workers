@@ -88,18 +88,27 @@ export const defaultMessage = (status: number): string => {
 	return 'Die Anfrage konnte nicht verarbeitet werden.';
 };
 
+type UnexpectedErrorReporter = (error: unknown) => string;
+let reportUnexpected: UnexpectedErrorReporter | null = null;
+
+/** Registered in hooks.client.ts so programming errors caught by components are reported. */
+export const setUnexpectedErrorReporter = (reporter: UnexpectedErrorReporter): void => {
+	reportUnexpected = reporter;
+};
+
 /**
  * User facing German message for an error, including the support reference.
+ * API errors were already logged by the backend; anything else is an unexpected client-side
+ * error and gets reported so it shows up in the server log under the displayed reference.
  */
 export const userMessage = (error: unknown): string => {
 	if (error instanceof ApiError) {
+		if (error.status === 0) return defaultMessage(0);
 		const base = error.status >= 500 ? defaultMessage(error.status) : translate(error.message);
 		return error.requestId && error.status >= 500 ? `${base} (Referenz: ${error.requestId.slice(0, 8)})` : base;
 	}
-	if (error instanceof TypeError) {
-		return defaultMessage(0);
-	}
-	return defaultMessage(500);
+	const reference = reportUnexpected?.(error);
+	return reference ? `${defaultMessage(500)} (Referenz: ${reference.slice(0, 8)})` : defaultMessage(500);
 };
 
 const TRANSLATIONS: Array<[RegExp, string]> = [

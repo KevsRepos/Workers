@@ -11,7 +11,7 @@ import {
 } from '$lib/server/session';
 import { refreshSession } from '$lib/server/refresh';
 
-const PUBLIC_PATHS = ['/login', '/health'];
+const PUBLIC_PATHS = ['/login', '/health', '/client-errors'];
 
 const isPublic = (pathname: string): boolean =>
 	PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));

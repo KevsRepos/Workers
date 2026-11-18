@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ApiError, errorFromResponse, translate, userMessage } from './errors';
+import { ApiError, errorFromResponse, setUnexpectedErrorReporter, translate, userMessage } from './errors';
 
 describe('api errors', () => {
 	it('parses problem details and field errors', async () => {
@@ -43,5 +43,17 @@ describe('api errors', () => {
 			'Das Passwort muss mindestens 12 Zeichen lang sein.'
 		);
 		expect(translate('something else')).toBe('something else');
+	});
+
+	it('reports unexpected client errors and shows the reference', () => {
+		const reported: unknown[] = [];
+		setUnexpectedErrorReporter((error) => {
+			reported.push(error);
+			return '1234abcd-0000-4000-8000-000000000000';
+		});
+		expect(userMessage(new TypeError('x is undefined'))).toContain('Referenz: 1234abcd');
+		expect(reported).toHaveLength(1);
+		userMessage(new ApiError(422, { type: 't', title: 't', status: 422, detail: 'Bitte prüfen' }));
+		expect(reported).toHaveLength(1);
 	});
 });

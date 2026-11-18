@@ -55,5 +55,6 @@ Listen sind paginiert: `?page=1&limit=25` → `{ items, page, limit, total, page
 - `src/hooks.server.ts`: Request-ID, Security-Header, Sitzung (Token-Erneuerung mit Schutz gegen parallele Rotation), Zugriffsschutz.
 - `src/lib/server/`: Backend-Client, Sitzungs-Cookies, Proxy-Allowlist. Nur serverseitig.
 - `src/routes/api/[...path]`: Same-Origin-Proxy für interaktive Komponenten (Origin- und Content-Type-Prüfung).
+- `src/hooks.client.ts` + `src/routes/client-errors`: Meldung von Browserfehlern ins Server-Log (Referenz für den Support, Datenminimierung, Rate-Limit).
 - `src/lib/components/ui/`: eigenes, barrierearmes UI-Kit (Formfelder mit Fehlerbindung, Combobox nach ARIA-Muster, Dialog, Toasts).
 - Druckansichten (`…/print`) erzeugen A4-Dokumente direkt aus dem Browser.

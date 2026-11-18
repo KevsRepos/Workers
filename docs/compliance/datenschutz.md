@@ -10,6 +10,7 @@ Diese Datei dokumentiert die Verarbeitung aus technischer Sicht und dient als Gr
 | Arbeitszeiterfassung | Beschäftigte | Arbeitsbeginn/-ende, Pausen, Abwesenheitsart (Urlaub/Krank/Feiertag), Notiz | gesetzliche Pflicht (§ 16 Abs. 2 ArbZG, BAG 1 ABR 22/21), § 26 BDSG | `TIME_TRACKING_RETENTION_YEARS` Jahre nach Ablauf des Kalenderjahres (Standard 2 = Minimum nach § 16 Abs. 2 ArbZG), Löschung per `app:time-tracking:purge` |
 | Benutzerkonten | Beschäftigte | Name, E-Mail, Passwort-Hash, Rollen, letzte Anmeldung | Zugangssteuerung, Art. 6 Abs. 1 lit. b/f | Konto deaktivieren bei Austritt; Löschung nach Ablauf der Fristen der zugeordneten Daten |
 | Audit- und Sicherheitsprotokoll | Beschäftigte, ggf. Kunden (in Änderungen) | Zeitpunkt, Konto, Aktion, alte/neue Werte, IP-Adresse, User-Agent | Nachvollziehbarkeit (GoBD), Sicherheit, Art. 6 Abs. 1 lit. c/f | `AUDIT_RETENTION_DAYS` (Standard 6 Jahre), Bereinigung per `app:audit:purge` |
+| Fehlerprotokoll (Server- und Browserfehler) | Beschäftigte | Konto-ID, Pfad, Fehlermeldung (bereinigt), Browser-Kennung, Zeitpunkt | Betriebssicherheit, Art. 6 Abs. 1 lit. f | mit der Rotation der Container-Logs (Docker `max-size`/`max-file`) |
 | Sitzungen | Beschäftigte | Refresh-Token-Hash, Ablaufzeiten | Sicherheit | täglich automatisch nach Ablauf + 30 Tage |
 | Erinnerungs-E-Mails | Beschäftigte | E-Mail-Adresse, Uhrzeit, Wochentage | Unterstützung der Erfassungspflicht, Einwilligung/lit. f (freiwillig, vom Nutzer selbst aktiviert) | mit dem Konto |
 
