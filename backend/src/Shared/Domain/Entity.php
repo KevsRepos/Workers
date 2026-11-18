@@ -19,7 +19,7 @@ abstract class Entity
     #[ORM\Column(type: UuidStringType::NAME, unique: true)]
     public ?string $id = null;
 
-    /** @phpstan-ignore doctrine.columnType (nullable until assigned in PrePersist, never null in the database) */
+    /** Nullable in PHP until assigned in PrePersist; never null in the database. */
     #[ORM\Column(type: 'datetime_immutable')]
     public ?\DateTimeImmutable $createdAt = null;
 
