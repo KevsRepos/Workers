@@ -70,7 +70,7 @@ final readonly class AuditLogReader
                 return $this->failure($checked, $firstSeq, $lastSeq, $seq, 'First entry does not start from genesis.');
             }
 
-            /** @var array{seq: int|string, event_id: string, occurred_at: string, category: string, action: string, actor_id: ?string, actor_label: ?string, subject_type: ?string, subject_id: ?string, changes: ?string, context: ?string} $row */
+            /** @var array{seq: int|string, event_id: string, occurred_at: string, category: string, action: string, actor_id: ?string, actor_label: ?string, subject_type: ?string, subject_id: ?string, changes: ?string, context: ?string, prev_hash: string, hash: string} $row */
             $computed = AuditHasher::hash((string) $row['prev_hash'], $row);
             if (!hash_equals($computed, (string) $row['hash'])) {
                 return $this->failure($checked, $firstSeq, $lastSeq, $seq, 'Content hash mismatch (row was modified).');

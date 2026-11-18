@@ -8,6 +8,9 @@ use App\Audit\AuditAction;
 
 final class TimeTrackingTest extends ApiTestCase
 {
+    /**
+     * @return array{int, int}
+     */
     private function lastMonth(): array
     {
         $date = new \DateTimeImmutable('first day of last month');

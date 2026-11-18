@@ -82,10 +82,11 @@ final class DoctrineAuditListener implements ResetInterface
         $changes = [];
 
         if ($action === AuditAction::ENTITY_UPDATED) {
-            foreach ($uow->getEntityChangeSet($entity) as $field => [$old, $new]) {
-                if (\in_array($field, $ignored, true)) {
+            foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
+                if (\in_array($field, $ignored, true) || !\is_array($change)) {
                     continue;
                 }
+                [$old, $new] = $change;
                 $changes[$field] = \in_array($field, $config->redact, true)
                     ? ['old' => self::REDACTED, 'new' => self::REDACTED]
                     : ['old' => $this->normalize($old, $uow), 'new' => $this->normalize($new, $uow)];

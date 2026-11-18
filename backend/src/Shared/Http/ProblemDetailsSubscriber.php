@@ -93,7 +93,7 @@ final readonly class ProblemDetailsSubscriber implements EventSubscriberInterfac
             $status = $throwable->getStatusCode();
             /** @var array<string, string> $headers */
             $headers = $throwable->getHeaders();
-            $previous = $throwable instanceof \Throwable ? $throwable->getPrevious() : null;
+            $previous = $throwable->getPrevious();
 
             if ($previous instanceof ValidationFailedException) {
                 $errors = [];

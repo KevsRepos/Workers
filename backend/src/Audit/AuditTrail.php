@@ -38,7 +38,7 @@ final readonly class AuditTrail
         return new AuditEvent(
             $action,
             $actor?->id,
-            $actor?->emailAddress ?? ($this->requestContext->getRequestId() === null ? 'system' : null),
+            $actor->emailAddress ?? ($this->requestContext->getRequestId() === null ? 'system' : null),
             $subjectType,
             $subjectId,
             $changes,
