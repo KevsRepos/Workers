@@ -1,0 +1,18 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - src/Shared/Http/ControllerInvoker.php
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    doctrine:
+        objectManagerLoader: tests/object-manager.php
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            # Timestamps/ids are assigned in PrePersist; the properties are null only before the first flush.
+            identifier: doctrine.columnType
+            path: src/Shared/Domain/Entity.php
+            count: 1

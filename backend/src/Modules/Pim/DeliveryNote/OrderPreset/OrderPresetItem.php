@@ -1,22 +1,23 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Modules\Pim\DeliveryNote\OrderPreset;
 
-use App\Lib\Entity;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Ignore;
 use App\Modules\Pim\Product\Product;
+use App\Shared\Domain\Entity;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'order_preset_item')]
+#[ORM\UniqueConstraint(name: 'uniq_order_preset_item', columns: ['order_preset_id', 'product_id'])]
 class OrderPresetItem extends Entity
 {
     #[ORM\ManyToOne(targetEntity: OrderPreset::class, inversedBy: 'items')]
-    #[ORM\JoinColumn(name: "order_preset_id", referencedColumnName: "id", nullable: false)]
-    #[Ignore]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     public OrderPreset $orderPreset;
 
     #[ORM\ManyToOne(targetEntity: Product::class)]
-    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(nullable: false)]
     public Product $product;
 }

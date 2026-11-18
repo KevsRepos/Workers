@@ -1,97 +1,77 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Modules\Customer;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Modules\Customer\Address\CustomerAddress;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Persistence\ManagerRegistry;
 
-class Repository
+/**
+ * @extends ServiceEntityRepository<Customer>
+ */
+class Repository extends ServiceEntityRepository
 {
-    public function __construct(
-        private EntityManagerInterface $em
-    ) {}
-
-    public function save(Customer $customer, bool $flush = false): Customer
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->em->persist($customer);
-        if ($flush) {
-            $this->em->flush();
-        }
-
-        return $customer;
+        parent::__construct($registry, Customer::class);
     }
 
-    public function saveDefaultShippingAddress(string $customerId, string $addressId, bool $flush = false): void
+    public function add(Customer $customer): void
     {
-        $this->em->createQueryBuilder()
-            ->update(Customer::class, 'c')
-            ->set('c.defaultShippingAddress', ':addressId')
-            ->where('c.id = :customerId')
-            ->setParameter('addressId', $addressId, 'uuid')
-            ->setParameter('customerId', $customerId, 'uuid')
-            ->getQuery()
-            ->execute();
-
-        if ($flush) {
-            $this->em->flush();
-        }
+        $this->getEntityManager()->persist($customer);
     }
 
-    public function saveDefaultBillingAddress(string $customerId, string $addressId, bool $flush = false): void
+    public function findWithAddresses(string $id): ?Customer
     {
-        $this->em->createQueryBuilder()
-            ->update(Customer::class, 'c')
-            ->set('c.defaultBillingAddress', ':addressId')
-            ->where('c.id = :customerId')
-            ->setParameter('addressId', $addressId, 'uuid')
-            ->setParameter('customerId', $customerId, 'uuid')
-            ->getQuery()
-            ->execute();
-
-        if ($flush) {
-            $this->em->flush();
-        }
-    }
-
-    // ... you can add find/findBy helpers if needed ...
-
-    public function search(string $query): array
-    {
-        $customers = $this->em->createQueryBuilder()
-            ->select('c')
-            ->from(Customer::class, 'c')
-            ->where(
-                $this->em->createQueryBuilder()->expr()->orX(
-                    'LOWER(c.firstName) LIKE LOWER(:query)',
-                    'LOWER(c.surname) LIKE LOWER(:query)',
-                    'LOWER(c.companyName) LIKE LOWER(:query)',
-                )
-            )
-            ->setParameter('query', '%' . $query . '%')
-            ->orderBy('c.surname', 'ASC')
-            ->addOrderBy('c.firstName', 'ASC')
-            ->setMaxResults(20)
-            ->getQuery()
-            ->getArrayResult();
-
-        return array_map(fn($c) => [
-            ...$c,
-            'customerName' => $c['company']
-                ? $c['companyName']
-                : trim(($c['firstName'] ?? '') . ' ' . ($c['surname'] ?? '')),
-        ], $customers);
-    }
-
-    public function findById(string $id): ?Customer
-    {
-        return $this->em->getRepository(Customer::class)
-            ->createQueryBuilder('c')
-            ->select('c', 'a', 'sa', 'ba')
+        return $this->createQueryBuilder('c')
+            ->addSelect('a')
             ->leftJoin('c.addresses', 'a')
-            ->leftJoin('c.defaultShippingAddress', 'sa')
-            ->leftJoin('c.defaultBillingAddress', 'ba')
             ->where('c.id = :id')
-            ->setParameter('id', $id, 'uuid')
+            ->setParameter('id', $id, 'app_uuid')
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findAddress(string $id): ?CustomerAddress
+    {
+        return $this->getEntityManager()->find(CustomerAddress::class, $id);
+    }
+
+    /**
+     * @return array{list<Customer>, int}
+     */
+    public function search(?string $query, int $offset, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.anonymizedAt IS NULL')
+            ->orderBy('c.companyName', 'ASC')
+            ->addOrderBy('c.surname', 'ASC')
+            ->addOrderBy('c.firstName', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        if ($query !== null && $query !== '') {
+            $terms = preg_split('/\s+/', mb_strtolower($query)) ?: [];
+            foreach (array_values(array_filter($terms)) as $i => $term) {
+                $qb->andWhere(\sprintf(
+                    '(LOWER(c.firstName) LIKE :t%1$d OR LOWER(c.surname) LIKE :t%1$d OR LOWER(c.companyName) LIKE :t%1$d OR LOWER(c.email) LIKE :t%1$d OR c.phone LIKE :t%1$d)',
+                    $i,
+                ))->setParameter('t' . $i, '%' . addcslashes($term, '%_\\') . '%');
+            }
+        }
+
+        $paginator = new Paginator($qb->getQuery(), fetchJoinCollection: false);
+
+        return [iterator_to_array($paginator->getIterator(), false), \count($paginator)];
+    }
+
+    public function hasDeliveryNotes(Customer $customer): bool
+    {
+        return (int) $this->getEntityManager()->createQuery(
+            'SELECT COUNT(d.id) FROM App\Modules\Pim\DeliveryNote\DeliveryNote d WHERE d.customer = :customer',
+        )->setParameter('customer', $customer->id, 'app_uuid')->getSingleScalarResult() > 0;
     }
 }

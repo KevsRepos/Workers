@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Modules\Pim\DeliveryNote\OrderPreset;
 
@@ -15,37 +17,27 @@ class Repository extends ServiceEntityRepository
         parent::__construct($registry, OrderPreset::class);
     }
 
-    /** @return OrderPreset[] */
+    /**
+     * @return list<OrderPreset>
+     */
     public function findAllOrdered(): array
     {
-        return $this->createQueryBuilder('orderPreset')
-            ->leftJoin('orderPreset.items', 'item')
-            ->addSelect('item')
-            ->leftJoin('item.product', 'product')
-            ->addSelect('product')
-            ->orderBy('orderPreset.name', 'ASC')
+        return $this->createQueryBuilder('o')
+            ->addSelect('i', 'p')
+            ->leftJoin('o.items', 'i')
+            ->leftJoin('i.product', 'p')
+            ->orderBy('o.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-    public function findById(string $id): ?OrderPreset
+    public function add(OrderPreset $preset): void
     {
-        return $this->find($id);
+        $this->getEntityManager()->persist($preset);
     }
 
-    public function save(OrderPreset $orderPreset, bool $flush = false): void
+    public function remove(OrderPreset $preset): void
     {
-        $this->getEntityManager()->persist($orderPreset);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(OrderPreset $orderPreset, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($orderPreset);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->remove($preset);
     }
 }

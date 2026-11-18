@@ -1,0 +1,121 @@
+@import 'tailwindcss';
+
+@theme {
+	--font-sans:
+		'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--font-brand: 'Falcon-Poster-Bold', var(--font-sans);
+
+	--color-brand-50: oklch(97% 0.02 155);
+	--color-brand-100: oklch(93% 0.04 155);
+	--color-brand-200: oklch(86% 0.07 155);
+	--color-brand-300: oklch(76% 0.1 155);
+	--color-brand-400: oklch(62% 0.12 155);
+	--color-brand-500: oklch(50% 0.11 155);
+	--color-brand-600: oklch(42% 0.1 155);
+	--color-brand-700: oklch(35% 0.08 155);
+	--color-brand-800: oklch(29% 0.065 155);
+	--color-brand-900: oklch(24% 0.05 155);
+	--color-brand-950: oklch(17% 0.035 155);
+}
+
+@font-face {
+	font-family: 'Falcon-Poster-Bold';
+	src: url('/Falcon-Poster-Bold.ttf') format('truetype');
+	font-display: swap;
+}
+
+@layer base {
+	html {
+		-webkit-text-size-adjust: 100%;
+		touch-action: manipulation;
+	}
+
+	body {
+		@apply bg-stone-50 text-stone-900 antialiased;
+		min-height: 100dvh;
+	}
+
+	:focus-visible {
+		@apply outline-2 outline-offset-2 outline-brand-500;
+	}
+
+	h1,
+	h2,
+	h3 {
+		@apply font-semibold tracking-tight text-stone-900;
+	}
+}
+
+@layer components {
+	.field-input {
+		@apply block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 shadow-xs transition placeholder:text-stone-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 focus:outline-none disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-500 sm:text-sm;
+	}
+
+	.field-input[aria-invalid='true'] {
+		@apply border-red-500 focus:border-red-500 focus:ring-red-200;
+	}
+
+	.card {
+		@apply rounded-xl border border-stone-200 bg-white shadow-xs;
+	}
+
+	.volume-highlight {
+		@apply rounded px-1 font-semibold;
+	}
+	.highlight-24033l {
+		@apply bg-amber-100 text-amber-900;
+	}
+	.highlight-20033l {
+		@apply bg-orange-100 text-orange-900;
+	}
+	.highlight-2005l {
+		@apply bg-sky-100 text-sky-900;
+	}
+	.highlight-2405l {
+		@apply bg-indigo-100 text-indigo-900;
+	}
+	.highlight-1105l {
+		@apply bg-violet-100 text-violet-900;
+	}
+	.highlight-121l {
+		@apply bg-emerald-100 text-emerald-900;
+	}
+	.highlight-61l {
+		@apply bg-teal-100 text-teal-900;
+	}
+	.highlight-28025l {
+		@apply bg-pink-100 text-pink-900;
+	}
+	.highlight-24025l {
+		@apply bg-rose-100 text-rose-900;
+	}
+	.highlight-1207l {
+		@apply bg-lime-100 text-lime-900;
+	}
+	.highlight-30033l {
+		@apply bg-yellow-100 text-yellow-900;
+	}
+	.highlight-5l,
+	.highlight-30l,
+	.highlight-50l {
+		@apply bg-stone-200 text-stone-900;
+	}
+}
+
+@media print {
+	body {
+		@apply bg-white;
+	}
+	.no-print {
+		display: none !important;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 1ms !important;
+		transition-duration: 1ms !important;
+	}
+}

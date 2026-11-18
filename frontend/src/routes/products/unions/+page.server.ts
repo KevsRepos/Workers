@@ -1,12 +1,8 @@
-import { requestWorkers } from "$lib/api/server/requestWorkers.js";
-import { error } from "@sveltejs/kit";
+import type { PageServerLoad } from './$types';
+import type { ProductUnion } from '$lib/api/types';
+import { api } from '$lib/server/backend';
 
-export const load = async () => {
-    const res = await requestWorkers('product-unions');
-
-    if(res.error) {
-        error(500, 'Ein Fehler ist aufgetreten');
-    }
-
-    return { productUnions: res };
+export const load: PageServerLoad = async (event) => {
+	event.depends('app:unions');
+	return { unions: await api(event).get<ProductUnion[]>('/product-unions') };
 };

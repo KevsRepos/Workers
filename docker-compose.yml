@@ -1,129 +1,183 @@
+# Production stack. Configuration and secrets come from ./.env (see .env.example).
+#   docker compose --profile init run --rm certbot-init   # first certificate
+#   docker compose up -d --build
+#   docker compose run --rm php bin/console app:account:create admin@example.org Vorname Nachname --admin
+
+x-backend-env: &backend-env
+  APP_ENV: prod
+  APP_DEBUG: "0"
+  APP_SECRET: ${APP_SECRET:?set APP_SECRET}
+  DATABASE_URL: mysql://${MARIADB_USER:-workers}:${MARIADB_PASSWORD:?set MARIADB_PASSWORD}@mariadb:3306/${MARIADB_DATABASE:-workers}?serverVersion=12.3.3-MariaDB&charset=utf8mb4
+  JWT_SECRET_KEY: /srv/app/config/jwt/private.pem
+  JWT_PUBLIC_KEY: /srv/app/config/jwt/public.pem
+  JWT_PASSPHRASE: ${JWT_PASSPHRASE:?set JWT_PASSPHRASE}
+  MAILER_DSN: ${MAILER_DSN:-null://null}
+  MAILER_FROM: ${MAILER_FROM:-workers@localhost}
+  AUDIT_RETENTION_DAYS: ${AUDIT_RETENTION_DAYS:-2190}
+  TIME_TRACKING_RETENTION_YEARS: ${TIME_TRACKING_RETENTION_YEARS:-2}
+  TRUSTED_PROXIES: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+
+x-backend: &backend
+  image: workers-backend:${APP_VERSION:-latest}
+  build:
+    context: ./backend
+    target: prod
+  environment: *backend-env
+  volumes:
+    - jwt_keys:/srv/app/config/jwt:ro
+  read_only: true
+  tmpfs:
+    - /srv/app/var/log
+    - /tmp
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: [ALL]
+  networks: [internal]
+  restart: unless-stopped
+
 services:
   mariadb:
     image: mariadb:12.3.3
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in the root .env file}
-      MYSQL_DATABASE: db
-      MYSQL_USER: db
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in the root .env file}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?set MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-workers}
+      MARIADB_USER: ${MARIADB_USER:-workers}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?set MARIADB_PASSWORD}
+      TZ: Europe/Berlin
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 12
       start_period: 30s
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal]
+    restart: unless-stopped
 
-  php:
-    build:
-      context: ./backend
-    image: workers-backend:latest
-    working_dir: /var/www/workers/backend
-    depends_on:
-      - mariadb
-    env_file:
-      - ./backend/.env
+  # Generates the JWT key pair once (named volume; never in the image or the repository).
+  jwt-keys:
+    <<: *backend
+    read_only: false
+    user: root
+    cap_drop: []
     volumes:
-      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
-    command: /bin/sh -c "mkdir -p config/jwt var/cache var/log; if [ ! -f config/jwt/private.pem ] && [ ! -f config/jwt/public.pem ]; then php bin/console lexik:jwt:generate-keypair --no-interaction || exit 1; fi; chown -R www-data:www-data config/jwt var/cache var/log; exec php-fpm -F"
-    healthcheck:
-      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 9000"]
-      interval: 5s
-      timeout: 2s
-      retries: 5
-      start_period: 5s
-
-  setup-certbot:
-    image: certbot/certbot:latest
-    network_mode: host
-    # standalone: certbot öffnet selbst Port 80, kein nginx nötig.
-    # Nginx startet danach direkt mit dem echten Cert.
-    command: certonly --standalone -d ${DOMAIN} --email ${CERTBOT_EMAIL} --agree-tos --non-interactive --keep-until-expiring
-    volumes:
-      - ssl_certs:/etc/letsencrypt
+      - jwt_keys:/srv/app/config/jwt
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        [ -f config/jwt/private.pem ] || php bin/console lexik:jwt:generate-keypair --no-interaction;
+        chown www-data:www-data config/jwt/*.pem && chmod 0440 config/jwt/*.pem
     restart: "no"
 
+  migrate:
+    <<: *backend
+    command: ["php", "bin/console", "doctrine:migrations:migrate", "--no-interaction", "--allow-no-migration"]
+    depends_on:
+      mariadb: { condition: service_healthy }
+      jwt-keys: { condition: service_completed_successfully }
+    restart: "no"
+
+  php:
+    <<: *backend
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  # Scheduler worker: time tracking reminders and daily maintenance.
+  worker:
+    <<: *backend
+    command: ["php", "bin/console", "messenger:consume", "scheduler_default", "--time-limit=3600", "--memory-limit=128M"]
+    healthcheck: { disable: true }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  node:
+    image: workers-frontend:${APP_VERSION:-latest}
+    build:
+      context: ./frontend
+    environment:
+      BACKEND_URL: http://nginx:8080
+      ORIGIN: https://${DOMAIN:?set DOMAIN}
+      ADDRESS_HEADER: x-forwarded-for
+      XFF_DEPTH: "1"
+      COOKIE_SECURE: "true"
+      PUBLIC_COMPANY_NAME: ${COMPANY_NAME:-}
+      PUBLIC_COMPANY_STREET: ${COMPANY_STREET:-}
+      PUBLIC_COMPANY_POSTAL_CODE: ${COMPANY_POSTAL_CODE:-}
+      PUBLIC_COMPANY_CITY: ${COMPANY_CITY:-}
+      PUBLIC_COMPANY_PHONE: ${COMPANY_PHONE:-}
+      PUBLIC_COMPANY_FAX: ${COMPANY_FAX:-}
+      PUBLIC_COMPANY_EMAIL: ${COMPANY_EMAIL:-}
+    volumes:
+      # optional company logo for printed documents
+      - ./deploy/branding:/app/build/client/img/branding:ro
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    networks: [internal]
+    depends_on:
+      php: { condition: service_healthy }
+    restart: unless-stopped
+
   nginx:
-    container_name: nginx
-    image: nginx:stable
+    image: nginx:1.28-alpine
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+      NGINX_ENVSUBST_FILTER: DOMAIN
     volumes:
-      - ./nginx.conf:/etc/nginx/templates/default.conf.template:ro
-      - ssl_certs:/etc/nginx/ssl:ro
+      - ./deploy/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./deploy/nginx/proxy.conf:/etc/nginx/snippets/proxy.conf:ro
+      - certs:/etc/letsencrypt:ro
       - certbot_webroot:/var/www/certbot:ro
-    environment:
-      - DOMAIN=${DOMAIN}
+    networks: [internal, edge]
     depends_on:
-      setup-certbot:
-        condition: service_completed_successfully
-      mariadb:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "sh", "-c", "test -f /var/run/nginx.pid"]
-      interval: 5s
-      timeout: 2s
-      retries: 5
-    command: /bin/sh -c "envsubst '$$DOMAIN' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf || exit 1; (while :; do sleep 12h; nginx -s reload; done) & exec nginx -g 'daemon off;'"
+      node: { condition: service_healthy }
+    restart: unless-stopped
 
-  renew-ssl:
-    image: certbot/certbot:latest
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot --quiet; sleep 12h & wait $${!}; done'
+  certbot-init:
+    image: certbot/certbot:v4.2.0
+    profiles: ["init"]
+    ports: ["80:80"]
+    command: certonly --standalone -d ${DOMAIN} --email ${CERTBOT_EMAIL} --agree-tos --non-interactive --keep-until-expiring
     volumes:
-      - ssl_certs:/etc/letsencrypt
+      - certs:/etc/letsencrypt
+
+  certbot:
+    image: certbot/certbot:v4.2.0
+    entrypoint: ["/bin/sh", "-c", "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"]
+    volumes:
+      - certs:/etc/letsencrypt
       - certbot_webroot:/var/www/certbot
-    depends_on:
-      - nginx
+    networks: [edge]
+    restart: unless-stopped
 
-  node:
-    build:
-      context: ./frontend
-    image: workers-frontend:latest
-    working_dir: /app
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    depends_on:
-      setup-migrate:
-        condition: service_started
-      php:
-        condition: service_healthy
-    volumes:
-      - migrate_state:/var/www/migrate_state:rw
-      - ssl_certs:/ssl:ro
-    # Entrypoint will import mounted CA if present
+  backup:
+    image: mariadb:12.3.3
+    entrypoint: ["/bin/sh", "/backup.sh"]
     environment:
-      - BACKEND_INTERNAL_URL=http://nginx:8080/workers
-
-  setup-migrate:
-    image: workers-backend:latest
-    working_dir: /var/www/workers/backend
-    env_file:
-      - ./backend/.env
-    command: /bin/sh -c "set -eux; until nc -z mariadb 3306; do echo 'waiting for mariadb...'; sleep 1; done; php bin/console doctrine:migrations:migrate --no-interaction; mkdir -p /var/www/migrate_state; touch /var/www/migrate_state/done"
-    depends_on:
-      - mariadb
-      - php
-    restart: "no"
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-workers}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
+      TZ: Europe/Berlin
     volumes:
-      - migrate_state:/var/www/migrate_state:rw
-      - ./backend/config/jwt:/var/www/workers/backend/config/jwt:rw
+      - ./deploy/backup/backup.sh:/backup.sh:ro
+      - ${BACKUP_DIR:-./backups}:/backups
+    networks: [internal]
+    depends_on:
+      mariadb: { condition: service_healthy }
+    restart: unless-stopped
+
+networks:
+  internal:
+    internal: true
+  edge: {}
 
 volumes:
   db_data:
-  migrate_state:
-  ssl_certs:
+  jwt_keys:
+  certs:
   certbot_webroot:
-  
-
-networks:
-  default:
-    driver: bridge
